@@ -5,24 +5,54 @@ class AsistenciaM
 
     public function listOfAsistencia($id)
     {
-        $query = pg_query("SELECT
-                                central.ctrl_asistencia_info.id_ctrl_asistencia_info,
-                                central.ctrl_asistencia_info.no_dispositivo,
-                                UPPER(central.cat_asistencia_ubicacion.descripcion),
-                                UPPER(central.cat_asistencia_estatus.descripcion),
-                                UPPER(central.ctrl_asistencia_info.observaciones)
-                            FROM central.ctrl_asistencia_info
-                            INNER JOIN central.cat_asistencia_ubicacion
-                                ON central.ctrl_asistencia_info.id_cat_asistencia_ubicacion = 
-                                    central.cat_asistencia_ubicacion.id_cat_asistencia_ubicacion
-                            INNER JOIN central.cat_asistencia_estatus
-                                ON central.ctrl_asistencia_info.id_cat_asistencia_estatus =
-                                    central.cat_asistencia_estatus.id_cat_asistencia_estatus
-                            WHERE central.ctrl_asistencia_info.id_tbl_empleados_hraes = $id
-                            ORDER BY central.ctrl_asistencia_info.id_ctrl_asistencia_info DESC
-                            LIMIT 1");
+        $query = pg_query("WITH AsistenciaFiltrada AS (
+                SELECT
+                    central.ctrl_asistencia_info.id_ctrl_asistencia_info,
+                    central.ctrl_asistencia_info.no_dispositivo,
+                    UPPER(central.cat_asistencia_ubicacion.descripcion) AS ubicacion,
+                    UPPER(central.cat_asistencia_estatus.descripcion) AS estatus,
+                    UPPER(central.ctrl_asistencia_info.observaciones) AS observaciones,
+                    TO_DATE(SUBSTRING(central.ctrl_asistencia_info.tiempo, 1, 10), 'DD/MM/YYYY') AS fecha,
+                    TO_TIMESTAMP(central.ctrl_asistencia_info.tiempo, 'DD/MM/YYYY HH24:MI:SS')::TIME AS hora
+                FROM central.ctrl_asistencia_info
+                INNER JOIN central.cat_asistencia_ubicacion
+                    ON central.ctrl_asistencia_info.id_cat_asistencia_ubicacion = 
+                        central.cat_asistencia_ubicacion.id_cat_asistencia_ubicacion
+                INNER JOIN central.cat_asistencia_estatus
+                    ON central.ctrl_asistencia_info.id_cat_asistencia_estatus =
+                        central.cat_asistencia_estatus.id_cat_asistencia_estatus
+                WHERE central.ctrl_asistencia_info.id_tbl_empleados_hraes = $id
+            ),
+            PrimerUltimoRegistros AS (
+                SELECT 
+                    id_ctrl_asistencia_info,
+                    no_dispositivo,
+                    ubicacion,
+                    estatus,
+                    observaciones,
+                    fecha,
+                    hora,
+                    ROW_NUMBER() OVER (PARTITION BY fecha ORDER BY hora ASC) AS rn_asc,
+                    ROW_NUMBER() OVER (PARTITION BY fecha ORDER BY hora DESC) AS rn_desc
+                FROM AsistenciaFiltrada
+            )
+            SELECT
+                id_ctrl_asistencia_info,
+                no_dispositivo,
+                ubicacion,
+                estatus,
+                observaciones,
+                fecha,
+                hora
+            FROM PrimerUltimoRegistros
+            WHERE rn_asc = 1 OR rn_desc = 1
+            ORDER BY fecha, hora;
+        ");
+    
         return $query;
     }
+    
+
 
     public function listOfJornada($id)
     {
@@ -307,46 +337,62 @@ class AsistenciaM
 
     public function addDataInTables()
     {
-        $query = pg_query("INSERT INTO central.ctrl_asistencia(
-                                fecha, hora, dispositivo, verificacion, estado, evento, id_tbl_empleados_hraes)
-                            WITH Filtradas AS (
-                                SELECT
-                                    cti.id_tbl_empleados_hraes,
-                                    TO_CHAR(TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI'), 'HH24:MI:SS') AS hora
-                                FROM central.ctrl_temp_asistencia cta
-                                INNER JOIN central.ctrl_asistencia_info cti
-                                    ON cta.no_empleado::TEXT = cti.no_dispositivo::TEXT
-                                WHERE
-                                    cti.id_cat_asistencia_estatus = 1
-                                    AND TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI')::TIME > '05:00:00'
-                            ),
-                            Horas AS (
-                                SELECT
-                                    id_tbl_empleados_hraes,
-                                    MIN(hora) AS hora_minima,
-                                    MAX(hora) AS hora_maxima
-                                FROM Filtradas
-                                GROUP BY id_tbl_empleados_hraes
-                            )
-                            SELECT DISTINCT ON (cti.id_tbl_empleados_hraes, hora)
-                                TO_CHAR(TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI'), 'YYYY-MM-DD')::DATE AS fecha,
-                                TO_CHAR(TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI'), 'HH24:MI:SS')::TIME AS hora,
-                                UPPER(cta.dispositivo) AS dispositivo,
-                                UPPER(cta.verificacion) AS verificacion,
-                                UPPER(cta.estado) AS estado,
-                                UPPER(cta.evento) AS evento,
-                                cti.id_tbl_empleados_hraes
-                            FROM central.ctrl_temp_asistencia cta
-                            INNER JOIN central.ctrl_asistencia_info cti
-                                ON cta.no_empleado::TEXT = cti.no_dispositivo::TEXT
-                            INNER JOIN Horas hm
-                                ON cti.id_tbl_empleados_hraes = hm.id_tbl_empleados_hraes
-                                AND TO_CHAR(TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI'), 'HH24:MI:SS') IN (hm.hora_minima, hm.hora_maxima)
-                            WHERE cti.id_cat_asistencia_estatus = 1
-                            ORDER BY cti.id_tbl_empleados_hraes, hora;");
+        $query = pg_query("WITH Filtradas AS (
+            SELECT
+                cti.id_tbl_empleados_hraes,
+                DATE(TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI')) AS fecha,
+                MIN(TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI')) AS primer_registro,
+                MAX(TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI')) AS ultimo_registro,
+                cta.dispositivo,
+                cta.verificacion,
+                cta.estado,
+                cta.evento
+            FROM central.ctrl_temp_asistencia cta
+            INNER JOIN central.ctrl_asistencia_info cti
+                ON cta.no_empleado::TEXT = cti.no_dispositivo::TEXT
+            WHERE
+                cti.id_cat_asistencia_estatus = 1
+            GROUP BY cti.id_tbl_empleados_hraes, DATE(TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI')), cta.dispositivo, cta.verificacion, cta.estado, cta.evento
+        ),
+        RegistrosUnificados AS (
+            SELECT
+                id_tbl_empleados_hraes,
+                fecha,
+                primer_registro AS hora,
+                'PRIMER REGISTRO' AS tipo_registro,
+                dispositivo,
+                verificacion,
+                estado,
+                evento
+            FROM Filtradas
+            UNION ALL
+            SELECT
+                id_tbl_empleados_hraes,
+                fecha,
+                ultimo_registro AS hora,
+                'ÚLTIMO REGISTRO' AS tipo_registro,
+                dispositivo,
+                verificacion,
+                estado,
+                evento
+            FROM Filtradas
+        )
+        INSERT INTO central.ctrl_asistencia (
+            fecha, hora, dispositivo, verificacion, estado, evento, id_tbl_empleados_hraes
+        )
+        SELECT
+            TO_CHAR(fecha, 'YYYY-MM-DD')::DATE,
+            TO_CHAR(hora, 'HH24:MI:SS')::TIME,
+            UPPER(dispositivo),
+            UPPER(verificacion),
+            UPPER(estado),
+            UPPER(evento),
+            id_tbl_empleados_hraes
+        FROM RegistrosUnificados
+        ORDER BY id_tbl_empleados_hraes, fecha, hora;");
         return $query;
     }
-
+    
 
 
     //listado para pbtener el total de asistencias
@@ -435,36 +481,36 @@ class AsistenciaM
     {
         $query = pg_query("INSERT INTO central.reporte_faltas
                             SELECT central.tbl_empleados_hraes.rfc,
-                                    public.cat_unidad.nombre,
-                                    public.cat_coordinacion.nombre,
-                                    central.cat_puesto_hraes.nombre_posicion,
-                                    (central.tbl_empleados_hraes.nombre ||' '|| central.tbl_empleados_hraes.primer_apellido ||' '|| central.tbl_empleados_hraes.segundo_apellido) as nombre_completo,
-                                    central.ctrl_telefono_hraes.movil,
-                                    central.ctrl_asistencia_info.no_dispositivo,
-                                    central.ctrl_faltas.fecha,
-                                    central.ctrl_faltas.hora,
-                                    central.ctrl_faltas.cantidad,
-                                    central.cat_retardo_estatus.descripcion
-                            FROM central.tbl_empleados_hraes
-                                INNER JOIN central.ctrl_asistencia_info -- 
-                                ON central.tbl_empleados_hraes.id_tbl_empleados_hraes = central.ctrl_asistencia_info.id_tbl_empleados_hraes
-                                INNER JOIN central.ctrl_telefono_hraes
-                                ON central.tbl_empleados_hraes.id_tbl_empleados_hraes = central.ctrl_telefono_hraes.id_tbl_empleados_hraes 
-                                AND central.ctrl_telefono_hraes.id_cat_estatus = 1
-                                INNER JOIN central.tbl_plazas_empleados_hraes
-                                ON central.tbl_empleados_hraes.id_tbl_empleados_hraes = central.tbl_plazas_empleados_hraes.id_tbl_empleados_hraes 
-                                INNER JOIN central.tbl_control_plazas_hraes
-                                ON central.tbl_plazas_empleados_hraes.id_tbl_control_plazas_hraes =  central.tbl_control_plazas_hraes.id_tbl_control_plazas_hraes
-                                INNER JOIN public.cat_unidad
-                                ON central.tbl_control_plazas_hraes.id_cat_unidad = public.cat_unidad.id_cat_unidad
-                                INNER JOIN public.cat_coordinacion
-                                ON central.tbl_control_plazas_hraes.id_cat_coordinacion = public.cat_coordinacion.id_cat_coordinacion
-                                INNER JOIN central.cat_puesto_hraes
-                                ON central.tbl_control_plazas_hraes.id_cat_puesto_hraes =	central.cat_puesto_hraes.id_cat_puesto_hraes
-                                INNER JOIN central.ctrl_faltas
-                                ON central.tbl_empleados_hraes.id_tbl_empleados_hraes = central.ctrl_faltas.id_tbl_empleados_hraes
-                                INNER JOIN central.cat_retardo_estatus
-                                ON central.ctrl_faltas.id_cat_retardo_estatus = central.cat_retardo_estatus.id_cat_retardo_estatus;");
+       public.cat_unidad.nombre AS unidad,
+       public.cat_coordinacion.nombre AS coordinacion,
+       central.cat_puesto_hraes.nombre_posicion AS puesto,
+       (central.tbl_empleados_hraes.nombre || ' ' || central.tbl_empleados_hraes.primer_apellido || ' ' || central.tbl_empleados_hraes.segundo_apellido) AS nombre_completo,
+       central.ctrl_telefono_hraes.movil,
+       central.ctrl_asistencia_info.no_dispositivo,
+       central.ctrl_faltas.fecha,
+       central.ctrl_faltas.hora,
+       central.ctrl_faltas.cantidad,
+       central.cat_retardo_estatus.descripcion AS estatus
+FROM central.tbl_empleados_hraes
+LEFT JOIN central.ctrl_asistencia_info
+    ON central.tbl_empleados_hraes.id_tbl_empleados_hraes = central.ctrl_asistencia_info.id_tbl_empleados_hraes
+LEFT JOIN central.ctrl_telefono_hraes
+    ON central.tbl_empleados_hraes.id_tbl_empleados_hraes = central.ctrl_telefono_hraes.id_tbl_empleados_hraes 
+    AND central.ctrl_telefono_hraes.id_cat_estatus = 1
+LEFT JOIN central.tbl_plazas_empleados_hraes
+    ON central.tbl_empleados_hraes.id_tbl_empleados_hraes = central.tbl_plazas_empleados_hraes.id_tbl_empleados_hraes 
+LEFT JOIN central.tbl_control_plazas_hraes
+    ON central.tbl_plazas_empleados_hraes.id_tbl_control_plazas_hraes = central.tbl_control_plazas_hraes.id_tbl_control_plazas_hraes
+LEFT JOIN public.cat_unidad
+    ON central.tbl_control_plazas_hraes.id_cat_unidad = public.cat_unidad.id_cat_unidad
+LEFT JOIN public.cat_coordinacion
+    ON central.tbl_control_plazas_hraes.id_cat_coordinacion = public.cat_coordinacion.id_cat_coordinacion
+LEFT JOIN central.cat_puesto_hraes
+    ON central.tbl_control_plazas_hraes.id_cat_puesto_hraes = central.cat_puesto_hraes.id_cat_puesto_hraes
+LEFT JOIN central.ctrl_faltas
+    ON central.tbl_empleados_hraes.id_tbl_empleados_hraes = central.ctrl_faltas.id_tbl_empleados_hraes
+LEFT JOIN central.cat_retardo_estatus
+    ON central.ctrl_faltas.id_cat_retardo_estatus = central.cat_retardo_estatus.id_cat_retardo_estatus");
         return $query;
     }
 
