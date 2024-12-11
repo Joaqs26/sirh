@@ -103,82 +103,86 @@ class AsistenciaM
     }
 
     public function listadoAsistenciaAll($idEmpleado, $paginator)
-    {
-        $query = pg_query("WITH MinMaxHoras AS (
-                                SELECT
-                                    fecha,
-                                    MIN(hora) AS hora_minima,
-                                    MAX(hora) AS hora_maxima
-                                FROM central.ctrl_asistencia
-                                WHERE id_tbl_empleados_hraes = $idEmpleado
-                                GROUP BY fecha
-                            )
-                            SELECT
-                                ca.id_ctrl_asistencia,
-                                TO_CHAR(ca.fecha, 'DD/MM/YYYY') AS fecha_formateada,
-                                TO_CHAR(ca.hora, 'HH24:MI') AS hora_formateada,
-                                CASE 
-                                    WHEN ca.hora = mmh.hora_minima THEN 'PRIMER REGISTRO'
-                                    WHEN ca.hora = mmh.hora_maxima THEN 'ÚLTIMO REGISTRO'
-                                    ELSE 'REGISTRO INTERMEDIO'
-                                END AS tipo_registro,
-                                UPPER(ca.dispositivo) AS dispositivo,
-                                UPPER(ca.verificacion) AS verificacion,
-                                UPPER(ca.estado) AS estado,
-                                UPPER(ca.evento) AS evento,
-                                ca.id_user
-                            FROM central.ctrl_asistencia ca
-                            INNER JOIN MinMaxHoras mmh
-                                ON ca.fecha = mmh.fecha
-                                AND (ca.hora = mmh.hora_minima OR ca.hora = mmh.hora_maxima)
-                            WHERE ca.id_tbl_empleados_hraes = $idEmpleado
-                            ORDER BY ca.fecha DESC, ca.hora
-                            LIMIT 3 OFFSET $paginator;");
-        return $query;
-    }
+{
+    $query = pg_query("WITH MinMaxHoras AS ( SELECT
+                fecha_hora::TIMESTAMP::DATE AS fecha,
+                MIN(fecha_hora::TIMESTAMP) FILTER (WHERE fecha_hora::TIMESTAMP::TIME >= '07:00:00') AS hora_minima, -- Primer registro después de las 07:00
+                MAX(fecha_hora::TIMESTAMP) AS hora_maxima -- Último registro del día
+            FROM central.ctrl_asistencia
+            WHERE id_tbl_empleados_hraes = $idEmpleado
+            GROUP BY fecha_hora::TIMESTAMP::DATE
+        )
+        SELECT
+            ca.id_ctrl_asistencia,
+            TO_CHAR(ca.fecha_hora::TIMESTAMP, 'DD/MM/YYYY') AS fecha_formateada,
+            TO_CHAR(ca.fecha_hora::TIMESTAMP, 'HH24:MI') AS hora_formateada,
+            CASE 
+                WHEN ca.fecha_hora::TIMESTAMP = mmh.hora_minima THEN 'PRIMER REGISTRO'
+                WHEN ca.fecha_hora::TIMESTAMP = mmh.hora_maxima THEN 'ÚLTIMO REGISTRO'
+                ELSE 'REGISTRO INTERMEDIO'
+            END AS tipo_registro,
+            UPPER(ca.dispositivo) AS dispositivo,
+            UPPER(ca.verificacion) AS verificacion,
+            UPPER(ca.estado) AS estado,
+            UPPER(ca.evento) AS evento,
+            ca.id_user
+        FROM central.ctrl_asistencia ca
+        INNER JOIN MinMaxHoras mmh
+            ON ca.fecha_hora::TIMESTAMP::DATE = mmh.fecha
+            AND (ca.fecha_hora::TIMESTAMP = mmh.hora_minima OR ca.fecha_hora::TIMESTAMP = mmh.hora_maxima)
+        WHERE ca.id_tbl_empleados_hraes = $idEmpleado
+        ORDER BY ca.fecha_hora::TIMESTAMP DESC
+        LIMIT 3 OFFSET $paginator;
+    ");
+    return $query;
+}
 
-    public function listadoAsistenciaBusq($idEmpleado, $busqueda, $paginator)
-    {
-        $query = pg_query("WITH MinMaxHoras AS (
-                                SELECT
-                                    fecha,
-                                    MIN(hora) AS hora_minima,
-                                    MAX(hora) AS hora_maxima
-                                FROM central.ctrl_asistencia
-                                WHERE id_tbl_empleados_hraes = $idEmpleado
-                                GROUP BY fecha
-                            )
-                            SELECT
-                                ca.id_ctrl_asistencia,
-                                TO_CHAR(ca.fecha, 'DD/MM/YYYY') AS fecha_formateada,
-                                TO_CHAR(ca.hora, 'HH24:MI') AS hora_formateada,
-                                CASE 
-                                    WHEN ca.hora = mmh.hora_minima THEN 'PRIMER REGISTRO'
-                                    WHEN ca.hora = mmh.hora_maxima THEN 'ÚLTIMO REGISTRO'
-                                    ELSE 'REGISTRO INTERMEDIO'
-                                END AS tipo_registro,
-                                UPPER(ca.dispositivo) AS dispositivo,
-                                UPPER(ca.verificacion) AS verificacion,
-                                UPPER(ca.estado) AS estado,
-                                UPPER(ca.evento) AS evento,
-                                ca.id_user
-                            FROM central.ctrl_asistencia ca
-                            INNER JOIN MinMaxHoras mmh
-                                ON ca.fecha = mmh.fecha
-                                AND (ca.hora = mmh.hora_minima OR ca.hora = mmh.hora_maxima)
-                            WHERE ca.id_tbl_empleados_hraes = $idEmpleado
-                            AND ( TO_CHAR(ca.fecha, 'DD/MM/YYYY')::TEXT LIKE '%$busqueda%' OR
-                                  TO_CHAR(ca.hora, 'HH24:MI')::TEXT LIKE '%$busqueda%' OR
-                                  TRIM(UPPER(UNACCENT(ca.dispositivo))) LIKE '%$busqueda%' OR
-                                  TRIM(UPPER(UNACCENT(ca.verificacion))) LIKE '%$busqueda%' OR
-                                  TRIM(UPPER(UNACCENT(ca.estado))) LIKE '%$busqueda%' OR
-                                  TRIM(UPPER(UNACCENT(ca.evento))) LIKE '%$busqueda%')
-                            ORDER BY ca.fecha DESC, ca.hora
-                            LIMIT 3 OFFSET $paginator;");
-        return $query;
-    }
+    
+public function listadoAsistenciaBusq($idEmpleado, $busqueda, $paginator)
+{
+    $query = pg_query("WITH MinMaxHoras AS (
+            SELECT
+                fecha_hora::TIMESTAMP::DATE AS fecha,
+                MIN(fecha_hora::TIMESTAMP) FILTER (WHERE fecha_hora::TIMESTAMP::TIME >= '07:00:00') AS hora_minima, -- Primer registro después de las 07:00
+                MAX(fecha_hora::TIMESTAMP) AS hora_maxima -- Último registro del día
+            FROM central.ctrl_asistencia
+            WHERE id_tbl_empleados_hraes = $idEmpleado
+            GROUP BY fecha_hora::TIMESTAMP::DATE
+        )
+        SELECT
+            ca.id_ctrl_asistencia,
+            TO_CHAR(ca.fecha_hora::TIMESTAMP, 'DD/MM/YYYY') AS fecha_formateada,
+            TO_CHAR(ca.fecha_hora::TIMESTAMP, 'HH24:MI') AS hora_formateada,
+            CASE 
+                WHEN ca.fecha_hora::TIMESTAMP = mmh.hora_minima THEN 'PRIMER REGISTRO'
+                WHEN ca.fecha_hora::TIMESTAMP = mmh.hora_maxima THEN 'ÚLTIMO REGISTRO'
+                ELSE 'REGISTRO INTERMEDIO'
+            END AS tipo_registro,
+            UPPER(ca.dispositivo) AS dispositivo,
+            UPPER(ca.verificacion) AS verificacion,
+            UPPER(ca.estado) AS estado,
+            UPPER(ca.evento) AS evento,
+            ca.id_user
+        FROM central.ctrl_asistencia ca
+        INNER JOIN MinMaxHoras mmh
+            ON ca.fecha_hora::TIMESTAMP::DATE = mmh.fecha
+            AND (ca.fecha_hora::TIMESTAMP = mmh.hora_minima OR ca.fecha_hora::TIMESTAMP = mmh.hora_maxima)
+        WHERE ca.id_tbl_empleados_hraes = $idEmpleado
+          AND ( TO_CHAR(ca.fecha_hora::TIMESTAMP, 'DD/MM/YYYY') LIKE '%$busqueda%'
+             OR TO_CHAR(ca.fecha_hora::TIMESTAMP, 'HH24:MI') LIKE '%$busqueda%'
+             OR TRIM(UPPER(UNACCENT(ca.dispositivo))) LIKE '%$busqueda%'
+             OR TRIM(UPPER(UNACCENT(ca.verificacion))) LIKE '%$busqueda%'
+             OR TRIM(UPPER(UNACCENT(ca.estado))) LIKE '%$busqueda%'
+             OR TRIM(UPPER(UNACCENT(ca.evento))) LIKE '%$busqueda%')
+        ORDER BY ca.fecha_hora::TIMESTAMP DESC
+        LIMIT 3 OFFSET $paginator;
+    ");
+    return $query;
+}
 
-    public function editAsistencia($id)
+
+    
+        public function editAsistencia($id)
     {
         $query = pg_query("SELECT * 
                             FROM central.ctrl_asistencia
@@ -306,64 +310,66 @@ class AsistenciaM
     }
 
     public function addDataInTables()
-    {
-        $query = pg_query("INSERT INTO central.ctrl_asistencia (
-                fecha, hora, dispositivo, verificacion, estado, evento, id_tbl_empleados_hraes
-            )
-            WITH Filtradas AS (
-                SELECT
-                    cti.id_tbl_empleados_hraes,
-                    TO_CHAR(TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI'), 'YYYY-MM-DD')::DATE AS fecha,
-                    TO_CHAR(TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI'), 'HH24:MI:SS')::TIME AS hora,
-                    cta.dispositivo,
-                    cta.verificacion,
-                    cta.estado,
-                    cta.evento
-                FROM central.ctrl_temp_asistencia cta
-                INNER JOIN central.ctrl_asistencia_info cti
-                    ON cta.no_empleado::TEXT = cti.no_dispositivo::TEXT
-                WHERE cti.id_cat_asistencia_estatus = 1
-            ),
-            MinMaxHoras AS (
-                SELECT
-                    id_tbl_empleados_hraes,
-                    fecha,
-                    MIN(hora) AS hora_minima,
-                    MAX(hora) AS hora_maxima
-                FROM Filtradas
-                GROUP BY id_tbl_empleados_hraes, fecha
-            ),
-            RegistrosSinDuplicados AS (
-                SELECT DISTINCT
-                    mmh.fecha,
-                    CASE
-                        WHEN f.hora = mmh.hora_minima THEN mmh.hora_minima
-                        ELSE mmh.hora_maxima
-                    END AS hora,
-                    UPPER(f.dispositivo) AS dispositivo,
-                    UPPER(f.verificacion) AS verificacion,
-                    UPPER(f.estado) AS estado,
-                    UPPER(f.evento) AS evento,
-                    f.id_tbl_empleados_hraes
-                FROM Filtradas f
-                INNER JOIN MinMaxHoras mmh
-                    ON f.id_tbl_empleados_hraes = mmh.id_tbl_empleados_hraes
-                    AND f.fecha = mmh.fecha
-                    AND (f.hora = mmh.hora_minima OR f.hora = mmh.hora_maxima)
-            )
-            SELECT DISTINCT ON (id_tbl_empleados_hraes, fecha, hora)
+{
+    $query = pg_query("INSERT INTO central.ctrl_asistencia (
+            fecha, hora, dispositivo, verificacion, estado, evento, id_tbl_empleados_hraes
+        )
+        WITH Filtradas AS (
+            SELECT
+                cti.id_tbl_empleados_hraes,
+                TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI') AS timestamp_completo,
+                TO_DATE(cta.tiempo, 'MM/DD/YYYY') AS fecha,
+                TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI')::TIME AS hora,
+                cta.dispositivo,
+                cta.verificacion,
+                cta.estado,
+                cta.evento
+            FROM central.ctrl_temp_asistencia cta
+            INNER JOIN central.ctrl_asistencia_info cti
+                ON cta.no_empleado::TEXT = cti.no_dispositivo::TEXT
+            WHERE cti.id_cat_asistencia_estatus = 1
+        ),
+        MinMaxHoras AS (
+            SELECT
+                id_tbl_empleados_hraes,
                 fecha,
-                hora,
-                dispositivo,
-                verificacion,
-                estado,
-                evento,
-                id_tbl_empleados_hraes
-            FROM RegistrosSinDuplicados
-            ORDER BY id_tbl_empleados_hraes, fecha, hora;
-        ");
-        return $query;
-    }
+                MIN(hora) FILTER (WHERE hora >= '07:00:00') AS hora_minima,
+                MAX(hora) AS hora_maxima
+            FROM Filtradas
+            GROUP BY id_tbl_empleados_hraes, fecha
+        ),
+        RegistrosSinDuplicados AS (
+            SELECT DISTINCT
+                f.fecha,
+                CASE
+                    WHEN f.hora = mmh.hora_minima THEN mmh.hora_minima
+                    ELSE mmh.hora_maxima
+                END AS hora,
+                UPPER(f.dispositivo) AS dispositivo,
+                UPPER(f.verificacion) AS verificacion,
+                UPPER(f.estado) AS estado,
+                UPPER(f.evento) AS evento,
+                f.id_tbl_empleados_hraes
+            FROM Filtradas f
+            INNER JOIN MinMaxHoras mmh
+                ON f.id_tbl_empleados_hraes = mmh.id_tbl_empleados_hraes
+                AND f.fecha = mmh.fecha
+                AND (f.hora = mmh.hora_minima OR f.hora = mmh.hora_maxima)
+        )
+        SELECT DISTINCT ON (id_tbl_empleados_hraes, fecha, hora)
+            fecha,
+            hora,
+            dispositivo,
+            verificacion,
+            estado,
+            evento,
+            id_tbl_empleados_hraes
+        FROM RegistrosSinDuplicados
+        ORDER BY id_tbl_empleados_hraes, fecha, hora;
+    ");
+    return $query;
+}
+
     
 
 
