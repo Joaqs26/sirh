@@ -51,5 +51,6 @@
     "!dist/js",
     "nuget",
     "tests"
+    
   ]
 }
