@@ -416,17 +416,109 @@ class FaltaModelM
 
     public function process_5()
     {
-        $query = pg_query("--########################
-                            --### PROCESO VALIDADO ### 5
-                            --########################
-                            --==========================================================================
-                            --### Script para Actualizar la Fecha de Último Proceso en Configuración ###
-                            --==========================================================================
-                            UPDATE central.cat_asistencia_config
-                            SET fecha_ult_proceso = CURRENT_DATE;");
+        $query = pg_query("UPDATE central.cat_asistencia_config
+    SET fecha_ult_proceso = CURRENT_DATE 
+    WHERE id_cat_asistencia_config = 1; 
+    (SELECT fecha_ult_proceso FROM central.cat_asistencia_config WHERE id_cat_asistencia_config = 1) -- Agregar esta condición");
+            return $query;
+        }
+
+        public function process_6()
+        {
+            $query = pg_query("INSERT INTO central.ctrl_faltas (
+    id_tbl_empleados_hraes,
+    es_por_retardo,
+    id_cat_retardo_tipo,
+    id_cat_retardo_estatus,
+    fecha
+)
+SELECT 
+    123 AS id_tbl_empleados_hraes,            -- Reemplaza 123 con un ID real de empleado
+    TRUE AS es_por_retardo,                   -- Es por retardo
+    3 AS id_cat_retardo_tipo,                 -- Tipo de retardo
+    CASE 
+        WHEN (NoRet >= 3 AND NoRet < 6) THEN 1
+        WHEN (NoRet >= 6 AND NoRet < 9) THEN 2
+        WHEN (NoRet >= 9 AND NoRet < 12) THEN 3
+        WHEN (NoRet >= 12) THEN 4
+    END AS id_cat_retardo_estatus,            -- Estatus de retardo
+    CURRENT_DATE AS fecha                     -- Fecha actual
+FROM (
+    SELECT COUNT(*) + 6 AS NoRet
+    FROM central.ctrl_retardo
+    WHERE fecha <= '2024-08-15'               -- Fecha en formato YYYY-MM-DD
+      AND id_tbl_empleados_hraes = 123       -- Reemplaza 123 con un ID real de empleado
+) AS Retardos;");
         return $query;
 
-    }    
+    }        
+
+    public function process_7()
+    { 
+        $query = pg_query("INSERT INTO central.ctrl_faltas (
+    id_tbl_empleados_hraes,
+    observaciones,
+    es_por_retardo,
+    id_cat_retardo_tipo,
+    id_cat_retardo_estatus,
+    id_user,
+    fecha,
+    hora,
+    cantidad
+)
+SELECT 
+    f.id_tbl_empleados_hraes,                      -- ID del empleado
+    'FALTA POR OMISIÓN' AS observaciones,          -- Observación
+    FALSE AS es_por_retardo,                       -- No es por retardo
+    3 AS id_cat_retardo_tipo,                      -- Tipo de falta por omisión
+    8 AS id_cat_retardo_estatus,                   -- Estatus para falta por omisión
+    NULL AS id_user,                               -- Usuario que procesa
+    f.fecha,                                       -- Fecha omitida
+    '00:00:00' AS hora,                            -- Hora predeterminada
+    1 AS cantidad                                  -- Una falta
+FROM (
+    -- Generar todas las combinaciones de empleados y fechas del rango
+    SELECT 
+        e.id_tbl_empleados_hraes,
+        g.fecha
+    FROM 
+        central.tbl_empleados_hraes e              -- Tabla de empleados
+    CROSS JOIN (
+        -- Generar el rango de fechas dinámicamente desde ctrl_asistencia
+        SELECT 
+            GENERATE_SERIES(
+                (SELECT MIN(fecha) FROM central.ctrl_asistencia),
+                (SELECT MAX(fecha) FROM central.ctrl_asistencia),
+                '1 day'::INTERVAL
+            )::DATE AS fecha
+    ) g
+    INNER JOIN central.ctrl_asistencia_info ai    -- Filtrar empleados activos
+        ON e.id_tbl_empleados_hraes = ai.id_tbl_empleados_hraes
+        AND ai.id_cat_asistencia_estatus = 1      -- Solo empleados con estatus ACTIVO
+
+    INNER JOIN asistencia.ctrl_plantilla_qna p
+        ON e.id_tbl_empleados_hraes = CAST(p.ids AS INTEGER)
+        AND p.ubicacion = 'E CAMPA'
+        AND p.ids ~ '^\d+$'                      -- Filtrar solo valores numéricos en 
+        ) f
+LEFT JOIN central.ctrl_asistencia a
+    ON f.id_tbl_empleados_hraes = a.id_tbl_empleados_hraes
+    AND f.fecha = a.fecha                          -- Verificar si ya hay un registro de asistencia en esa fecha
+WHERE a.fecha IS NULL                              -- No hay registros de asistencia en esa fecha
+    AND f.fecha NOT IN (                           -- Excluir fechas en cat_dias_festivos
+        SELECT fecha 
+        FROM central.cat_dias_festivos
+    )
+    AND NOT EXISTS (                               -- Evitar duplicados en ctrl_faltas
+        SELECT 1 
+        FROM central.ctrl_faltas cf
+        WHERE cf.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+          AND cf.fecha = f.fecha
+          AND cf.id_cat_retardo_tipo = 3           -- Ya existe una falta por omisión
+    );");
+        return $query;
+
+    }        
 
 
     public function truncateTableTmpFaltas()
@@ -449,7 +541,9 @@ class FaltaModelM
 
     public function udpdateFaltas()
     {
-        $query = pg_query(" UPDATE central.ctrl_retardo R
+
+             $query = pg_query(" UPDATE central.ctrl_retardo R
+
                             SET id_cat_retardo_estatus = 3, -- JUSTIFICADA
                                 observaciones = J.observaciones	-- Observaciones del Justificación
                             FROM central.masivo_ctrl_temp_faltas_just J	-- Justificaciones
