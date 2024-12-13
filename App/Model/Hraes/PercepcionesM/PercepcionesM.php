@@ -9,7 +9,7 @@ class ModelPercepcionesM
                                     cat_concepto.concepto,
                                     cat_valores.valor,
                                     ctrl_percepciones_hraes.fecha_registro
-                            FROM ctrl_percepciones_hraes
+                            FROM public.ctrl_percepciones_hraes
                             INNER JOIN cat_valores
                             ON ctrl_percepciones_hraes.id_cat_valores =
                                 cat_valores.id_cat_valores
@@ -36,7 +36,7 @@ class ModelPercepcionesM
     {
         $listado = pg_query("SELECT id_ctrl_percepciones_hraes,id_tbl_empleados_hraes,
                                     id_cat_valores,fecha_registro
-                             FROM ctrl_percepciones_hraes
+                             FROM public.ctrl_percepciones_hraes
                              WHERE id_ctrl_percepciones_hraes = $id_object");
         return $listado;
     }
@@ -45,37 +45,37 @@ class ModelPercepcionesM
     {
         $condition = ';'; //->separator
         if($id_object != null){
-            $condition = ' AND ctrl_percepciones_hraes.id_ctrl_percepciones_hraes != ' . $id_object;
+            $condition = ' AND public.ctrl_percepciones_hraes.id_ctrl_percepciones_hraes != ' . $id_object;
         }
 
         $listado = pg_query("SELECT COUNT (id_ctrl_percepciones_hraes)
-                             FROM ctrl_percepciones_hraes
+                             FROM public.ctrl_percepciones_hraes
                              INNER JOIN cat_valores
-                             ON ctrl_percepciones_hraes.id_cat_valores =
+                             ON public.ctrl_percepciones_hraes.id_cat_valores =
                                  cat_valores.id_cat_valores
                              INNER JOIN cat_concepto
                              ON cat_valores.id_cat_concepto =
                                  cat_concepto.id_cat_concepto
-                             WHERE ctrl_percepciones_hraes.id_tbl_empleados_hraes = $id_tbl_empleados_hraes
+                             WHERE public.ctrl_percepciones_hraes.id_tbl_empleados_hraes = $id_tbl_empleados_hraes
                              AND cat_concepto.id_cat_concepto = $id_cat_concepto" . $condition);
         return $listado;
     }
 
     public function editarByArray($conexion, $datos, $condicion)
     {
-        $pg_update = pg_update($conexion, 'ctrl_percepciones_hraes', $datos, $condicion);
+        $pg_update = pg_update($conexion, 'public.ctrl_percepciones_hraes', $datos, $condicion);
         return $pg_update;
     }
 
     public function agregarByArray($conexion, $datos)
     {
-        $pg_add = pg_insert($conexion, 'ctrl_percepciones_hraes', $datos);
+        $pg_add = pg_insert($conexion, 'public.ctrl_percepciones_hraes', $datos);
         return $pg_add;
     }
 
     public function eliminarByArray($conexion, $condicion)
     {
-        $pgs_delete = pg_delete($conexion, 'ctrl_percepciones_hraes', $condicion);
+        $pgs_delete = pg_delete($conexion, 'public.ctrl_percepciones_hraes', $condicion);
         return $pgs_delete;
     }
 

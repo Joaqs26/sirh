@@ -1,20 +1,30 @@
 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
     aria-hidden="true" id="agregar_editar_jefe">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 700px;">
         <div class="modal-content">
             <div class="modal-header background-modal">
-                <h5 class="modal-title text-modal-tittle"><label id="tituloJefe" class="text-modal-tittle"></label> jefe
-                    inmediato.</h5>
-            </div>
-
-            <div class="card-body">
                 <div class="container">
                     <div class="row">
                         <div class="col-12">
-                            <label class="text-input-form div-spacing text-input-rem">Nombre de jefe inmediato</label><label
+                            <h1 class="text-tittle-card"><label id="tituloJefe"></label>
+                                jefe inmediato.
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="div-spacing"></div>
+            <div class="card-body">
+                <div class="container">
+                    <div class="row mx-1">
+                        <div class="col-12">
+                            <label for="campo" class="form-label input-text-form text-input-rem">Nombre de jefe inmediato</label><label
                                 class="text-required">*</label>
-                            <input onkeyup="convertirAMayusculas(event,'jefe_inmediato')" type="text" class="form-control" id="jefe_inmediato" placeholder="Jefe inmediato"
-                                maxlength="60">
+                            <input onkeyup="convertirAMayusculas(event,'jefe_inmediato')" maxlength="60" type="text"
+                                class="form-control div-spacing custom-input" id="jefe_inmediato"
+                                placeholder="Nombre">
+                            <div class="line"></div>
                         </div>
                     </div>
                 </div>
@@ -31,3 +41,5 @@
         </div>
     </div>
 </div>
+
+

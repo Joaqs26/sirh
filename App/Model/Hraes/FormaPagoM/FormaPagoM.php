@@ -8,7 +8,7 @@ class ModelFormaPagoM
             $result = "AND id_ctrl_cuenta_clabe_hraes != $id_object;";
         }
         $listado = pg_query("SELECT COUNT(id_ctrl_cuenta_clabe_hraes)
-                             FROM ctrl_cuenta_clabe_hraes
+                             FROM public.ctrl_cuenta_clabe_hraes
                              WHERE id_tbl_empleados_hraes = $id_tbl_empleados_hraes
                              AND id_cat_estatus = $value " . $result);
         return $listado;
@@ -20,7 +20,7 @@ class ModelFormaPagoM
                                     cat_banco.nombre,
                                     cat_formato_pago.forma_pago,
                                     cat_estatus.estatus
-                            FROM ctrl_cuenta_clabe_hraes
+                            FROM public.ctrl_cuenta_clabe_hraes
                             INNER JOIN cat_banco
                             ON ctrl_cuenta_clabe_hraes.id_cat_banco = 
                                 cat_banco.id_cat_banco
@@ -43,7 +43,7 @@ class ModelFormaPagoM
                                     cat_banco.nombre,
                                     cat_formato_pago.forma_pago,
                                     cat_estatus.estatus
-                            FROM ctrl_cuenta_clabe_hraes
+                            FROM public.ctrl_cuenta_clabe_hraes
                             INNER JOIN cat_banco
                             ON ctrl_cuenta_clabe_hraes.id_cat_banco = 
                                 cat_banco.id_cat_banco
@@ -68,7 +68,7 @@ class ModelFormaPagoM
     function listarByIdFormaPago($id_object){
         $listado = pg_query("SELECT id_ctrl_cuenta_clabe_hraes, clabe, id_cat_estatus,
                                     id_cat_banco,id_tbl_empleados_hraes,id_cat_formato_pago
-                             FROM ctrl_cuenta_clabe_hraes
+                             FROM public.ctrl_cuenta_clabe_hraes
                              WHERE id_ctrl_cuenta_clabe_hraes = $id_object");
         return $listado;
     }
@@ -87,19 +87,19 @@ class ModelFormaPagoM
 
     function editarByArray($conexion, $datos, $condicion)
     {
-        $pg_update = pg_update($conexion, 'ctrl_cuenta_clabe_hraes', $datos, $condicion);
+        $pg_update = pg_update($conexion, 'public.ctrl_cuenta_clabe_hraes', $datos, $condicion);
         return $pg_update;
     }
 
     function agregarByArray($conexion, $datos)
     {
-        $pg_add = pg_insert($conexion, 'ctrl_cuenta_clabe_hraes', $datos);
+        $pg_add = pg_insert($conexion, 'public.ctrl_cuenta_clabe_hraes', $datos);
         return $pg_add;
     }
 
     function eliminarByArray($conexion, $condicion)
     {
-        $pgs_delete = pg_delete($conexion, 'ctrl_cuenta_clabe_hraes', $condicion);
+        $pgs_delete = pg_delete($conexion, 'public.ctrl_cuenta_clabe_hraes', $condicion);
         return $pgs_delete;
     }
 

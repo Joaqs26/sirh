@@ -4,14 +4,14 @@ class ModelDomicilioM{
 
     public function selectCountById($id_object){
         $listado = pg_query("SELECT COUNT (id_tbl_domicilios_hraes)
-                             FROM tbl_domicilios_hraes
+                             FROM public.tbl_domicilios_hraes
                              WHERE id_tbl_empleados_hraes =  $id_object");
         return $listado;
     }
 
     public function listarByIdEdit($id_object){
         $listado = pg_query("SELECT *
-                            FROM tbl_domicilios_hraes
+                            FROM public.tbl_domicilios_hraes
                             WHERE id_tbl_empleados_hraes = $id_object");
         return $listado;
     }
@@ -42,17 +42,17 @@ class ModelDomicilioM{
     }
 
     function editarByArray($conexion, $datos, $condicion){
-        $pg_update = pg_update($conexion, 'tbl_domicilios_hraes', $datos, $condicion);
+        $pg_update = pg_update($conexion, 'public.tbl_domicilios_hraes', $datos, $condicion);
         return $pg_update;
     }
 
     function agregarByArray($conexion, $datos){
-        $pg_add = pg_insert($conexion, 'tbl_domicilios_hraes', $datos);
+        $pg_add = pg_insert($conexion, 'public.tbl_domicilios_hraes', $datos);
         return $pg_add;
     }
 
     function eliminarByArray($conexion, $condicion){
-        $pgs_delete = pg_delete($conexion,'tbl_domicilios_hraes',$condicion);
+        $pgs_delete = pg_delete($conexion,'public.tbl_domicilios_hraes',$condicion);
         return $pgs_delete;
     }
 }

@@ -22,7 +22,7 @@ function validarQuinquenio_x(id_tbl_empleados_hraes,id_object){
             if(!bool){
                 agregarEditarByDbByQuinquenio();
             } else {
-                mensajeError(message);
+                notyf.error(message);
             }
         }
     );

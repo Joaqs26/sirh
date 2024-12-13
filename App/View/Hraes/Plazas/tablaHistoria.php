@@ -9,7 +9,7 @@ $query = $listado->listarHistoria($id_tbl_plazas_empleados_hraes); //INICIO DE L
 
 $data =
     '<table class="table table-bordered" id="tabla_historia_plaza_empleado_ix" style="width:100%">
-    <thead>
+    <thead class="text-center">
         <tr>
             <th class="input-text-form">Rfc de empleado</th>
             <th class="input-text-form">Movimiento</th>
@@ -23,7 +23,7 @@ if (!$result = pg_query($connectionDBsPro, $query)) {
 if (pg_num_rows($result) > 0) {
     while ($row = pg_fetch_row($result)) {
         $data .=
-            '<tbody>
+            '<tbody class="text-center">
                         <tr>
                             <td style="font-size: 14px">
                                 ' . $row[0] . '

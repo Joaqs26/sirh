@@ -26,7 +26,7 @@ function iniciarTabla_nt(busqueda, paginador, id_tbl_empleados_hraes) {
 function iniciarTablaTelefono(id_tbl_empleados_hraes) { ///INGRESA LA TABLA
     $.ajax({
         type: 'POST',
-        url: '../../../../App/View/Hraes/Modulo/NumeroTelefonico/tabla.php',
+        url: '../../../../App/View/Central/Modulo/NumeroTelefonico/tabla.php',
         data: { id_tbl_empleados_hraes: id_tbl_empleados_hraes },
         success: function (data) {
             $('#modulo_telefono').html(data);

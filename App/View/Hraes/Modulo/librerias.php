@@ -1,5 +1,4 @@
-
-<!-- LIBRERIAS JS -->
+<!-- LHraesRERIAS JS -->
 <script src="../../../../js/Hraes/Modulo/Inicio/iniciar.js"></script>
 <script src="../../../../js/Hraes/Modulo/Inicio/Popup.js"></script>
 
@@ -79,6 +78,26 @@
 <script src="../../../../js/Hraes/Modulo/Falta/Validar.js"></script>
 <script src="../../../../js/Hraes/Modulo/Falta/buscar.js"></script>
 
+<script src="../../../../js/Hraes/Modulo/Lengua/Iniciar.js"></script>
+<script src="../../../../js/Hraes/Modulo/Lengua/Validar.js"></script>
+<script src="../../../../js/Hraes/Modulo/Lengua/buscar.js"></script>
+
 <script src="../../../../js/Hraes/Modulo/Licencia/Iniciar.js"></script>
 <script src="../../../../js/Hraes/Modulo/Licencia/Validar.js"></script>
 <script src="../../../../js/Hraes/Modulo/Licencia/buscar.js"></script>
+
+<script src="../../../../js/Hraes/Modulo/ConfAsistencia/Iniciar.js"></script>
+<script src="../../../../js/Hraes/Modulo/ConfAsistencia/Validar.js"></script>
+
+<script src="../../../../js/Hraes/Modulo/Asistencia/Iniciar.js"></script>
+<script src="../../../../js/Hraes/Modulo/Asistencia/Validar.js"></script>
+<script src="../../../../js/Hraes/Modulo/Asistencia/buscar.js"></script>
+<script src="../../../../js/Hraes/Modulo/Asistencia/Masivo.js"></script>
+
+<script src="../../../../js/Hraes/Modulo/Incidencia/Iniciar.js"></script>
+<script src="../../../../js/Hraes/Modulo/Incidencia/Validar.js"></script>
+<script src="../../../../js/Hraes/Modulo/Incidencia/buscar.js"></script>
+
+<script src="../../../../js/Hraes/Modulo/Preventivas/Iniciar.js"></script>
+<script src="../../../../js/Hraes/Modulo/Preventivas/Validar.js"></script>
+<script src="../../../../js/Hraes/Modulo/Preventivas/buscar.js"></script>

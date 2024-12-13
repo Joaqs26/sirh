@@ -1,5 +1,6 @@
 <?php
 
+$isNow = 'NOW()';
 ///INCLUDE CONEXION
 include '../../../../conexion.php';
 include '../../../View/validar_sesion.php';
@@ -80,14 +81,39 @@ include '../../../Controllers/Catalogos/CatNacionalidadC/CatNacionalidadC.php';
 include '../../../Controllers/Hrae/Catalogos/CatCapacidadC/CatCapacidadC.php';
 
 
-//MORE 
 include '../../../Model/Hraes/FaltaM/FaltaM.php';
-
-
+include '../../../Model/Hraes/LenguaM/LenguaM.php';
+include '../../../Model/Catalogos/CatLenguaM/CatLenguaM.php';
 include '../../../Model/Hraes/LicenciasM/LicenciasM.php';
 include '../../../Model/Catalogos/CatLicenciaM/CatLicenciaM.php';
 include '../../../Model/Catalogos/CatDiasM/CatDiasM.php';
+include '../../../Model/Catalogos/CatAsistenciaM/CatAsistenciaM.php';
 include '../../../Model/Catalogos/CatEstatusIncideciasM/CatEstatusIncideciasM.php';
+include '../../../Model/Hraes/AsistenciaM/AsistenciaM.php';
 
-include '../../../Controllers/Hrae/MasivoC/MasivoC.php';
-include '../../../Model/Hraes/MasivoM/EMpleadosM.php';
+include '../../../Model/Catalogos/CatPlazasM/CatPlazasM.php';
+include '../../../Controllers/Catalogos/CatPlazasC/CatPlazasC.php';
+include '../../../Controllers/Hrae/Catalogos/CatTipoContratacionC/CatTipoContratacionC.php';
+include '../../../Model/Hraes/Catalogos/CatTipoContratacionM/CatTipoContratacionM.php';
+include '../../../Model/Catalogos/CatUnidadResponsableM/CatUnidadResponsableM.php';
+include '../../../Controllers/Catalogos/CatUnidadResponsableC/CatUnidadResponsableC.php';
+include '../../../Controllers/Hrae/Catalogos/CatPuestoC/CatPuestosC.php';
+include '../../../Controllers/Hrae/Catalogos/CatTabularesC/CatTabularesC.php';
+include '../../../Model/Hraes/Catalogos/CatTabularesM/CatTabularesM.php';
+include '../../../Controllers/Hrae/Catalogos/CatNivelesC/CatNivelesC.php';
+include '../../../Model/Hraes/Catalogos/CatNivelesM/CatNivelesM.php';
+include '../../../Controllers/Hrae/Catalogos/CatZonasPagoC/CatZonasPagoC.php';
+include '../../../Model/Hraes/Catalogos/CatZonasPagoM/CatZonasPagoM.php';
+include '../../../Model/Catalogos/CatUnidadAdM/CatUnidadAdM.php';
+
+
+include '../../../Model/Hraes/Catalogos/CatRetardosM/CatRetardosM.php';
+include '../../../Model/Hraes/Catalogos/CatZonasEcoM/CatZonasEcoM.php';
+include '../../../Model/Hraes/Catalogos/CatQuincenasM/CatQuincenasM.php';
+include '../../../Model/Hraes/IncidenciasM/IncidenciasM.php';
+include '../../../Model/Hraes/ContratacionM/ContratacionM.php';
+include '../../../Model/Hraes/CatPeriodoM/CatPeriodoM.php';
+include '../../../Model/Hraes/PreventivasM/PreventivasM.php';
+
+include '../../../Controllers/Catalogos/CatEntidadC/CatEntidadC.php';
+include '../../../Controllers/Catalogos/CatRegionC/CatRegionC.php';

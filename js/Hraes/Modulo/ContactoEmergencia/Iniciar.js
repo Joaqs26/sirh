@@ -74,11 +74,11 @@ function agregarEditarByDbByEmergencia() {
     },
         function (data) {
             if (data == 'edit'){
-                mensajeExito('Contacto emergencia modificado con éxito');
+                notyf.success('Contacto emergencia modificado con éxito');
             } else if (data == 'add') {
-                mensajeExito('Contacto emergencia agregado con éxito');  
+                notyf.success('Contacto emergencia agregado con éxito');  
             } else {
-                mensajeError(data);
+                notyf.error(mensajeSalida);
             }
             $("#agregar_editar_contacto_emergencia").modal("hide");
             buscarEmergencia();
@@ -103,9 +103,9 @@ function eliminarEmergencia(id_object) {//ELIMINAR USUARIO
             },
             function (data, status) {
                 if (data == 'delete'){
-                    mensajeExito('Contacto emergencia eliminado con éxito')
+                    notyf.success('Contacto emergencia eliminado con éxito')
                 } else {
-                    mensajeError(data);
+                    notyf.error(mensajeSalida);
                 }
                 buscarEmergencia();
             }

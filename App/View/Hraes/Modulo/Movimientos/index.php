@@ -1,7 +1,6 @@
 
 
 
-
 <style>
     .bootstrap-select:hover .dropdown-toggle {
       background-color: #f8f9fa; /* Cambia aquí el color cuando el cursor está encima */
@@ -51,4 +50,3 @@
 </div>
 
 <?php include 'AgregarEditar.php' ?>
-

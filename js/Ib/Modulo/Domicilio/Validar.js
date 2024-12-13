@@ -21,7 +21,7 @@ function validarDomicilio(){
 
 function buscarInfor(){
     let codigo_postal = document.getElementById('codigo_postal1').value.trim();
-    $.post("../../../../App/Controllers/Hrae/DomicilioC/CodigoPostalC.php", {
+    $.post("../../../../App/Controllers/Central/DomicilioC/CodigoPostalC.php", {
         codigo_postal: codigo_postal
     },
         function (data) {
@@ -47,7 +47,7 @@ function buscarInfor(){
 
 document.getElementById("municipio1").addEventListener("change", function() {
     let municipio1 = this.value;
-    $.post("../../../../App/Controllers/Hrae/DomicilioC/ColoniaC.php", {
+    $.post("../../../../App/Controllers/Central/DomicilioC/ColoniaC.php", {
         municipio1: municipio1,
     },
         function (data) {
@@ -67,7 +67,7 @@ document.getElementById("municipio1").addEventListener("change", function() {
 
   function validaCodigoFiscal(){
     let codigo_postal = document.getElementById('codigo_postal2').value.trim();
-    $.post("../../../../App/Controllers/Hrae/DomicilioC/CodigoPostalC.php", {
+    $.post("../../../../App/Controllers/Central/DomicilioC/CodigoPostalC.php", {
         codigo_postal: codigo_postal
     },
         function (data) {

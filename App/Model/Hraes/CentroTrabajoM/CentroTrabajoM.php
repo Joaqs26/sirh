@@ -2,13 +2,52 @@
 
 class modelCentroTrabajoHraes
 {
+    public function validateClues($clues)
+    {
+        $query = pg_query("SELECT 
+                                catalogos.cat_clues.nuevas_clues
+                            FROM catalogos.cat_clues
+                            WHERE catalogos.cat_clues.nuevas_clues = '$clues';");
+        return $query;
+    }
+
+
+
+    public function infoCentroByPlaza($id)
+    {
+        $query = pg_query("SELECT 
+                                public.tbl_centro_trabajo_hraes.nombre,
+                                public.tbl_centro_trabajo_hraes.clave_centro_trabajo,
+                                public.tbl_centro_trabajo_hraes.codigo_postal,
+                                public.tbl_centro_trabajo_hraes.colonia,
+                                CONCAT(public.cat_region.clave_region,' ', public.cat_region.region),
+                                CONCAT(public.cat_entidad.clave_entidad, ' ', public.cat_entidad.entidad),
+                                public.tbl_centro_trabajo_hraes.pais
+                            FROM public.tbl_centro_trabajo_hraes
+                            INNER JOIN public.cat_region
+                                ON public.tbl_centro_trabajo_hraes.id_cat_region =
+                                    public.cat_region.id_cat_region
+                            INNER JOIN public.cat_entidad
+                                ON public.tbl_centro_trabajo_hraes.id_cat_entidad =
+                                    public.cat_entidad.id_cat_entidad
+                            WHERE public.tbl_centro_trabajo_hraes.id_tbl_centro_trabajo_hraes = $id;");
+        return $query;
+    }
+    public function allCountPlazas($idClue)
+    {
+        $isQuery = pg_query("SELECT 
+                                    COUNT (id_tbl_control_plazas_hraes)
+                                FROM public.tbl_control_plazas_hraes
+                                WHERE id_tbl_centro_trabajo_hraes = $idClue;");
+        return $isQuery;
+    }
     public function listarByAll($paginator)
     {
         $listado = "SELECT tbl_centro_trabajo_hraes.id_tbl_centro_trabajo_hraes,
                             tbl_centro_trabajo_hraes.clave_centro_trabajo,
                             tbl_centro_trabajo_hraes.nombre,
                             cat_entidad.entidad, tbl_centro_trabajo_hraes.codigo_postal
-                    FROM tbl_centro_trabajo_hraes
+                    FROM public.tbl_centro_trabajo_hraes
                     INNER JOIN cat_entidad
                     ON tbl_centro_trabajo_hraes.id_cat_entidad = 
                         cat_entidad.id_cat_entidad
@@ -24,7 +63,7 @@ class modelCentroTrabajoHraes
                             tbl_centro_trabajo_hraes.clave_centro_trabajo,
                             tbl_centro_trabajo_hraes.nombre,
                             cat_entidad.entidad, tbl_centro_trabajo_hraes.codigo_postal
-                    FROM tbl_centro_trabajo_hraes
+                    FROM public.tbl_centro_trabajo_hraes
                     INNER JOIN cat_entidad
                     ON tbl_centro_trabajo_hraes.id_cat_entidad = 
                         cat_entidad.id_cat_entidad
@@ -44,13 +83,9 @@ class modelCentroTrabajoHraes
 
     public function listarByIdEdit($id_object)
     {
-        $listado = pg_query("SELECT id_tbl_centro_trabajo_hraes, clave_centro_trabajo, nombre,
-                                    colonia, codigo_postal, num_exterior, num_interior, latitud, longitud,
-                                    id_cat_region, id_estatus_centro, id_cat_entidad, pais, nivel_atencion
-                            FROM tbl_centro_trabajo_hraes
-                            WHERE id_tbl_centro_trabajo_hraes = $id_object
-                            ORDER BY id_tbl_centro_trabajo_hraes DESC
-                            LIMIT 6");
+        $listado = pg_query("SELECT *
+                            FROM public.tbl_centro_trabajo_hraes
+                            WHERE id_tbl_centro_trabajo_hraes = $id_object");
         return $listado;
     }
 
@@ -76,8 +111,9 @@ class modelCentroTrabajoHraes
     {
         return $array = [
             'id_tbl_centro_trabajo_hraes' => null,
-            'nombre' => null,
             'clave_centro_trabajo' => null,
+            'nombre' => null,
+            'pais' => null,
             'colonia' => null,
             'codigo_postal' => null,
             'num_exterior' => null,
@@ -87,7 +123,11 @@ class modelCentroTrabajoHraes
             'id_cat_region' => null,
             'id_estatus_centro' => null,
             'id_cat_entidad' => null,
-            'pais' => null
+            'nivel_atencion' => null,
+            'abreviatura' => null,
+            'id_cat_zona_economica' => null,
+            'fecha_usuario' => null,
+            'id_user' => null,
         ];
     }
 
@@ -97,16 +137,28 @@ class modelCentroTrabajoHraes
     function listarAllCount()
     {
         $listado = pg_query("SELECT COUNT (id_tbl_centro_trabajo_hraes)
-                             FROM tbl_centro_trabajo_hraes;");
+                             FROM public.tbl_centro_trabajo_hraes;");
         return $listado;
     }
 
     function listarByRegion($idRegion)
     {
         $listado = pg_query("SELECT COUNT (id_tbl_centro_trabajo_hraes)
-                             FROM tbl_centro_trabajo_hraes
+                             FROM public.tbl_centro_trabajo_hraes
                              WHERE id_cat_region = $idRegion;");
         return $listado;
+    }
+
+    function getEntityZona($idClue)
+    {
+        $query = pg_query("SELECT CONCAT(public.cat_entidad.clave_entidad, ' - ', 
+                                    public.cat_entidad.entidad)
+                            FROM public.tbl_centro_trabajo_hraes
+                            INNER JOIN public.cat_entidad
+                                ON public.cat_entidad.id_cat_entidad =
+                                    public.tbl_centro_trabajo_hraes.id_cat_entidad
+                            WHERE public.tbl_centro_trabajo_hraes.id_tbl_centro_trabajo_hraes = $idClue;");
+        return $query;
     }
 
 

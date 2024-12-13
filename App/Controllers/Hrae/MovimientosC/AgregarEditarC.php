@@ -10,7 +10,7 @@ $modelEmpleadosHraes = new modelEmpleadosHraes();
 $modelPlazasHraes = new modelPlazasHraes();
 
 ///VARIABLES DE MODEL JS
-$nombreTabla = 'tbl_plazas_empleados_hraes';
+$nombreTabla = 'public.tbl_plazas_empleados_hraes';
 $movimientoBaja = $_POST['movimientoBaja'];
 $movimientoAlta = $_POST['movimientoAlta'];
 $movimientoMov = $_POST['movimientoMov'];
@@ -74,26 +74,26 @@ modificarPlaza($connectionDBsPro, $movimientoBaja, $movimientoAlta, $movimientoM
 if ($_POST['id_object'] != null) { //Modificar
     if ($modelMovimientosM->editarByArray($connectionDBsPro, $datos, $condicion, $nombreTabla)) {
         $dataBitacora = [
-            'nombre_tabla' => 'tbl_plazas_empleados_hraes',
+            'nombre_tabla' => 'public.tbl_plazas_empleados_hraes',
             'accion' => 'MODIFICAR',
             'valores' => json_encode($var),
             'fecha' => $timestamp,
             'id_users' => $_SESSION['id_user']
         ];
-        $bitacoraM->agregarByArray($connectionDBsPro, $dataBitacora, 'bitacora_hraes');
+        $bitacoraM->agregarByArray($connectionDBsPro, $dataBitacora, 'public.bitacora_hraes');
         echo 'edit';
     }
 
 } else { //Agregar
     if ($modelMovimientosM->agregarByArray($connectionDBsPro, $datos, $nombreTabla)) {
         $dataBitacora = [
-            'nombre_tabla' => 'tbl_plazas_empleados_hraes',
+            'nombre_tabla' => 'public.tbl_plazas_empleados_hraes',
             'accion' => 'AGREGAR',
             'valores' => json_encode($var),
             'fecha' => $timestamp,
             'id_users' => $_SESSION['id_user']
         ];
-        $bitacoraM->agregarByArray($connectionDBsPro, $dataBitacora, 'bitacora_hraes');
+        $bitacoraM->agregarByArray($connectionDBsPro, $dataBitacora, 'public.bitacora_hraes');
         echo 'add';
     }
 }

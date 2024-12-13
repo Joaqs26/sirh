@@ -18,36 +18,22 @@ if (isset($_POST['id_tbl_centro_trabajo_hraes'])) {
                         <div class="vertical-line"></div>
                     </div>
                     <div class="col padding-left-0">
-                        <h4>Hospital Regional de Alta Especialidad</h4>
+                        <h4>HRAES</h4>
                     </div>
+                    <?php if ($id_tbl_centro_trabajo_hraes != null) { ?>
+                        <div class="col-auto">
+                            <a href="../CentroTrabajo/index.php" class="btn btn-light" role="button" aria-haspopup="true"
+                                aria-expanded="false">
+                                <i style="color:#235B4E" class="fa fa-arrow-left icono-pequeno-tabla"></i>
+                                <span class="hide-menu text-button-add">&nbsp;Regresar</span>
+                            </a>
+                        </div>
+                    <?php } ?>
                 </div>
             </div>
             <?php if ($id_tbl_centro_trabajo_hraes != null) { ?>
                 <div class="div-spacing"></div>
-
-                <div class="row">
-                    <div class="col-12">
-                        <h6 class="text-input-form-bold-label   div-spacing">Nombre centro de trabajo: <label
-                                id="nombreResult" class="text-result-normal"></label>
-                        </h6>
-                    </div>
-                </div>
-
-                <div class="row">
-
-                    <div class="col-3">
-                        <h6 class="text-input-form-bold-label div-spacing">Clave de centro de trabajo: <label id="clvResult"
-                                class="text-result-normal"></label>
-                        </h6>
-                    </div>
-
-                    <div class="col-2">
-                        <h6 class="text-input-form-bold-label   div-spacing">C&oacutedigo postal: <label id="cpResult"
-                                class="text-result-normal"></label>
-                        </h6>
-                    </div>
-
-                </div>
+                <?php include 'InfoClue.php' ?>
             <?php } ?>
         </div>
     </div>
@@ -56,48 +42,41 @@ if (isset($_POST['id_tbl_centro_trabajo_hraes'])) {
     <div class="card border-light">
         <div class="card-body">
             <div class="row div-spacing">
-                <div class="col-9">
-                    <h2 class="card-title tittle-card-index">Plazas</h2>
-                </div>
-                <div class="col-3 search-container">
-                    <input onkeyup="buscarPlaza();" id="buscar" type="text" placeholder="Buscar..."
-                        class="form-control mr-sm-2 search-input">
-                    <span class="search-icon"><i class="fas fa-search"></i></span>
+                <div class="row">
+
+                    <div class="col-12 col-md-6 col-lg-9 col-xl-9">
+                        <h2 class="card-title tittle-card-index">Plazas</h2>
+                    </div>
+
+
+                    <div class="col-3 search-container d-flex align-items-center">
+                        <?php if ($id_tbl_centro_trabajo_hraes != null) { ?>
+                            <button class="btn btn-light btn-circle" type="button" onclick="agregarEditarDetalles(null)"
+                                data-toggle="tooltip" title="Agregar plaza">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        <?php } else { ?>
+
+                            <button class="btn btn-light btn-circle" type="button" onclick="abrirModalAdd()" type="button"
+                                data-toggle="tooltip" title="Agregar plaza">
+                                <i class="fa fa-plus"></i>
+                            </button>
+
+                        <?php } ?>
+
+                        <input onkeyup="buscarPlaza();" id="buscar" type="text" placeholder="Buscar..."
+                            class="form-control search-input" style="margin-left: 15px;">
+                        <span class="search-icon ml-2"><i class="fas fa-search"></i></span>
+                    </div>
+
                 </div>
             </div>
 
-            <?php if ($id_tbl_centro_trabajo_hraes != null) { ?>
-                <div class="row div-spacing">
-                    <div class="col-9">
-                        <div class="form-inline">
-                            <button onclick="agregarEditarDetalles(null)" type="button" class="btn btn-light"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
-                                    class="fa fa-plus icono-pequeno-tabla"></i>
-                                <span class="hide-menu text-button-add">&nbsp;Agregar</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            <?php } else { ?>
-                <div class="row div-spacing">
-                    <div class="col-9">
-                        <div class="form-inline">
-                            <button data-toggle="modal" data-target="#exampleModal" type="button" class="btn btn-light"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
-                                    class="fa fa-plus icono-pequeno-tabla"></i>
-                                <span class="hide-menu text-button-add">&nbsp;Agregar</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            <?php } ?>
-
-            <div class="row">
-                <div class="col">
-                    <div class="text-center">
-                        <table class="table table-bordered" id="tabla_plazas" style="width:100%">
-                        </table>
-                    </div>
+            <div class="div-spacing"></div>
+            <div class="col-12 table-responsive">
+                <div class="text-center">
+                    <table class="table table-bordered table-fixed" id="tabla_plazas">
+                    </table>
                 </div>
             </div>
 
@@ -129,10 +108,10 @@ if (isset($_POST['id_tbl_centro_trabajo_hraes'])) {
             <div class="modal-header background-modal">
                 <div class="container">
                     <div class="row">
-                        <div class="col-1">
+                        <div class="col-12 col-sm-1">
                             <img src="../../../../assets/sirh/logo_plaza.png" style="max-width: 1000%;">
                         </div>
-                        <div class="col-11">
+                        <div class="col-12 col-sm-11">
                             <h1 class="text-tittle-card"><label id="" claa="text-modal-tittle"></label>
                                 Agregar plaza.
                             </h1>
@@ -155,7 +134,7 @@ if (isset($_POST['id_tbl_centro_trabajo_hraes'])) {
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="cerrarModalAdd()"><i class="fas fa-times"></i>
                     Cancelar</button>
                 <a href="../CentroTrabajo/index.php" type="button" class="btn btn-success save-botton-modal"><i
                         class="fa fa-arrow-right"></i> Ir</a>
@@ -167,9 +146,12 @@ if (isset($_POST['id_tbl_centro_trabajo_hraes'])) {
 
 
 
+
+
+<?php include 'AgregarEditar.php' ?>
+<?php include 'Detalles.php' ?>
 <?php include '../../librerias.php' ?>
+
 <script src="../../../../js/Hraes/Plazas/Busqueda.js"></script>
 <script src="../../../../js/Hraes/Plazas/Plazas.js"></script>
 <script src="../../../../js/Hraes/Plazas/validar.js"></script>
-<?php include 'AgregarEditar.php' ?>
-<?php include 'Detalles.php' ?>

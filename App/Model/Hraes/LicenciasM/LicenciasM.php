@@ -39,8 +39,8 @@ class ModelLicenciasM
                             INNER JOIN cat_estatus_incidencias
                                 ON public.ctrl_incidencias_licencias_hraes.id_cat_estatus_incidencias =
                                 cat_estatus_incidencias.id_cat_estatus_incidencias
-                            WHERE ctrl_incidencias_licencias_hraes.id_tbl_empleados_hraes = $id_object
-                            ORDER BY ctrl_incidencias_licencias_hraes.id_ctrl_incidencias_licencias_hraes DESC
+                            WHERE public.ctrl_incidencias_licencias_hraes.id_tbl_empleados_hraes = $id_object
+                            ORDER BY public.ctrl_incidencias_licencias_hraes.id_ctrl_incidencias_licencias_hraes DESC
                             LIMIT 3 OFFSET $paginator;");
         return $listado;
     }

@@ -4,7 +4,7 @@ include '../librerias.php';
 $adicionalM = new AdicionalM();
 $bitacoraM = new BitacoraM();
 $tablaEmpleados = 'tbl_empleados_hraes';
-$tablaAdicional = 'ctrl_adic_emp_hraes';
+$tablaAdicional = 'public.ctrl_adic_emp_hraes';
 
 $condicion = [
     'id_ctrl_adic_emp_hraes' => $_POST['id_ctrl_adic_emp_hraes']
@@ -34,7 +34,7 @@ if ($_POST['id_ctrl_adic_emp_hraes'] != null) { //Modificar
             'fecha' => $timestamp,
             'id_users' => $_SESSION['id_user']
         ];
-        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'bitacora_hraes');
+        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'public.bitacora_hraes');
         echo 'edit';
     }
 
@@ -47,7 +47,7 @@ if ($_POST['id_ctrl_adic_emp_hraes'] != null) { //Modificar
             'fecha' => $timestamp,
             'id_users' => $_SESSION['id_user']
         ];
-        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'bitacora_hraes');
+        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'public.bitacora_hraes');
         echo 'add';
     }
 }

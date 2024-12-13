@@ -91,6 +91,8 @@
         password: $('#password').val()
       };
       $.post('inicio_sesion.php', data, function (response) {
+
+      console.log(response)
         if (response == 'acceso') {
           window.location.href = 'App/View/System/home/index.php';
         } else {

@@ -1,13 +1,8 @@
 <?php
-include '../../../../conexion.php';
-include '../../../Model/Hraes/CentroTrabajoM/CentroTrabajoM.php';
-include '../../../Model/Catalogos/CatEntidadM/CatEntidadM.php';
-include '../../../Model/Catalogos/CatRegionM/CatRegionM.php';
-include '../../../Model/Catalogos/CatEstatusM/CatEstatusM.php';
-include '../../../Controllers/Catalogos/CatEntidadC/CatEntidadC.php';
-include '../../../Controllers/Catalogos/CatRegionC/CatRegionC.php';
-include '../../../Controllers/Catalogos/CatEstatusC/CatEstatusC.php';
 
+include '../librerias.php';
+
+$row = new Row();
 $model = new modelCentroTrabajoHraes();
 $catEntidad = new catalogoEntidad();
 $catalogoEntidad = new catalogoEntidadC();
@@ -15,53 +10,56 @@ $catalogoRegionC = new catalogoRegionC();
 $catalogoRegion = new catalogoRegion();
 $catalogoEstatus = new catalogoEstatus();
 $catalogoEstatusC = new catalogoEstatusC();
+$catSelectC = new CatSelectC();
+$catZonasEconomicas = new CatZonasEconomicas();
+$idZona = $response['id_cat_zonas_tabuladores_hraes'] ?? null;
 
 $id_object = $_POST['id_object'];
 
 if ($id_object != null) {
-    $response = returnArray($model->listarByIdEdit($id_object));
-    $entidad = $catalogoEntidad->returnCatEntidadByIdObject($catEntidad->listarByAll(),returnArrayById($catEntidad->obtenerElemetoById($response['id_cat_entidad'])));
-    $region = $catalogoRegionC->returnCatRegionByIdObject($catalogoRegion->listarByAll(),returnArrayById($catalogoRegion->obtenerElemetoById($response['id_cat_region'])));
-    $estatus = $catalogoEstatusC->returnCatEstatusByIdObject($catalogoEstatus->listarByAll(),returnArrayById($catalogoEstatus->obtenerElemetoById($response['id_estatus_centro'])));
+    $response = $row->returnArray($model->listarByIdEdit($id_object));
+    $entidad = $catSelectC->selectByAllCatalogo($catEntidad->selectByAllv2());
+    $region = $catSelectC->selectByAllCatalogo($catalogoRegion->listarByAllv2());
+    $estatus = $catSelectC->selectByAllCatalogo($catalogoEstatus->listarByAllv2());
+    $zona = $catSelectC->selectByAllCatalogo($catZonasEconomicas->selectByAll());
+
+    if ($response['id_cat_region'] != '') {
+        $region = $catSelectC->selectByEditCatalogo($catalogoRegion->listarByAllv2(), $row->returnArrayById($catalogoRegion->listarByEditv2($response['id_cat_region'])));
+    }
+    if ($response['id_estatus_centro'] != '') {
+        $estatus = $catSelectC->selectByEditCatalogo($catalogoEstatus->listarByAllv2(), $row->returnArrayById($catalogoEstatus->listarByEditv2($response['id_estatus_centro'])));
+    }
+    if ($response['id_cat_entidad'] != '') {
+        $entidad = $catSelectC->selectByEditCatalogo($catEntidad->selectByAllv2(), $row->returnArrayById($catEntidad->selectByEditv2($response['id_cat_entidad'])));
+    }
+    if ($response['id_cat_zona_economica'] != '') {
+    
+
+        $zona = $catSelectC->selectByEditCatalogo($catZonasEconomicas->selectByAll(), $row->returnArrayById($catZonasEconomicas->selectByEdit($response['id_cat_zona_economica'])));
+    }
+
     $var = [
         'entidad' => $entidad,
         'response' => $response,
         'region' => $region,
         'estatus' => $estatus,
+        'zona' => $zona,
     ];
     echo json_encode($var);
 
 } else {
-    $entidad = $catalogoEntidad->returnCatEntidad($catEntidad->listarByAll());
-    $region = $catalogoRegionC->returnCatRegion($catalogoRegion->listarByAll());
-    $estatus = $catalogoEstatusC->returnCatEstatus($catalogoEstatus->listarByAll());
+    $entidad = $catSelectC->selectByAllCatalogo($catEntidad->selectByAllv2());
+    $region = $catSelectC->selectByAllCatalogo($catalogoRegion->listarByAllv2());
+    $estatus = $catSelectC->selectByAllCatalogo($catalogoEstatus->listarByAllv2());
+    $zona = $catSelectC->selectByAllCatalogo($catZonasEconomicas->selectByAll());
     $response = $model->listarByNull();
     $var = [
         'entidad' => $entidad,
         'response' => $response,
         'region' => $region,
         'estatus' => $estatus,
+        'zona' => $zona,
     ];
     echo json_encode($var);
-}
-
-function returnArray($result)
-{
-    if (pg_num_rows($result) > 0) {
-        while ($row = pg_fetch_assoc($result)) {
-            $response = $row;
-        }
-    }
-    return $response;
-}
-
-function returnArrayById($result)
-{
-    if (pg_num_rows($result) > 0) {
-        while ($row = pg_fetch_row($result)) {
-            $response = $row;
-        }
-    }
-    return $response;
 }
 

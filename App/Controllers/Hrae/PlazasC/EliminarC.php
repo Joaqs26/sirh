@@ -6,7 +6,7 @@ include '../../../Model/Hraes/BitacoraM/BitacoraM.php';
 
 $model = new modelPlazasHraes();
 $bitacoraM = new BitacoraM();
-$tablaPlazas = 'tbl_control_plazas_hraes';
+$tablaPlazas = 'public.tbl_control_plazas_hraes';
 
 $condicion = [
     'id_tbl_control_plazas_hraes' => $_POST['id_object']
@@ -21,7 +21,7 @@ if (isset($_POST['id_object'])){
             'fecha' => $timestamp,
             'id_users' => $_SESSION['id_user']
         ];
-        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'bitacora_hraes');
+        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'public.bitacora_hraes');
         echo 'delete';
     }
 } 

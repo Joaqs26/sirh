@@ -36,6 +36,9 @@ function agregarEditarQuinquenio(id_object){
             $('#id_cat_quinquenio').html(quinquenio);  
             $("#fecha_registro").val(entity.fecha_registro);
 
+            $('#id_cat_quinquenio').selectpicker('refresh');
+            $('.selectpicker').selectpicker();
+
         }
     );
 
@@ -56,11 +59,11 @@ function agregarEditarByDbByQuinquenio() {
     },
         function (data) {
             if (data == 'edit'){
-                mensajeExito('Quinquenio modificado con éxito');
+                notyf.success('Quinquenio modificado con éxito');
             } else if (data == 'add') {
-                mensajeExito('Quinquenio agregado con éxito');  
+                notyf.success('Quinquenio agregado con éxito');  
             } else {
-                mensajeError(data);
+                notyf.error(mensajeSalida);
             }
             $("#agregar_editar_quinquenio").modal("hide");
             buscarQuinquenio();
@@ -72,10 +75,10 @@ function eliminarQuinquenio(id_object) {
     Swal.fire({
         title: "¿Está seguro?",
         text: "¡No podrás revertir esto!",
-        icon: "warning",
+        icon: "question",
         showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
+        confirmButtonColor: "#235B4E",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: "Si, eliminar",
         cancelButtonText: "Cancelar"
       }).then((result) => {
@@ -85,9 +88,9 @@ function eliminarQuinquenio(id_object) {
             },
             function (data) {
                 if (data == 'delete'){
-                    mensajeExito('Quinquenio eliminado con éxito')
+                    notyf.success('Quinquenio eliminado con éxito')
                 } else {
-                    mensajeError(data);
+                    notyf.error(mensajeSalida);
                 }
                 buscarQuinquenio();
             }

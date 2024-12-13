@@ -6,7 +6,7 @@ include '../../../View/validar_sesion.php';
 
 $model = new modelEmpleadosHraes();
 $bitacoraM = new BitacoraM();
-$tablaEmpleados = 'tbl_empleados_hraes';
+$tablaEmpleados = 'public.tbl_empleados_hraes';
 
 $condicion = [
     'id_tbl_empleados_hraes' => $_POST['id_object']
@@ -41,7 +41,7 @@ if ($_POST['id_object'] != null) { //Modificar
             'fecha' => $timestamp,
             'id_users' => $_SESSION['id_user']
         ];
-        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'bitacora_hraes');
+        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'public.bitacora_hraes');
         echo 'edit';
     }
 
@@ -54,7 +54,7 @@ if ($_POST['id_object'] != null) { //Modificar
             'fecha' => $timestamp,
             'id_users' => $_SESSION['id_user']
         ];
-        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'bitacora_hraes');
+        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'public.bitacora_hraes');
         echo 'add';
     }
 }

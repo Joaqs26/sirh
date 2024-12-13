@@ -36,11 +36,11 @@ function agregarEditarFormaPago(id_object){
         id_object: id_object
     },
         function (data) {
-            var jsonData = JSON.parse(data);//se obtiene el json
-            var entity = jsonData.response; //Se agrega a emtidad 
-            var estatus = jsonData.estatus; //Se agrega a emtidad 
-            var formatoPago = jsonData.formatoPago;
-            var banco = jsonData.banco;
+            let jsonData = JSON.parse(data);//se obtiene el json
+            let entity = jsonData.response; //Se agrega a emtidad 
+            let estatus = jsonData.estatus; //Se agrega a emtidad 
+            let formatoPago = jsonData.formatoPago;
+            let banco = jsonData.banco;
 
             $('#id_cat_estatus_formato_pago').empty();
             $('#id_cat_estatus_formato_pago').html(estatus); 
@@ -50,6 +50,9 @@ function agregarEditarFormaPago(id_object){
             $("#clabe").val(entity.clabe);
             $("#nombre_banco").val(banco);
             $("#id_cat_banco").val(entity.id_cat_banco);
+
+            $('#id_cat_estatus_formato_pago').selectpicker('refresh');
+            $('.selectpicker').selectpicker();
         }
     );
 
@@ -78,11 +81,11 @@ function agregarEditarByDbByFormatoPago() {
     },
         function (data, status) {
             if (data == 'edit'){
-                mensajeExito('Forma de pago modificada con éxito');
+                notyf.success('Forma de pago modificada con éxito');
             } else if (data == 'add') {
-                mensajeExito('Forma de pago agregada con éxito');  
+                notyf.success('Forma de pago agregada con éxito');  
             } else {
-                mensajeError(data);
+                notyf.error(mensajeSalida);
             }
             $("#agregar_editar_forma_pago").modal("hide");
             buscarFormaPago();
@@ -95,10 +98,10 @@ function eliminarFormaPago(id_object) {//ELIMINAR USUARIO
     Swal.fire({
         title: "¿Está seguro?",
         text: "¡No podrás revertir esto!",
-        icon: "warning",
+        icon: "question",
         showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
+        confirmButtonColor: "#235B4E",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: "Si, eliminar",
         cancelButtonText: "Cancelar"
       }).then((result) => {
@@ -108,9 +111,9 @@ function eliminarFormaPago(id_object) {//ELIMINAR USUARIO
             },
             function (data, status) {
                 if (data == 'delete'){
-                    mensajeExito('Forma de pago eliminada con éxito')
+                    notyf.success('Forma de pago eliminada con éxito')
                 } else {
-                    mensajeError(data);
+                    notyf.error(mensajeSalida);
                 }
                 buscarFormaPago();
             }

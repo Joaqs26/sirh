@@ -12,18 +12,18 @@ if (isset($_POST['busqueda'])) {
 }
 
 $data =
-    '<table class="table table-bordered" id="tabla_capacidad_dif" style="width:100%">
-    <thead>
+    '<table class="table table-bordered table-fixed" id="tabla_capacidad_dif" style="width:100%">
+    <thead class="text-center">
         <tr>
-            <th>Acciones</th>
-            <th>Descripci&oacuten</th>
+            <th class="col-wide-action">Acciones</th>
+            <th class="col-wide">Descripci&oacuten</th>
         </tr>
     </thead>';
 
 if (pg_num_rows($listado) > 0) {
     while ($row = pg_fetch_row($listado)) {
         $data .=
-            '<tbody>
+            '<tbody class="text-center">
                         <tr>
                         <td>
                         <div class="btn-group">

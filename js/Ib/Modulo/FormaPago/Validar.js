@@ -23,7 +23,7 @@ function validarCuenta(){
 
     $.ajax({
         type: 'POST',
-        url: "../../../../App/Controllers/Hrae/FormaPagoC/ValidarClabeC.php",
+        url: "../../../../App/Controllers/Central/FormaPagoC/ValidarClabeC.php",
         data: {clabeSub:clabeSub },
         success: function (data) {
             jsonData = JSON.parse(data);

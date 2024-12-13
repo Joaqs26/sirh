@@ -12,18 +12,18 @@ if(isset($_POST['busqueda'])){
     $listado = $modelCorreoM ->listarByBusqueda($id_tbl_empleados_hraes,$_POST['busqueda'],$paginador);
 } 
 $data =
-    '<table class="table table-bordered" id="tabla_correo" style="width:100%">
-    <thead>
+    '<table class="table table-bordered table-fixed" id="tabla_correo">
+    <thead class="text-center">
         <tr>
-            <th>Acciones</th>
-            <th>Correo electrónico</th>
+            <th class="col-wide-action">Acciones</th>
+            <th class="col-wide">Correo electrónico</th>
         </tr>
     </thead>';
 
 if (pg_num_rows($listado) > 0) {
     while ($row = pg_fetch_row($listado)) {
         $data .=
-            '<tbody>
+            '<tbody class="text-center">
                         <tr>
                         <td>
                         <div class="btn-group">

@@ -5,7 +5,7 @@ function iniciarCampos(){
 }
 
 function camposPersonDetalles(id_object){
-    $.post("../../../../App/Controllers/Hrae/CamposPerC/DetallesC.php", {
+    $.post("../../../../App/Controllers/Central/CamposPerC/DetallesC.php", {
         id_object: id_object
     },
         function (data) {
@@ -64,7 +64,7 @@ function agregarEditarByDbCamposPersonalizados() {
     var apoyo_titulacion = $("#apoyo_titulacion").val();
     var licencia_manejo = $("#licencia_manejo").val();
 
-    $.post("../../../../App/Controllers/Hrae/CamposPerC/AgregarEditarC.php", {
+    $.post("../../../../App/Controllers/Central/CamposPerC/AgregarEditarC.php", {
         id_tbl_empleados_hraes: id_tbl_empleados_hraes,
         id_ctrl_campos_pers_hraes: id_ctrl_campos_pers_hraes,
         porcentaje_ahorro_s: porcentaje_ahorro_s,

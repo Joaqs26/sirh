@@ -17,7 +17,7 @@ function validarDependienteD(){
 function campoInvalido(data, text){
     let bool = true;
     if (!data){
-        mensajeError('Campo ' + text + '* no valido.');
+        notyf.error('Campo ' + text + '* no valido.');
         bool = false;
     } 
     return bool;

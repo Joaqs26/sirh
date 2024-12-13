@@ -39,6 +39,7 @@ function agregarEditarEstudio(id_object){
         function (data) {
             let jsonData = JSON.parse(data);
             let estudio = jsonData.estudio; 
+
             let carrera = jsonData.carrera;
             let response = jsonData.response;
 
@@ -48,7 +49,11 @@ function agregarEditarEstudio(id_object){
             $('#id_cat_nivel_estudios').html(estudio);
             
             $('#id_cat_carrera_hraes').empty();
-            $('#id_cat_carrera_hraes').html(carrera); 
+            $('#id_cat_carrera_hraes').html(carrera);
+            
+            $('#id_cat_nivel_estudios').selectpicker('refresh');
+            $('#id_cat_carrera_hraes').selectpicker('refresh');
+            $('.selectpicker').selectpicker();
         }
     );
 
@@ -65,16 +70,16 @@ function guardarEstudio() {
         id_object: $("#id_object").val(),
         id_cat_carrera_hraes: $("#id_cat_carrera_hraes").val(),
         id_cat_nivel_estudios: $("#id_cat_nivel_estudios").val(),
-        cedula: $('#cedula_es_').val(),
+        cedula: $("#cedula_es_").val(),
         id_tbl_empleados_hraes:id_tbl_empleados_hraes
     },
         function (data) {
             if (data == 'edit'){
-                mensajeExito('Nivel de estudio modificado con éxito');
+                notyf.success('Nivel de estudio modificado con éxito');
             } else if (data == 'add') {
-                mensajeExito('Nivel de estudio agregado con éxito');  
+                notyf.success('Nivel de estudio agregado con éxito');  
             } else {
-                mensajeError(data);
+                notyf.error(mensajeSalida);
             }
             $("#agregar_editar_estudio").modal("hide");
             buscarEstudio();
@@ -86,10 +91,10 @@ function eliminarEstudio(id_object) {//ELIMINAR USUARIO
     Swal.fire({
         title: "¿Está seguro?",
         text: "¡No podrás revertir esto!",
-        icon: "warning",
+        icon: "question",
         showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
+        confirmButtonColor: "#235B4E",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: "Si, eliminar",
         cancelButtonText: "Cancelar"
       }).then((result) => {
@@ -99,9 +104,9 @@ function eliminarEstudio(id_object) {//ELIMINAR USUARIO
             },
             function (data) {
                 if (data == 'delete'){
-                    mensajeExito('Nivel de estudio eliminado con éxito')
+                    notyf.success('Nivel de estudio eliminado con éxito')
                 } else {
-                    mensajeError(data);
+                    notyf.error(mensajeSalida);
                 }
                 buscarEstudio();
             }

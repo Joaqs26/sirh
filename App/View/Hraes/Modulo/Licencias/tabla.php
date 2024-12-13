@@ -12,15 +12,15 @@ if(isset($_POST['busqueda'])){
     $listado = $modelLicenciasM->listarByBusqueda($id_tbl_empleados_hraes,$_POST['busqueda'],$paginador);
 } 
 $data =
-    '<table class="table table-bordered" id="tabla_licencia" style="width:100%">
+    '<table class="table table-bordered table-fixed" id="tabla_licencia" style="width:100%">
     <thead class="text-center">
         <tr>
-            <th>Acciones</th>
-            <th>Tipo</th>
-            <th>Fecha inicio</th>
-            <th>Fecha fin</th>
-            <th>Fecha registro</th>
-            <th>Estatus</th>
+            <th class="col-wide-action">Acciones</th>
+            <th class="col-wide">Tipo</th>
+            <th class="col-wide">Fecha inicio</th>
+            <th class="col-wide">Fecha fin</th>
+            <th class="col-wide">Fecha registro</th>
+            <th class="col-wide">Estatus</th>
         </tr>
     </thead>';
 

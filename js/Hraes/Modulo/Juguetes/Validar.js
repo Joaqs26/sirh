@@ -60,7 +60,7 @@ function existeMenor(id_object,curp_j,id_cat_fecha_juguetes_j){
             if (data != 'true'){
                 agregarEditarByDbByJuguete(); ///CANDIDATO VALIDO -> GUARDAR INFO
             } else {
-                mensajeError('Ya se encuentra un registro con la información proporcionada');
+                notyf.error('Ya se encuentra un registro con la información proporcionada');
             }
         }
     );

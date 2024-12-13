@@ -8,7 +8,7 @@ class ModelTelefonoM
             $result = "AND id_ctrl_telefono_hraes != $id_object;";
         }
         $listado = pg_query("SELECT COUNT(id_ctrl_telefono_hraes)
-                             FROM ctrl_telefono_hraes
+                             FROM public.ctrl_telefono_hraes
                              WHERE id_tbl_empleados_hraes = $id_tbl_empleados_hraes
                              AND id_cat_estatus = $value " . $result);
         return $listado;
@@ -20,7 +20,7 @@ class ModelTelefonoM
                                     ctrl_telefono_hraes.telefono, 
                                     cat_estatus.estatus,
                                     ctrl_telefono_hraes.id_tbl_empleados_hraes
-                            FROM ctrl_telefono_hraes
+                            FROM public.ctrl_telefono_hraes
                             INNER JOIN cat_estatus
                             ON ctrl_telefono_hraes.id_cat_estatus = cat_estatus.id_cat_estatus
                             WHERE ctrl_telefono_hraes.id_tbl_empleados_hraes = $id_object
@@ -36,7 +36,7 @@ class ModelTelefonoM
                                     ctrl_telefono_hraes.telefono, 
                                     cat_estatus.estatus,
                                     ctrl_telefono_hraes.id_tbl_empleados_hraes
-                             FROM ctrl_telefono_hraes
+                             FROM public.ctrl_telefono_hraes
                              INNER JOIN cat_estatus
                              ON ctrl_telefono_hraes.id_cat_estatus = cat_estatus.id_cat_estatus
                              WHERE ctrl_telefono_hraes.id_tbl_empleados_hraes = $id_object
@@ -63,26 +63,26 @@ class ModelTelefonoM
     {
         $listado = pg_query("SELECT id_ctrl_telefono_hraes,movil,id_cat_estatus,
                              id_tbl_empleados_hraes,telefono
-                             FROM ctrl_telefono_hraes
+                             FROM public.ctrl_telefono_hraes
                              WHERE id_ctrl_telefono_hraes = $id_object");
         return $listado;
     }
 
     function editarByArray($conexion, $datos, $condicion)
     {
-        $pg_update = pg_update($conexion, 'ctrl_telefono_hraes', $datos, $condicion);
+        $pg_update = pg_update($conexion, 'public.ctrl_telefono_hraes', $datos, $condicion);
         return $pg_update;
     }
 
     function agregarByArray($conexion, $datos)
     {
-        $pg_add = pg_insert($conexion, 'ctrl_telefono_hraes', $datos);
+        $pg_add = pg_insert($conexion, 'public.ctrl_telefono_hraes', $datos);
         return $pg_add;
     }
 
     function eliminarByArray($conexion, $condicion)
     {
-        $pgs_delete = pg_delete($conexion, 'ctrl_telefono_hraes', $condicion);
+        $pgs_delete = pg_delete($conexion, 'public.ctrl_telefono_hraes', $condicion);
         return $pgs_delete;
     }
 }

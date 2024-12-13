@@ -20,7 +20,7 @@ const dateInput = document.getElementById('fecha_rr');
 dateInput.addEventListener('change', function() {
     let isValue = dateInput.value;
     
-    $.post("../../../../App/Controllers/Central/CatQuincenaC/CatQuincenaC.php", {
+    $.post("../../../../App/Controllers/CentraL/CatQuincenaC/CatQuincenaC.php", {
         isValue: isValue
     },
         function (data) {

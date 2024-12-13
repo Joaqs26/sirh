@@ -21,26 +21,26 @@ $var = [
 if ($_POST['id_object'] != null) { //Modificar
     if ($modelCorreoM->editarByArray($connectionDBsPro, $datos, $condicion)) {
         $dataBitacora = [
-            'nombre_tabla' => 'ctrl_medios_contacto_hraes',
+            'nombre_tabla' => 'public.ctrl_medios_contacto_hraes',
             'accion' => 'MODIFICAR',
             'valores' => json_encode($var),
             'fecha' => $timestamp,
             'id_users' => $_SESSION['id_user']
         ];
-        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'bitacora_hraes');
+        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'public.bitacora_hraes');
         echo 'edit';
     }
 
 } else { //Agregar
     if ($modelCorreoM->agregarByArray($connectionDBsPro, $datos)) {
         $dataBitacora = [
-            'nombre_tabla' => 'ctrl_medios_contacto_hraes',
+            'nombre_tabla' => 'public.ctrl_medios_contacto_hraes',
             'accion' => 'AGREGAR',
             'valores' => json_encode($var),
             'fecha' => $timestamp,
             'id_users' => $_SESSION['id_user']
         ];
-        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'bitacora_hraes');
+        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'public.bitacora_hraes');
         echo 'add';
     }
 }

@@ -10,7 +10,7 @@ class ModelDependientesM
                                     ctrl_dependientes_economicos_hraes.apellido_materno),
                                     ctrl_dependientes_economicos_hraes.curp,
                                     cat_dependientes_economicos.nombre
-                            FROM ctrl_dependientes_economicos_hraes
+                            FROM public.ctrl_dependientes_economicos_hraes
                             INNER JOIN cat_dependientes_economicos
                             ON ctrl_dependientes_economicos_hraes.id_cat_dependientes_economicos =
                                 cat_dependientes_economicos.id_cat_dependientes_economicos
@@ -25,7 +25,7 @@ class ModelDependientesM
         $listado = pg_query("SELECT id_ctrl_dependientes_economicos_hraes,curp,nombre,
                                     apellido_materno,apellido_paterno,id_tbl_empleados_hraes,
                                     id_cat_dependientes_economicos
-                             FROM ctrl_dependientes_economicos_hraes
+                             FROM public.ctrl_dependientes_economicos_hraes
                              WHERE id_ctrl_dependientes_economicos_hraes = $id_object");
         return $listado;
     }
@@ -45,19 +45,19 @@ class ModelDependientesM
 
     function editarByArray($conexion, $datos, $condicion)
     {
-        $pg_update = pg_update($conexion, 'ctrl_dependientes_economicos_hraes', $datos, $condicion);
+        $pg_update = pg_update($conexion, 'public.ctrl_dependientes_economicos_hraes', $datos, $condicion);
         return $pg_update;
     }
 
     function agregarByArray($conexion, $datos)
     {
-        $pg_add = pg_insert($conexion, 'ctrl_dependientes_economicos_hraes', $datos);
+        $pg_add = pg_insert($conexion, 'public.ctrl_dependientes_economicos_hraes', $datos);
         return $pg_add;
     }
 
     function eliminarByArray($conexion, $condicion)
     {
-        $pgs_delete = pg_delete($conexion, 'ctrl_dependientes_economicos_hraes', $condicion);
+        $pgs_delete = pg_delete($conexion, 'public.ctrl_dependientes_economicos_hraes', $condicion);
         return $pgs_delete;
     }
 
@@ -69,7 +69,7 @@ class ModelDependientesM
                                     ctrl_dependientes_economicos_hraes.apellido_materno),
                                     ctrl_dependientes_economicos_hraes.curp,
                                     cat_dependientes_economicos.nombre
-                            FROM ctrl_dependientes_economicos_hraes
+                            FROM public.ctrl_dependientes_economicos_hraes
                             INNER JOIN cat_dependientes_economicos
                             ON ctrl_dependientes_economicos_hraes.id_cat_dependientes_economicos =
                                 cat_dependientes_economicos.id_cat_dependientes_economicos

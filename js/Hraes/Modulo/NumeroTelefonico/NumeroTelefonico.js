@@ -56,6 +56,9 @@ function agregarEditarTelefono(id_object){
             $('#id_cat_estatus').html(estatus); 
             $("#movil").val(entity.movil);
             $("#telefono").val(entity.telefono);
+
+            $('#id_cat_estatus').selectpicker('refresh');
+            $('.selectpicker').selectpicker();
         }
     );
 
@@ -81,11 +84,11 @@ function agregarEditarByDbByTelefono() {
     },
         function (data) {
             if (data == 'edit'){
-                mensajeExito('Número telefonico modificado con éxito');
+                notyf.success('Número telefonico modificado con éxito');
             } else if (data == 'add') {
-                mensajeExito('Número telefonico agregado con éxito');  
+                notyf.success('Número telefonico agregado con éxito');  
             } else {
-                mensajeError(data);
+                notyf.error(mensajeSalida);
             }
             $("#agregar_editar_telefono").modal("hide");
             buscarNumTelefonico();
@@ -97,10 +100,10 @@ function eliminarTelefono(id_object) {//ELIMINAR USUARIO
     Swal.fire({
         title: "¿Está seguro?",
         text: "¡No podrás revertir esto!",
-        icon: "warning",
+        icon: "question",
         showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
+        confirmButtonColor: "#235B4E",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: "Si, eliminar",
         cancelButtonText: "Cancelar"
       }).then((result) => {
@@ -110,9 +113,9 @@ function eliminarTelefono(id_object) {//ELIMINAR USUARIO
             },
             function (data, status) {
                 if (data == 'delete'){
-                    mensajeExito('Número telefonico eliminado con éxito')
+                    notyf.success('Número telefonico eliminado con éxito')
                 } else {
-                    mensajeError(data);
+                    notyf.error(mensajeSalida);
                 }
                 buscarNumTelefonico();
             }
@@ -120,39 +123,3 @@ function eliminarTelefono(id_object) {//ELIMINAR USUARIO
     }
     });
 }
-
-/*
-function buscarNumTelefonico(){
-    iniciarTablaTelefono(id_tbl_empleados_hraes);
-}
-
-
-
-function buscarTelefono(){ //BUSQUEDA
-    let buscar = document.getElementById("buscarTelefono").value.trim();
-    buscar = buscar.trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,"");
-    buscarlenth = buscar.length;
-    
-    if (buscarlenth == 0){
-        iniciarNumeroTelefonico();
-    } else {
-        iniciarTablaTelefonoByBusqueda(buscar,id_tbl_empleados_hraes);
-    }
-}
-
-
-function iniciarTablaTelefonoByBusqueda(buscar, id_tbl_empleados_hraes) { ///INGRESA LA TABLA
-    $.ajax({
-        type: 'POST',
-        url: '../../../../App/View/Hraes/Modulo/NumeroTelefonico/tabla.php',
-        data: { 
-            buscar: buscar,
-            id_tbl_empleados_hraes: id_tbl_empleados_hraes,
-         },
-        success: function (data) {
-            $('#modulo_telefono').html(data);
-        }
-    });
-}
-
-*/

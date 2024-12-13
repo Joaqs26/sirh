@@ -13,7 +13,7 @@ function validarEmail(valor) {
     if (/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(valor)){
      return true; ///Email correcto
     } else {
-        mensajeError('Ingrese un correo electrónico valido');
+        notyf.error('Ingrese un correo electrónico valido');
         return false; ///Email incorrecto
     }
   }

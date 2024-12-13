@@ -39,7 +39,7 @@ function validar(){
 
 
 function validarUnique(rfc,curp,numEmpleado,id_object){
-    $.post("../../../../App/Controllers/Hrae/EmpleadoC/ValidarC.php", {
+    $.post("../../../../App/Controllers/Central/EmpleadoC/ValidarC.php", {
         rfc: rfc,
         curp:curp,
         numEmpleado:numEmpleado,
@@ -105,7 +105,7 @@ document.getElementById("id_cat_pais_nacimiento").addEventListener("change", fun
 
     var select = document.getElementById("id_cat_pais_nacimiento");
     select.addEventListener("change", function() {
-        $.post("../../../../App/Controllers/Hrae/EmpleadoC/EstadoC.php", {
+        $.post("../../../../App/Controllers/Central/EmpleadoC/EstadoC.php", {
             id_cat_pais_nacimiento: select.value,
         },
             function (data) {

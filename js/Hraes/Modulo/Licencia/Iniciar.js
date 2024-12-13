@@ -37,7 +37,6 @@ function agregarEditarLicencia(id_object){
         id_object: id_object
     },
         function (data) {
-
             let jsonData = JSON.parse(data);
             let entity = jsonData.entity; 
             let licencia = jsonData.licencia;
@@ -93,11 +92,11 @@ function guardarLicencia() {
     },
         function (data) {
             if (data == 'edit'){
-                mensajeExito('Licencia modificada con éxito');
+                notyf.success('Licencia modificada con éxito');
             } else if (data == 'add') {
-                mensajeExito('Licencia agregada con éxito');  
+                notyf.success('Licencia agregada con éxito');  
             } else {
-                mensajeError(data);
+                notyf.error(mensajeSalida);
             }
             $("#agregar_editar_licencia").modal("hide");
             buscarLicencia();
@@ -109,10 +108,10 @@ function eliminarlicencia(id_object) {//ELIMINAR USUARIO
     Swal.fire({
         title: "¿Está seguro?",
         text: "¡No podrás revertir esto!",
-        icon: "warning",
+        icon: "question",
         showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
+        confirmButtonColor: "#235B4E",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: "Si, eliminar",
         cancelButtonText: "Cancelar"
       }).then((result) => {
@@ -122,9 +121,9 @@ function eliminarlicencia(id_object) {//ELIMINAR USUARIO
             },
             function (data) {
                 if (data == 'delete'){
-                    mensajeExito('Licencia eliminada con éxito')
+                    notyf.success('Licencia eliminada con éxito')
                 } else {
-                    mensajeError(data);
+                    notyf.error(mensajeSalida);
                 }
                 buscarLicencia();
             }

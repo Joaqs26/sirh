@@ -10,12 +10,11 @@ function validarDomicilio(){
        validarData(municipio1,'Municipio') &&
        validarData(colonia1,'Colonia') &&
        validarData(calle1,'Calle') &&
-       validarData(num_exterior1,'Núm. exterior') &&
-       caracteresCount('Código postal fiscal',6,codigo_postal2)){
+       validarData(num_exterior1,'Núm. exterior')){
         if(codigo_postal2.length == 5){
             validaCodigoFiscal();
         } else {
-            mensajeError('Código postal fiscal debe tener 5 caracteres');
+            notyf.error('Código postal fiscal debe tener 5 caracteres');
         }
     } 
 }
@@ -38,11 +37,10 @@ function buscarInfor(){
             $('#colonia1').html(colonia);  
             $("#entidad1").val(entidad);
             $("#pais_f").val(pais);
-
+            
             $('#colonia1').selectpicker('refresh');
             $('#municipio1').selectpicker('refresh');
             $('.selectpicker').selectpicker();
-            
         }
     );
 }
@@ -57,7 +55,7 @@ document.getElementById("municipio1").addEventListener("change", function() {
             var colonia = jsonData.colonia; 
 
             $('#colonia1').empty();
-            $('#colonia1').html(colonia);
+            $('#colonia1').html(colonia); 
             
             $('#colonia1').selectpicker('refresh');
             $('.selectpicker').selectpicker();
@@ -77,11 +75,7 @@ document.getElementById("municipio1").addEventListener("change", function() {
             let entidad = jsonData.entidad; 
 
             if (entidad == 'No encontrado'){
-                Swal.fire({
-                    title: "Código postal fiscal erróneo",
-                    text: "El código postal fiscal no se encuentra registrado en nuestra base de datos. Para resolver este problema, te recomendamos comunicarte con tu administrador para actualizar la información correcta.",
-                    icon: "error"
-                  });
+                messageErrorLarge('El código postal fiscal no se encuentra registrado en nuestra base de datos. Para resolver este problema, te recomendamos comunicarte con tu administrador para actualizar la información correcta.')
             } else {
                 guardarDomicilio();
             }

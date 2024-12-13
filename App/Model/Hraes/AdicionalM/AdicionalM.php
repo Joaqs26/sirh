@@ -4,7 +4,7 @@ class AdicionalM{
 
     public function selectCountById($id_object){
         $listado = pg_query("SELECT COUNT (id_ctrl_adic_emp_hraes)
-                             FROM ctrl_adic_emp_hraes
+                             FROM public.ctrl_adic_emp_hraes
                              WHERE id_tbl_empleados_hraes = $id_object;");
         return $listado;
     }
@@ -12,7 +12,7 @@ class AdicionalM{
     public function listarByIdEdit($id_object){
         $listado = pg_query("SELECT id_ctrl_adic_emp_hraes,fecha_expedicion,fecha_ingreso_gob_fed,
                                     vigencia_del,vigencia_al,funciones,antiguedad,id_tbl_empleados_hraes
-                            FROM ctrl_adic_emp_hraes
+                            FROM public.ctrl_adic_emp_hraes
                             WHERE id_tbl_empleados_hraes = $id_object");
         return $listado;
     }

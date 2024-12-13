@@ -47,6 +47,9 @@ function agregarEditarPercepcion(id_object){
             $('#id_cat_valores').empty();
             $('#id_cat_valores').html(valor); 
 
+            $('#id_cat_concepto').selectpicker('refresh');
+            $('#id_cat_valores').selectpicker('refresh');
+            $('.selectpicker').selectpicker();
         }
     );
 
@@ -69,11 +72,11 @@ function agregarEditarByDbByPercepcion() {
     },
         function (data) {
             if (data == 'edit'){
-                mensajeExito('Concepto modificado con éxito');
+                notyf.success('Concepto modificado con éxito');
             } else if (data == 'add') {
-                mensajeExito('Concepto agregado con éxito');  
+                notyf.success('Concepto agregado con éxito');  
             } else {
-                mensajeError(data);
+                notyf.error(mensajeSalida);
             }
             $("#agregar_editar_percepcion").modal("hide");
             buscarPercepcion();
@@ -86,10 +89,10 @@ function eliminarConcepto(id_object) {
     Swal.fire({
         title: "¿Está seguro?",
         text: "¡No podrás revertir esto!",
-        icon: "warning",
+        icon: "question",
         showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
+        confirmButtonColor: "#235B4E",
+        cancelButtonColor: "#6c757d",
         confirmButtonText: "Si, eliminar",
         cancelButtonText: "Cancelar"
       }).then((result) => {
@@ -99,9 +102,9 @@ function eliminarConcepto(id_object) {
             },
             function (data) {
                 if (data == 'delete'){
-                    mensajeExito('concepto eliminado con éxito')
+                    notyf.success('concepto eliminado con éxito')
                 } else {
-                    mensajeError(data);
+                    notyf.error(mensajeSalida);
                 }
                 buscarPercepcion();
             }

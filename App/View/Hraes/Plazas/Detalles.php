@@ -31,6 +31,26 @@
                                 <div class="line"></div>
                             </fieldset>
                         </div>
+                        <div class="col-8">
+                            <fieldset disabled>
+                                <label for="campo" class="form-label input-text-form">Nombre
+                                    (Clues)</label>
+                                <input type="text" class="form-control custom-input" id="espe_nombre">
+                                <div class="line"></div>
+                            </fieldset>
+                        </div>
+                    </div>
+
+                    <div class="div-spacing"></div>
+                    <div class="row">
+                        <div class="col-4">
+                            <fieldset disabled>
+                                <label for="campo" class="form-label input-text-form">Unidad responsable
+                                    (Clues)</label>
+                                <input type="text" class="form-control custom-input" id="espe_unidad_rep">
+                                <div class="line"></div>
+                            </fieldset>
+                        </div>
                         <div class="col-4">
                             <fieldset disabled>
                                 <label for="campo" class="form-label input-text-form">Entidad (Clues)</label>
@@ -52,41 +72,21 @@
                     <div class="row">
                         <div class="col-4">
                             <fieldset disabled>
-                                <label for="campo" class="form-label input-text-form">Unidad responsable
-                                    (Clues)</label>
-                                <input type="text" class="form-control custom-input" id="espe_unidad_rep">
-                                <div class="line"></div>
-                            </fieldset>
-                        </div>
-                        <div class="col-6">
-                            <fieldset disabled>
-                                <label for="campo" class="form-label input-text-form">Nombre
-                                    (Clues)</label>
-                                <input type="text" class="form-control custom-input" id="espe_nombre">
-                                <div class="line"></div>
-                            </fieldset>
-                        </div>
-                    </div>
-
-                    <div class="div-spacing"></div>
-                    <div class="row">
-                        <div class="col-4">
-                            <fieldset disabled>
-                                <label for="campo" class="form-label input-text-form">Nombre (Empleado)</label>
+                                <label for="campo" class="form-label input-text-form">Nombre (Empleado actual)</label>
                                 <input type="text" class="form-control custom-input" id="espe_nombre_emp">
                                 <div class="line"></div>
                             </fieldset>
                         </div>
                         <div class="col-4">
                             <fieldset disabled>
-                                <label for="campo" class="form-label input-text-form">Curp (Empleado)</label>
+                                <label for="campo" class="form-label input-text-form">Curp (Empleado actual)</label>
                                 <input type="text" class="form-control custom-input" id="espe_curp">
                                 <div class="line"></div>
                             </fieldset>
                         </div>
                         <div class="col-4">
                             <fieldset disabled>
-                                <label for="campo" class="form-label input-text-form">Rfc (Empleado)</label>
+                                <label for="campo" class="form-label input-text-form">Rfc (Empleado actual)</label>
                                 <input type="text" class="form-control custom-input" id="espe_rfc">
                                 <div class="line"></div>
                             </fieldset>
@@ -95,7 +95,7 @@
 
 
                     <div class="div-spacing"></div>
-                    <div class="card"  style=" border: none !important;">
+                    <div class="card" style=" border: none !important;">
                         <div class="card-body">
                             <h6>&Uacuteltimos movimientos de plaza</h6>
                             <table class="table table-bordered" id="tabla_historia_plaza_empleado_ix"

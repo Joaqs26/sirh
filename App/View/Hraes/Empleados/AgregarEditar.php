@@ -24,7 +24,7 @@
             <div class="card-body">
                 <div class="container">
                     <div class="row mx-1">
-                        <div class="col-8 col-md-6 col-lg-4 col-xl-2">
+                        <div class="col-4">
                             <label for="campo" class="form-label input-text-form">Nombre</label><label
                                 class="text-required">*</label>
                             <input onkeyup="convertirAMayusculas(event,'nombre')" maxlength="45" type="text"
@@ -41,7 +41,7 @@
                         </div>
                         <div class="col-4">
                             <label for="campo" class="form-label input-text-form">Apellido materno</label><label
-                                class="text-required"></label>
+                                class="text-required">*</label>
                             <input onkeyup="convertirAMayusculas(event,'segundo_apellido')" maxlength="25" type="text"
                                 class="form-control div-spacing custom-input" id="segundo_apellido"
                                 placeholder="Apellido materno">
@@ -159,7 +159,7 @@
                         </div>
                         <div class="col-3">
                             <label for="campo" class="form-label input-text-form">NSS</label><label
-                                class="text-required"></label>
+                                class="text-required">*</label>
                             <input type="number" oninput="validarNumero(this)" class="form-control custom-input"
                                 id="nss" placeholder="Número de seguro social">
                             <div class="line"></div>

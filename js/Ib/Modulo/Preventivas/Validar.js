@@ -160,7 +160,7 @@ function obtenerValoresIns(){
     let fecha_fin_ins = document.getElementById('fecha_fin_ins').value;
     let fecha_inicio_ins = document.getElementById('fecha_inicio_ins').value;
     
-    $.post("../../../../App/Controllers/Central/IncidenciasC/ValoresC.php", {
+    $.post("../../../../App/Controllers/Hrae/IncidenciasC/ValoresC.php", {
         fecha_fin_ins: fecha_fin_ins,
         fecha_inicio_ins: fecha_inicio_ins,
         id_tbl_empleados_hraes:id_tbl_empleados_hraes

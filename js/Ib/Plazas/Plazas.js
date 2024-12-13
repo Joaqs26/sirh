@@ -59,6 +59,7 @@ function agregarEditarDetalles(id_object) { //SE OBTIENEN INFO DE ID SELECCIONAD
         id_tbl_centro_trabajo_hraes: id_tbl_centro_trabajo_hraes
     },
         function (data) {
+            console.log(data);
             let jsonData = JSON.parse(data);//se obtiene el json
             let entity = jsonData.entity; //Se agrega a emtidad 
             let plazas = jsonData.plazas;

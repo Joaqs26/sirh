@@ -10,7 +10,7 @@ class ModelEmergenciaM
                                     ctrl_contacto_emergencia_hraes.segundo_apellido), 
                                     ctrl_contacto_emergencia_hraes.parentesco,
                                     ctrl_contacto_emergencia_hraes.movil
-                            FROM ctrl_contacto_emergencia_hraes
+                            FROM public.ctrl_contacto_emergencia_hraes
                             WHERE id_tbl_empleados_hraes = $id_object
                             ORDER BY ctrl_contacto_emergencia_hraes.id_ctrl_contacto_emergencia_hraes DESC
                             LIMIT 3 OFFSET $paginator;");
@@ -35,26 +35,26 @@ class ModelEmergenciaM
         $listado = pg_query("SELECT id_ctrl_contacto_emergencia_hraes,nombre,
                                     primer_apellido,segundo_apellido,parentesco,
                                     movil,id_tbl_empleados_hraes
-                             FROM ctrl_contacto_emergencia_hraes
+                             FROM public.ctrl_contacto_emergencia_hraes
                              WHERE id_ctrl_contacto_emergencia_hraes = $id_object");
         return $listado;
     }
 
     function editarByArray($conexion, $datos, $condicion)
     {
-        $pg_update = pg_update($conexion, 'ctrl_contacto_emergencia_hraes', $datos, $condicion);
+        $pg_update = pg_update($conexion, 'public.ctrl_contacto_emergencia_hraes', $datos, $condicion);
         return $pg_update;
     }
 
     function agregarByArray($conexion, $datos)
     {
-        $pg_add = pg_insert($conexion, 'ctrl_contacto_emergencia_hraes', $datos);
+        $pg_add = pg_insert($conexion, 'public.ctrl_contacto_emergencia_hraes', $datos);
         return $pg_add;
     }
 
     function eliminarByArray($conexion, $condicion)
     {
-        $pgs_delete = pg_delete($conexion, 'ctrl_contacto_emergencia_hraes', $condicion);
+        $pgs_delete = pg_delete($conexion, 'public.ctrl_contacto_emergencia_hraes', $condicion);
         return $pgs_delete;
     }
 
@@ -66,7 +66,7 @@ class ModelEmergenciaM
                                     ctrl_contacto_emergencia_hraes.segundo_apellido), 
                                     ctrl_contacto_emergencia_hraes.parentesco,
                                     ctrl_contacto_emergencia_hraes.movil
-                            FROM ctrl_contacto_emergencia_hraes
+                            FROM public.ctrl_contacto_emergencia_hraes
                             WHERE id_tbl_empleados_hraes = $id_object
                             AND (TRIM(UPPER(UNACCENT(ctrl_contacto_emergencia_hraes.nombre))) 
                                     LIKE '%$busqueda%' OR

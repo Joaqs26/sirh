@@ -1,12 +1,10 @@
 <div class="row font-size-modulo">
     <div class="col-9">
         <div class="form-inline">
-            <div class="btn-group">
-                <button onclick="agregarEditarFalta(null)" type="button" class="btn btn-light" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false"><i class="fa fa-plus icono-pequeno-tabla"></i>
-                    <span class="hide-menu text-button-add">&nbsp;Agregar</span>
-                </button>
-            </div>
+            <button onclick="agregarEditarFalta(null)" type="button" class="btn btn-light" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false"><i class="fa fa-plus icono-pequeno-tabla"></i>
+                <span class="hide-menu text-button-add">&nbsp;Agregar</span>
+            </button>
         </div>
     </div>
     <div class="col-3 search-container">
@@ -17,14 +15,13 @@
 </div>
 
 <br>
-<div class="row">
-    <div class="col">
-        <div class="text-center">
-            <table class="table table-bordered" id="tabla_falta" style="width:100%">
-            </table>
-        </div>
+<div class="col-12 table-responsive">
+    <div class="text-center">
+        <table class="table table-bordered table-fixed" id="tabla_falta">
+        </table>
     </div>
 </div>
+
 
 <div class="row">
     <div class="col">

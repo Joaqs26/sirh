@@ -11,13 +11,13 @@ $condicion = [
 if (isset($_POST['id_object'])){
     if ($modelPercepcionesM-> eliminarByArray($connectionDBsPro, $condicion)){
         $dataBitacora = [
-            'nombre_tabla' => 'ctrl_percepciones_hraes',
+            'nombre_tabla' => 'public.ctrl_percepciones_hraes',
             'accion' => 'ELIMINAR',
             'valores' => json_encode($condicion),
             'fecha' => $timestamp,
             'id_users' => $_SESSION['id_user']
         ];
-        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'bitacora_hraes');
+        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'public.bitacora_hraes');
         echo 'delete';
     }
 } 

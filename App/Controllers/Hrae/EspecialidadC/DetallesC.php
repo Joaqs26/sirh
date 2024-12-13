@@ -18,9 +18,8 @@ if ($id_object != null){
 } else {
     $especialidad = $catEspecialidadC->selectByAll($catEspecialidadM->listarByAll());
     $var = [
-        'especialidad' => $especialidad,
         'response' => '',
-        
+        'especialidad' => $especialidad,
     ];
     echo json_encode($var);
 }

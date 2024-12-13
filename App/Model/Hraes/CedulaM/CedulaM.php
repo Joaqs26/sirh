@@ -6,7 +6,7 @@ class ModelCedulaM
     {
         $listado = pg_query("SELECT id_ctrl_cedula_empleados_hraes, id_tbl_empleados_hraes,
                                     cedula_profesional
-                            FROM ctrl_cedula_empleados_hraes
+                            FROM public.ctrl_cedula_empleados_hraes
                             WHERE id_tbl_empleados_hraes = $id_object
                             ORDER BY id_ctrl_cedula_empleados_hraes DESC 
                             LIMIT 3 OFFSET $paginator;");
@@ -17,7 +17,7 @@ class ModelCedulaM
     {
         $listado = pg_query("SELECT id_ctrl_cedula_empleados_hraes, id_tbl_empleados_hraes,
                                     cedula_profesional
-                            FROM ctrl_cedula_empleados_hraes
+                            FROM public.ctrl_cedula_empleados_hraes
                             WHERE id_tbl_empleados_hraes = $id_object
                             AND cedula_profesional LIKE '%$busqueda%'
                             ORDER BY id_ctrl_cedula_empleados_hraes DESC 
@@ -29,7 +29,7 @@ class ModelCedulaM
     {
         $listado = pg_query("SELECT id_ctrl_cedula_empleados_hraes, id_tbl_empleados_hraes,
                                     cedula_profesional
-                            FROM ctrl_cedula_empleados_hraes
+                            FROM public.ctrl_cedula_empleados_hraes
                             WHERE id_ctrl_cedula_empleados_hraes = $id_object");
         return $listado;
     }
@@ -45,19 +45,19 @@ class ModelCedulaM
 
     function editarByArray($conexion, $datos, $condicion)
     {
-        $pg_update = pg_update($conexion, 'ctrl_cedula_empleados_hraes', $datos, $condicion);
+        $pg_update = pg_update($conexion, 'public.ctrl_cedula_empleados_hraes', $datos, $condicion);
         return $pg_update;
     }
 
     function agregarByArray($conexion, $datos)
     {
-        $pg_add = pg_insert($conexion, 'ctrl_cedula_empleados_hraes', $datos);
+        $pg_add = pg_insert($conexion, 'public.ctrl_cedula_empleados_hraes', $datos);
         return $pg_add;
     }
 
     function eliminarByArray($conexion, $condicion)
     {
-        $pgs_delete = pg_delete($conexion, 'ctrl_cedula_empleados_hraes', $condicion);
+        $pgs_delete = pg_delete($conexion, 'public.ctrl_cedula_empleados_hraes', $condicion);
         return $pgs_delete;
     }
 }

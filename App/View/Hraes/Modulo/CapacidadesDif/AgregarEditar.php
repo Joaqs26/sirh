@@ -1,23 +1,43 @@
 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
     aria-hidden="true" id="agregar_editar_capacidad">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered" style="max-width: 700px;">
         <div class="modal-content">
             <div class="modal-header background-modal">
-                <h5 class="modal-title text-modal-tittle"><label id="titulodiscapacidad" class="text-modal-tittle"></label>
-                    capacidad diferente.</h5>
-            </div>
-
-
-            <div class="card-body">
                 <div class="container">
                     <div class="row">
+                        <div class="col-2">
+                            <img src="../../../../assets/sirh/logo_discapacidad.png"
+                                style="max-width: 350%;margin-top: 20px;">
+                        </div>
+                        <div class="col-10">
+                            <h1 class="text-tittle-card"><label id="titulodiscapacidad"></label>
+                                capacidad diferente.
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="div-spacing"></div>
+            <div class="card-body">
+                <div class="container">
+                    <div class="row mx-1">
                         <div class="col-12">
-                            <label class="text-input-form text-input-rem">Capacidad diferente</label><label
-                                class="text-required">*</label>
-                            <div class="custom-select-wrapper">
-                                <select class="form-control" aria-label="Default select example"
-                                    id="id_cat_capacidad_dif_hraes" required>
-                                </select>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label for="campo" class="form-label input-text-form text-input-rem">Seleccione
+                                        una opci&oacuten</label>
+                                    <label class="text-required">*</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <select class="form-control custom-select selectpicker"
+                                        data-style="input-select-selectpicker" aria-label="Default select example"
+                                        data-live-search="true" id="id_cat_capacidad_dif_hraes"
+                                        data-none-results-text="Sin resultados">
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -35,3 +55,4 @@
         </div>
     </div>
 </div>
+

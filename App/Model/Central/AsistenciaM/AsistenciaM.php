@@ -307,46 +307,64 @@ class AsistenciaM
 
     public function addDataInTables()
     {
-        $query = pg_query("INSERT INTO central.ctrl_asistencia(
-                                fecha, hora, dispositivo, verificacion, estado, evento, id_tbl_empleados_hraes)
-                            WITH Filtradas AS (
-                                SELECT
-                                    cti.id_tbl_empleados_hraes,
-                                    TO_CHAR(TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI'), 'HH24:MI:SS') AS hora
-                                FROM central.ctrl_temp_asistencia cta
-                                INNER JOIN central.ctrl_asistencia_info cti
-                                    ON cta.no_empleado::TEXT = cti.no_dispositivo::TEXT
-                                WHERE
-                                    cti.id_cat_asistencia_estatus = 1
-                                    AND TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI')::TIME > '05:00:00'
-                            ),
-                            Horas AS (
-                                SELECT
-                                    id_tbl_empleados_hraes,
-                                    MIN(hora) AS hora_minima,
-                                    MAX(hora) AS hora_maxima
-                                FROM Filtradas
-                                GROUP BY id_tbl_empleados_hraes
-                            )
-                            SELECT DISTINCT ON (cti.id_tbl_empleados_hraes, hora)
-                                TO_CHAR(TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI'), 'YYYY-MM-DD')::DATE AS fecha,
-                                TO_CHAR(TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI'), 'HH24:MI:SS')::TIME AS hora,
-                                UPPER(cta.dispositivo) AS dispositivo,
-                                UPPER(cta.verificacion) AS verificacion,
-                                UPPER(cta.estado) AS estado,
-                                UPPER(cta.evento) AS evento,
-                                cti.id_tbl_empleados_hraes
-                            FROM central.ctrl_temp_asistencia cta
-                            INNER JOIN central.ctrl_asistencia_info cti
-                                ON cta.no_empleado::TEXT = cti.no_dispositivo::TEXT
-                            INNER JOIN Horas hm
-                                ON cti.id_tbl_empleados_hraes = hm.id_tbl_empleados_hraes
-                                AND TO_CHAR(TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI'), 'HH24:MI:SS') IN (hm.hora_minima, hm.hora_maxima)
-                            WHERE cti.id_cat_asistencia_estatus = 1
-                            ORDER BY cti.id_tbl_empleados_hraes, hora;");
+        $query = pg_query("INSERT INTO central.ctrl_asistencia (
+                fecha, hora, dispositivo, verificacion, estado, evento, id_tbl_empleados_hraes
+            )
+            WITH Filtradas AS (
+                SELECT
+                    cti.id_tbl_empleados_hraes,
+                    TO_CHAR(TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI'), 'YYYY-MM-DD')::DATE AS fecha,
+                    TO_CHAR(TO_TIMESTAMP(cta.tiempo, 'MM/DD/YYYY HH24:MI'), 'HH24:MI:SS')::TIME AS hora,
+                    cta.dispositivo,
+                    cta.verificacion,
+                    cta.estado,
+                    cta.evento
+                FROM central.ctrl_temp_asistencia cta
+                INNER JOIN central.ctrl_asistencia_info cti
+                    ON cta.no_empleado::TEXT = cti.no_dispositivo::TEXT
+                WHERE cti.id_cat_asistencia_estatus = 1
+            ),
+            MinMaxHoras AS (
+                SELECT
+                    id_tbl_empleados_hraes,
+                    fecha,
+                    MIN(hora) AS hora_minima,
+                    MAX(hora) AS hora_maxima
+                FROM Filtradas
+                GROUP BY id_tbl_empleados_hraes, fecha
+            ),
+            RegistrosSinDuplicados AS (
+                SELECT DISTINCT
+                    mmh.fecha,
+                    CASE
+                        WHEN f.hora = mmh.hora_minima THEN mmh.hora_minima
+                        ELSE mmh.hora_maxima
+                    END AS hora,
+                    UPPER(f.dispositivo) AS dispositivo,
+                    UPPER(f.verificacion) AS verificacion,
+                    UPPER(f.estado) AS estado,
+                    UPPER(f.evento) AS evento,
+                    f.id_tbl_empleados_hraes
+                FROM Filtradas f
+                INNER JOIN MinMaxHoras mmh
+                    ON f.id_tbl_empleados_hraes = mmh.id_tbl_empleados_hraes
+                    AND f.fecha = mmh.fecha
+                    AND (f.hora = mmh.hora_minima OR f.hora = mmh.hora_maxima)
+            )
+            SELECT DISTINCT ON (id_tbl_empleados_hraes, fecha, hora)
+                fecha,
+                hora,
+                dispositivo,
+                verificacion,
+                estado,
+                evento,
+                id_tbl_empleados_hraes
+            FROM RegistrosSinDuplicados
+            ORDER BY id_tbl_empleados_hraes, fecha, hora;
+        ");
         return $query;
     }
-
+    
 
 
     //listado para pbtener el total de asistencias
@@ -476,3 +494,4 @@ class AsistenciaM
     }
 
 }
+
