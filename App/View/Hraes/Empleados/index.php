@@ -9,7 +9,7 @@
                         <div class="vertical-line"></div>
                     </div>
                     <div class="col padding-left-0">
-                        <h4>Hraes</h4>
+                        <h4>HRAES</h4>
                     </div>
                 </div>
             </div>
