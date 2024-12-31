@@ -7,23 +7,23 @@ class PreventivasM
     {
         $query = pg_query("SELECT 
                                 public.ctrl_preventivas.id_ctrl_preventivas,
-                                UPPER(public.cat_preventivas.descripcion) AS estatus,
+                                UPPER(central.cat_preventivas.descripcion) AS estatus,
                                 UPPER(public.ctrl_preventivas.no_oficio),
                                 TO_CHAR(public.ctrl_preventivas.fecha_inicio, 'DD/MM/YYYY'),
                                 TO_CHAR(public.ctrl_preventivas.fecha_fin, 'DD/MM/YYYY'),
-                                public.cat_quincenas.nombre AS quincena,
-                                CONCAT (TO_CHAR(public.cat_quincenas.fecha_inicio, 'DD/MM/YYYY'), ' - ',
-                                        TO_CHAR(public.cat_quincenas.fecha_fin, 'DD/MM/YYYY')) AS periodo_quincena,
+                                central.cat_quincenas.nombre AS quincena,
+                                CONCAT (TO_CHAR(central.cat_quincenas.fecha_inicio, 'DD/MM/YYYY'), ' - ',
+                                        TO_CHAR(central.cat_quincenas.fecha_fin, 'DD/MM/YYYY')) AS periodo_quincena,
                                 UPPER(public.ctrl_preventivas.observaciones)
                             FROM public.ctrl_preventivas
-                            INNER JOIN public.cat_quincenas
+                            INNER JOIN central.cat_quincenas
                                 ON public.ctrl_preventivas.fecha_inicio BETWEEN 
-                                    public.cat_quincenas.fecha_inicio AND public.cat_quincenas.fecha_fin	
-                            INNER JOIN public.cat_preventivas
+                                    central.cat_quincenas.fecha_inicio AND central.cat_quincenas.fecha_fin	
+                            INNER JOIN central.cat_preventivas
                                 ON	public.ctrl_preventivas.id_cat_preventivas =
-                                    public.cat_preventivas.id_cat_preventivas
+                                    central.cat_preventivas.id_cat_preventivas
                             WHERE public.ctrl_preventivas.id_tbl_empleados_hraes = $id_tbl_empleados_hraes -- IS ID_EMPLOYEE
-                            ORDER BY public.cat_quincenas.fecha_inicio DESC
+                            ORDER BY central.cat_quincenas.fecha_inicio DESC
                             LIMIT 3 OFFSET $paginador;");
         return $query;
     }
@@ -32,31 +32,31 @@ class PreventivasM
     {
         $query = pg_query("SELECT 
                                 public.ctrl_preventivas.id_ctrl_preventivas,
-                                UPPER(public.cat_preventivas.descripcion) AS estatus,
+                                UPPER(central.cat_preventivas.descripcion) AS estatus,
                                 UPPER(public.ctrl_preventivas.no_oficio),
                                 TO_CHAR(public.ctrl_preventivas.fecha_inicio, 'DD/MM/YYYY'),
                                 TO_CHAR(public.ctrl_preventivas.fecha_fin, 'DD/MM/YYYY'),
-                                public.cat_quincenas.nombre AS quincena,
-                                CONCAT (TO_CHAR(public.cat_quincenas.fecha_inicio, 'DD/MM/YYYY'), ' - ',
-                                        TO_CHAR(public.cat_quincenas.fecha_fin, 'DD/MM/YYYY')) AS periodo_quincena,
+                                central.cat_quincenas.nombre AS quincena,
+                                CONCAT (TO_CHAR(central.cat_quincenas.fecha_inicio, 'DD/MM/YYYY'), ' - ',
+                                        TO_CHAR(central.cat_quincenas.fecha_fin, 'DD/MM/YYYY')) AS periodo_quincena,
                                 UPPER(public.ctrl_preventivas.observaciones)
                             FROM public.ctrl_preventivas
-                            INNER JOIN public.cat_quincenas
+                            INNER JOIN central.cat_quincenas
                                 ON public.ctrl_preventivas.fecha_inicio BETWEEN 
-                                    public.cat_quincenas.fecha_inicio AND public.cat_quincenas.fecha_fin	
-                            INNER JOIN public.cat_preventivas
+                                    central.cat_quincenas.fecha_inicio AND central.cat_quincenas.fecha_fin	
+                            INNER JOIN central.cat_preventivas
                                 ON	public.ctrl_preventivas.id_cat_preventivas =
-                                    public.cat_preventivas.id_cat_preventivas
+                                    central.cat_preventivas.id_cat_preventivas
                             WHERE public.ctrl_preventivas.id_tbl_empleados_hraes = $id_tbl_empleados_hraes -- IS ID_EMPLOYEE
                             AND (
-                                UPPER(TRIM(UNACCENT(public.cat_preventivas.descripcion))) LIKE '%$busqueda%' OR
+                                UPPER(TRIM(UNACCENT(central.cat_preventivas.descripcion))) LIKE '%$busqueda%' OR
                                 UPPER(TRIM(UNACCENT(public.ctrl_preventivas.no_oficio))) LIKE '%$busqueda%' OR
                                 TO_CHAR(public.ctrl_preventivas.fecha_inicio, 'DD/MM/YYYY')::TEXT LIKE '%$busqueda%' OR
                                 TO_CHAR(public.ctrl_preventivas.fecha_fin, 'DD/MM/YYYY')::TEXT LIKE '%$busqueda%' OR
-                                UPPER(TRIM(UNACCENT(public.cat_quincenas.nombre))) LIKE '%$busqueda%' OR
+                                UPPER(TRIM(UNACCENT(central.cat_quincenas.nombre))) LIKE '%$busqueda%' OR
                                 UPPER(TRIM(UNACCENT(public.ctrl_preventivas.observaciones))) LIKE '%$busqueda%' 
                             )
-                            ORDER BY public.cat_quincenas.fecha_inicio DESC
+                            ORDER BY central.cat_quincenas.fecha_inicio DESC
                             LIMIT 3 OFFSET $paginador;");
         return $query;
     }
@@ -77,20 +77,20 @@ class PreventivasM
     public function listarCatPreventivas()
     {
         $query = pg_query("SELECT 
-                                public.cat_preventivas.id_cat_preventivas,
-                                UPPER(public.cat_preventivas.descripcion)
-                            FROM public.cat_preventivas
-                            ORDER BY public.cat_preventivas.descripcion ASC;");
+                                central.cat_preventivas.id_cat_preventivas,
+                                UPPER(central.cat_preventivas.descripcion)
+                            FROM central.cat_preventivas
+                            ORDER BY central.cat_preventivas.descripcion ASC;");
         return $query;
     }
 
     public function editCatPreventivas($id)
     {
         $query = pg_query("SELECT 
-                                public.cat_preventivas.id_cat_preventivas,
-                                UPPER(public.cat_preventivas.descripcion)
-                            FROM public.cat_preventivas
-                            WHERE public.cat_preventivas.id_cat_preventivas = $id;");
+                                central.cat_preventivas.id_cat_preventivas,
+                                UPPER(central.cat_preventivas.descripcion)
+                            FROM central.cat_preventivas
+                            WHERE central.cat_preventivas.id_cat_preventivas = $id;");
         return $query;
     }
 
