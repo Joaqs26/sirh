@@ -1,19 +1,19 @@
-|<q></q><?php
+<?php
 include '../../../../../conexion.php';
-include '../../../../Model/Central/RetardoM/RetardoM.php';
+include '../../../../Model/Central/Alerta/AlertasM.php';
 
-$listado = new ModelRetardoM();
+$listado = new AlertasM();
 $paginador = $_POST['paginador'];
 
-$query = $listado->listadoAllFaltas($paginador);
+$query = $listado->listadoAllAlertas($paginador);
 
 if (isset($_POST['busqueda'])) {
     $busqueda = $_POST['busqueda'];
-    $query = $listado->listadoAllFaltasBusqueda($busqueda, $paginador);
+    $query = $listado->listadoAllAlertasBusqueda($busqueda, $paginador);
 }
 
 $data =
-    '<table class="table table-bordered table-fixed" id="tabla_faltas_" style="width:100%">
+    '<table class="table table-bordered table-fixed" id="tabla_alertas" style="width:100%">
     <thead>
         <tr>
             <th class="col-wide-action">Acciones</th>
@@ -23,7 +23,7 @@ $data =
             <th class="col-wide">Hora</th>
             <th class="col-wide">Tipo</th>
             <th class="col-wide">Estatus</th>
-            <th class="col-wide">Observaciones</th>
+            <th class="col-wide">Observaciones</th>hfghgffhghgfgfh
         </tr>
     </thead>';
 
@@ -39,8 +39,8 @@ if (pg_num_rows($result) > 0) {
                             <div class="btn-group">
                                 <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-edit icono-grande-tabla"></i></button>
                             <div class="dropdown-menu">
-                                <button onclick="getUser(' . $row[7] . ')" class="dropdown-item btn btn-light"><i class="	fa fa-user icon-edit-table"></i> Usuario</button>
-                                <button onclick="mostrarRetardo()" class="dropdown-item btn btn-light"><i class="fas fa-edit icon-edit-table"></i> Modificar</button>
+                                <button onclick="getUser(' . $row[7] . ')" class="dropdown-item btn btn-light"><i class="fa fa-user icon-edit-table"></i> Usuario</button>
+                                <button onclick="mostrarAlerta()" class="dropdown-item btn btn-light"><i class="fas fa-edit icon-edit-table"></i> Modificar</button>
                             </div>
                           </div>
                                 </td>
@@ -83,5 +83,5 @@ function returnArrayById($result)
             $response = $row;
         }
     }
-    return $response;
+    return $response;  
 }

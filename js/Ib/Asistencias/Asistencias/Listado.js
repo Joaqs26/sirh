@@ -24,6 +24,7 @@ function iniciarTablaAsis(busqueda, paginador) { ///INGRESA LA TABLA
             paginador: paginador
         },
         success: function (data) {
+            console.log(data)
             $('#tabla_asistencias_').html(data);
         }
     });
@@ -46,6 +47,7 @@ function getDetallesAsistencia(id) {
         id: id
     },
         function (data) {
+            console.log(data)
             let jsonData = JSON.parse(data);//se obtiene el json
             let response = jsonData.response;
 

@@ -385,11 +385,10 @@ class AsistenciaM
                 INNER JOIN central.ctrl_asistencia 
                     ON central.ctrl_asistencia.id_tbl_empleados_hraes =
                         central.tbl_empleados_hraes.id_tbl_empleados_hraes
-                ORDER BY central.ctrl_asistencia.fecha  DESC
+                ORDER BY central.ctrl_asistencia.fecha ASC, central.ctrl_asistencia.hora ASC
                 LIMIT 5 OFFSET $paginator;");
         return $query;
     }
-
     public function listarAsistenciaDepBusqueda($busqueda, $paginator)
     {
         $query = ("SELECT

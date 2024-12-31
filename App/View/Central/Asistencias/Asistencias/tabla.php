@@ -8,6 +8,7 @@ $paginador = $_POST['paginador'];
 $query = $listado->listarAsistenciaDep($paginador);
 
 if (isset($_POST['busqueda'])) {
+    
     $busqueda = $_POST['busqueda'];
     $query = $listado->listarAsistenciaDepBusqueda($busqueda, $paginador);
 }
@@ -69,7 +70,9 @@ echo $data;
 
 
 function returnArrayById($result)
+
 {
+   
     if (pg_num_rows($result) > 0) {
         while ($row = pg_fetch_row($result)) {
             $response = $row;
