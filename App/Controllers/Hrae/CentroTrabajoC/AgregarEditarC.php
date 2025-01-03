@@ -4,7 +4,7 @@ include '../librerias.php';
 
 $model = new modelCentroTrabajoHraes();
 $bitacoraM = new BitacoraM();
-$tablaCentroTrabajo = 'public.tbl_centro_trabajo_hraes';
+$tablaCentroTrabajoHraes = 'central.tbl_centro_trabajo_hraes';
 
 $condicion = [
     'id_tbl_centro_trabajo_hraes' => $_POST['id_object']
@@ -24,7 +24,7 @@ $datos = [
     'id_estatus_centro' => $_POST['id_estatus_centro'],
     'id_cat_entidad' => $_POST['id_cat_entidad'],
     'id_cat_zona_economica' => $_POST['id_cat_zona_economica'],
-    'fecha_usuario' => $isNow,
+    'fecha_usuario' => date('Y-m-d H:i:s'),
     'id_user' => $_SESSION['id_user']
 ];
 
@@ -33,29 +33,47 @@ $var = [
     'condicion' => $condicion
 ];
 
-if ($_POST['id_object'] != null) { //Modificar
-    if ($model->editarByArray($connectionDBsPro, $datos, $condicion, $tablaCentroTrabajo)) {
-        $dataBitacora = [
-            'nombre_tabla' => $tablaCentroTrabajo,
-            'accion' => 'MODIFICAR',
-            'valores' => json_encode($var),
-            'fecha' => $isNow,
-            'id_users' => $_SESSION['id_user']
-        ];
-        pg_insert($connectionDBsPro, 'public.bitacora_hraes', $dataBitacora);
-        echo 'edit';
+try {
+    // Verificar si la clave ya pertenece a otro registro
+    $claveCentro = $_POST['clave_centro_trabajo'];
+    $idActual = $_POST['id_object'];
+
+    $query = "SELECT id_tbl_centro_trabajo_hraes 
+              FROM central.tbl_centro_trabajo_hraes 
+              WHERE clave_centro_trabajo = '$claveCentro' 
+              AND id_tbl_centro_trabajo_hraes != $idActual";
+
+    $result = pg_query($connectionDBsPro, $query);
+
+    if (pg_num_rows($result) > 0) {
+        throw new Exception("Error: La clave centro de trabajo '$claveCentro' ya está en uso en otro registro.");
     }
 
-} else { //Agregar
-    if ($model->agregarByArray($connectionDBsPro, $datos, $tablaCentroTrabajo)) {
-        $dataBitacora = [
-            'nombre_tabla' => $tablaCentroTrabajo,
-            'accion' => 'AGREGAR',
-            'valores' => json_encode($var),
-            'fecha' => $isNow,
-            'id_users' => $_SESSION['id_user']
-        ];
-        pg_insert($connectionDBsPro, 'public.bitacora_hraes', $dataBitacora);
-        echo 'add';
+    if ($_POST['id_object'] != null) { // Modificar
+        if ($model->editarByArray($connectionDBsPro, $datos, $condicion, $tablaCentroTrabajoHraes)) {
+            $dataBitacora = [
+                'nombre_tabla' => $tablaCentroTrabajoHraes,
+                'accion' => 'MODIFICAR',
+                'valores' => json_encode($var),
+                'fecha' => date('Y-m-d H:i:s'),
+                'id_users' => $_SESSION['id_user']
+            ];
+            pg_insert($connectionDBsPro, 'central.bitacora_hraes', $dataBitacora);
+            echo 'edit';
+        }
+    } else { // Agregar
+        if ($model->agregarByArray($connectionDBsPro, $datos, $tablaCentroTrabajoHraes)) {
+            $dataBitacora = [
+                'nombre_tabla' => $tablaCentroTrabajoHraes,
+                'accion' => 'AGREGAR',
+                'valores' => json_encode($var),
+                'fecha' => date('Y-m-d H:i:s'),
+                'id_users' => $_SESSION['id_user']
+            ];
+            pg_insert($connectionDBsPro, 'central.bitacora_hraes', $dataBitacora);
+            echo 'add';
+        }
     }
+} catch (Exception $e) {
+    echo 'Error: ' . $e->getMessage();
 }

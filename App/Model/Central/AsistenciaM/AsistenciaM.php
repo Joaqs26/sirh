@@ -237,21 +237,22 @@ class AsistenciaM
         $tableName,
         $tiempo,
         $no_empleado,
-        $nombre,
-        $apellido,
-        $num_tarjeta,
-        $dispositivo,
-        $punto_evento,
-        $verificacion,
-        $estado,
-        $evento,
-        $notas
+        $nombre = null,
+        $apellido = null,
+        $num_tarjeta = null,
+        $dispositivo = null,
+        $punto_evento = null,
+        $verificacion = null,
+        $estado = null,
+        $evento = null,
+        $notas = null
     ) {
-        $query = pg_query("INSERT INTO $tableName
-                                    VALUES ('$tiempo', '$no_empleado', '$nombre', '$apellido', '$num_tarjeta', '$dispositivo', 
-                                            '$punto_evento', '$verificacion', '$estado', '$evento', '$notas');");
+        $query = pg_query("INSERT INTO $tableName (tiempo, no_empleado, nombre, apellido, num_tarjeta, dispositivo, punto_evento, verificacion, estado, evento, notas)
+                           VALUES ('$tiempo', '$no_empleado', '$nombre', '$apellido', '$num_tarjeta', '$dispositivo', 
+                                   '$punto_evento', '$verificacion', '$estado', '$evento', '$notas');");
         return $query;
     }
+    
 
     public function getReporte()
     {

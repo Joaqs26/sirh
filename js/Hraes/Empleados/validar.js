@@ -110,6 +110,7 @@ document.getElementById("id_cat_pais_nacimiento").addEventListener("change", fun
             id_cat_pais_nacimiento: select.value,
         },
             function (data) {
+                console.log(data);
                 let jsonData = JSON.parse(data);
                 let estado = jsonData.estado; 
     

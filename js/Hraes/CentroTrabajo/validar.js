@@ -38,6 +38,7 @@ function validarInfo(codigo_postal, clave_centro_trabajo) {
 
     },
         function (data) {
+            console.log(data);
             let jsonData = JSON.parse(data);
             let bool = jsonData.bool;
             let message = jsonData.message;
