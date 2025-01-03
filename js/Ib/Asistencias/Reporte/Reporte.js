@@ -31,7 +31,7 @@ function getReporteAsistencia() {
 
     // Agregar evento click al botón personalizado
     document.getElementById('btnRetardos').addEventListener('click', function () {
-        descargarReporte("../../../../App/Controllers/Central/AsistenciaC/OtroReporteC.php", "OTRO_REPORTE.xlsx");
+        descargarReporte("../../../../App/Controllers/Central/RetardoC/ReporteC.php", "OTRO_REPORTE.xlsx");
         Swal.close(); // Cierra el cuadro de diálogo después de ejecutar la acción
     });
 }
