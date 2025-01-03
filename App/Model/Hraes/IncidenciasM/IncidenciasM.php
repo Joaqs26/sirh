@@ -7,19 +7,19 @@ class IncidenciasM
     {
         $query = pg_query("SELECT 
                                 public.ctrl_incidencias.id_ctrl_incidencias,
-                                UPPER(public.cat_incidencias.descripcion),
+                                UPPER(central.cat_incidencias.descripcion),
                                 TO_CHAR(public.ctrl_incidencias.fecha_inicio, 'DD/MM/YYYY'),
                                 TO_CHAR(public.ctrl_incidencias.fecha_fin, 'DD/MM/YYYY'),
                                 UPPER(public.ctrl_incidencias.observaciones),
-                                UPPER(public.cat_periodo.descripcion),
+                                UPPER(central.cat_periodo.descripcion),
                                 UPPER(public.users.nombre)
                             FROM public.ctrl_incidencias
-                            INNER JOIN public.cat_incidencias
-                                ON public.cat_incidencias.id_cat_incidencias =
+                            INNER JOIN central.cat_incidencias
+                                ON central.cat_incidencias.id_cat_incidencias =
                                     public.ctrl_incidencias.id_cat_incidencias
-                            INNER JOIN public.cat_periodo
+                            INNER JOIN central.cat_periodo
                                 ON public.ctrl_incidencias.fecha_inicio BETWEEN
-                                    public.cat_periodo.fecha_inicio AND public.cat_periodo.fecha_fin
+                                    central.cat_periodo.fecha_inicio AND central.cat_periodo.fecha_fin
                             LEFT JOIN public.users
                                 ON public.users.id_user =
                                     public.ctrl_incidencias.id_user
@@ -33,29 +33,29 @@ class IncidenciasM
     {
         $query = pg_query("SELECT 
                                 public.ctrl_incidencias.id_ctrl_incidencias,
-                                UPPER(public.cat_incidencias.descripcion),
+                                UPPER(central.cat_incidencias.descripcion),
                                 TO_CHAR(public.ctrl_incidencias.fecha_inicio, 'DD/MM/YYYY'),
                                 TO_CHAR(public.ctrl_incidencias.fecha_fin, 'DD/MM/YYYY'),
                                 UPPER(public.ctrl_incidencias.observaciones),
-                                UPPER(public.cat_periodo.descripcion),
+                                UPPER(central.cat_periodo.descripcion),
                                 UPPER(public.users.nombre)
                             FROM public.ctrl_incidencias
-                            INNER JOIN public.cat_incidencias
-                                ON public.cat_incidencias.id_cat_incidencias =
+                            INNER JOIN central.cat_incidencias
+                                ON central.cat_incidencias.id_cat_incidencias =
                                     public.ctrl_incidencias.id_cat_incidencias
-                            INNER JOIN public.cat_periodo
+                            INNER JOIN central.cat_periodo
                                 ON public.ctrl_incidencias.fecha_inicio BETWEEN
-                                    public.cat_periodo.fecha_inicio AND public.cat_periodo.fecha_fin
+                                    central.cat_periodo.fecha_inicio AND central.cat_periodo.fecha_fin
                             LEFT JOIN public.users
                                 ON public.users.id_user =
                                     public.ctrl_incidencias.id_user
                             WHERE public.ctrl_incidencias.id_tbl_empleados_hraes = $idEmpleado
                             AND (
-                                     UPPER(TRIM(UNACCENT(public.cat_incidencias.descripcion)))  LIKE '%$busqueda%' 
+                                     UPPER(TRIM(UNACCENT(central.cat_incidencias.descripcion)))  LIKE '%$busqueda%' 
                                   OR TO_CHAR(public.ctrl_incidencias.fecha_inicio, 'DD/MM/YYYY')::TEXT LIKE '%$busqueda%'
                                   OR TO_CHAR(public.ctrl_incidencias.fecha_fin, 'DD/MM/YYYY')::TEXT LIKE '%$busqueda%'
                                   OR UPPER(TRIM(UNACCENT(public.ctrl_incidencias.observaciones))) LIKE '%$busqueda%'
-                                  OR UPPER(TRIM(UNACCENT(UPPER(public.cat_periodo.descripcion)))) LIKE '%$busqueda%'
+                                  OR UPPER(TRIM(UNACCENT(UPPER(central.cat_periodo.descripcion)))) LIKE '%$busqueda%'
                                 )
                             ORDER BY public.ctrl_incidencias.fecha_inicio DESC
                             LIMIT 3 OFFSET $paginator;");
@@ -91,19 +91,19 @@ class IncidenciasM
     //catalago de incidencias
     public function listarCatIncidencias(){
         $query = pg_query ("SELECT 
-                                public.cat_incidencias.id_cat_incidencias,
-                                UPPER(public.cat_incidencias.descripcion)
-                            FROM public.cat_incidencias
-                            ORDER BY public.cat_incidencias.id_cat_incidencias ASC;");
+                                central.cat_incidencias.id_cat_incidencias,
+                                UPPER(central.cat_incidencias.descripcion)
+                            FROM central.cat_incidencias
+                            ORDER BY central.cat_incidencias.id_cat_incidencias ASC;");
         return $query;
     }
 
     public function editarCatIncidencias($id){
         $query = pg_query ("SELECT 
-                                public.cat_incidencias.id_cat_incidencias,
-                                UPPER(public.cat_incidencias.descripcion)
-                            FROM public.cat_incidencias
-                            WHERE public.cat_incidencias.id_cat_incidencias = $id;");
+                                central.cat_incidencias.id_cat_incidencias,
+                                UPPER(central.cat_incidencias.descripcion)
+                            FROM central.cat_incidencias
+                            WHERE central.cat_incidencias.id_cat_incidencias = $id;");
         return $query;
     }
 
