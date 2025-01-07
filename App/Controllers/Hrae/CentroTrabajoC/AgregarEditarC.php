@@ -34,20 +34,19 @@ $var = [
 ];
 
 try {
-    // Verificar si la clave ya pertenece al registro que se está editando
+    // Verificar si la clave ya pertenece a otro registro
     $claveCentro = $_POST['clave_centro_trabajo'];
     $idActual = $_POST['id_object'];
 
     $query = "SELECT id_tbl_centro_trabajo_hraes 
-              FROM $tablaCentroTrabajoHraes 
-              WHERE clave_centro_trabajo = '$claveCentro'";
+              FROM central.tbl_centro_trabajo_hraes 
+              WHERE clave_centro_trabajo = '$claveCentro' 
+              AND id_tbl_centro_trabajo_hraes != $idActual";
+
     $result = pg_query($connectionDBsPro, $query);
 
     if (pg_num_rows($result) > 0) {
-        $duplicatedRow = pg_fetch_assoc($result);
-        if ($duplicatedRow['id_tbl_centro_trabajo_hraes'] != $idActual) {
-            throw new Exception("Error: La clave centro de trabajo '$claveCentro' ya está en uso en otro registro.");
-        }
+        throw new Exception("Error: La clave centro de trabajo '$claveCentro' ya está en uso en otro registro.");
     }
 
     if ($_POST['id_object'] != null) { // Modificar

@@ -90,10 +90,20 @@ class modelCentroTrabajoHraes
     }
 
     function editarByArray($conexion, $datos, $condicion, $tablaCentroTrabajoHraes)
-    {
-        $pg_update = pg_update($conexion, $tablaCentroTrabajoHraes, $datos, $condicion);
-        return $pg_update;
+{
+    // Obtener clave y ID actual del registro
+    $clave = $datos['clave_centro_trabajo'];
+    $idActual = $condicion['id_tbl_centro_trabajo_hraes'];
+
+    // Verificar si la clave está duplicada
+    if ($this->isClaveDuplicada($clave, $idActual)) {
+        throw new Exception("Error: La clave centro de trabajo '$clave' ya está en uso en otro registro.");
     }
+
+    // Ejecutar actualización
+    $pg_update = pg_update($conexion, $tablaCentroTrabajoHraes, $datos, $condicion);
+    return $pg_update;
+}
 
     function agregarByArray($conexion, $datos, $tablaCentroTrabajoHraes)
     {
@@ -233,6 +243,17 @@ class modelCentroTrabajoHraes
                                 clave_centro_trabajo = '$clave_centro_trabajo';");
         return $agregar;
     }
+
+    public function isClaveDuplicada($clave, $idActual)
+{
+    $query = "SELECT id_tbl_centro_trabajo_hraes 
+              FROM central.tbl_centro_trabajo_hraes 
+              WHERE clave_centro_trabajo = '$clave' 
+              AND id_tbl_centro_trabajo_hraes != $idActual";
+    $result = pg_query($query);
+    return pg_num_rows($result) > 0;
+}
+
     /*
     function modificarCentroSQL($clave_centro_trabajo,$nombre,$pais,$colonia,$codigo_postal,$num_exterior,$num_interior,
                               $latitud,$longitud,$id_cat_region,$id_estatus_centro,$id_cat_entidad, $condition){
