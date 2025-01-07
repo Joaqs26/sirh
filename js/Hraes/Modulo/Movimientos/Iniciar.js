@@ -18,6 +18,7 @@ function iniciarTabla_mv(busqueda, paginador, id_tbl_empleados_hraes) {
         id_tbl_empleados_hraes:id_tbl_empleados_hraes
     },
         function (data) {
+            console.log(data);
             $("#tabla_movimientos").html(data); 
         }
     );
@@ -36,6 +37,7 @@ function agregarEditarMovimiento(id_object){
         id_object: id_object
     },
         function (data) {
+            console.log(data);
             let jsonData = JSON.parse(data);
             let entity = jsonData.response;
             let caracter = jsonData.caracter;
@@ -104,6 +106,7 @@ function guardarMovimiento() {
         movimientoMov:movimientoMov,
     },
         function (data) {
+            console.log(data);
             if (data == 'edit'){
                 mensajeExito('Movimiento modificado con éxito');
             } else if (data == 'add') {
@@ -135,6 +138,7 @@ function eliminarMovimiento(id_object) {//ELIMINAR USUARIO
                 id_object: id_object
             },
             function (data) {
+                console.log(data);
                 if (data == 'delete'){
                     mensajeExito('Movimiento eliminado con éxito')
                 } else {

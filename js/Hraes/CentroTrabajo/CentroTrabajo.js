@@ -111,7 +111,7 @@ function agregarEditarByDb() {
         pais: $("#pais").val(),
         id_cat_entidad: $("#id_cat_entidad").val(),
         id_cat_zona_economica: $("#id_cat_zona_economica").val(),
-        id_cat_region: $("#id_cat_region").val(),
+        id_cat_region: $("#id_cat_region").val(),   
         id_estatus_centro: $("#id_estatus_centro").val(),
     },
         function (data) {

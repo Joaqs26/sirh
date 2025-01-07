@@ -24,6 +24,7 @@ dateInput.addEventListener('change', function() {
         isValue: isValue
     },
         function (data) {
+            console.log(data);
             let jsonData = JSON.parse(data);
             $("#id_cat_quincenas").val(jsonData.id_cat_quincenas);
             $("#quincena_rr").val(jsonData.quincena);

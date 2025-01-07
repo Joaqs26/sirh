@@ -66,6 +66,7 @@ function validarUltimoMovimiento(movimiento_general,id_object,fecha_movimiento,n
         situacionPlaza:situacionPlaza,
     },  
         function (data) {
+            console.log(data);
             let jsonData = JSON.parse(data);
             let bool = jsonData.bool;
             let mensaje = jsonData.mensaje;
@@ -86,6 +87,7 @@ document.getElementById("id_tbl_control_plazas_hraes").addEventListener("change"
         id_tbl_control_plazas_hraes: id_tbl_control_plazas_hraes,
     },
         function (data) {
+            console.log(data);
             let jsonData = JSON.parse(data);
             let contratacion = jsonData.contratacion;
             let centroTrabajo = jsonData.centroTrabajo;
@@ -120,6 +122,7 @@ document.getElementById("movimiento_general").addEventListener("change", functio
         movimiento_general: movimiento_general,
     },
         function (data) {
+            console.log(data);
             var jsonData = JSON.parse(data);
             var especifico = jsonData.especifico; 
 
