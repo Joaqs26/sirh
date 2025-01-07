@@ -89,21 +89,21 @@ class modelCentroTrabajoHraes
         return $listado;
     }
 
-    function editarByArray($conexion, $datos, $condicion, $tablaCentroTrabajo)
+    function editarByArray($conexion, $datos, $condicion, $tablaCentroTrabajoHraes)
     {
-        $pg_update = pg_update($conexion, $tablaCentroTrabajo, $datos, $condicion);
+        $pg_update = pg_update($conexion, $tablaCentroTrabajoHraes, $datos, $condicion);
         return $pg_update;
     }
 
-    function agregarByArray($conexion, $datos, $tablaCentroTrabajo)
+    function agregarByArray($conexion, $datos, $tablaCentroTrabajoHraes)
     {
-        $pg_add = pg_insert($conexion, $tablaCentroTrabajo, $datos);
+        $pg_add = pg_insert($conexion, $tablaCentroTrabajoHraes, $datos);
         return $pg_add;
     }
 
-    function eliminarByArray($conexion, $condicion, $tablaCentroTrabajo)
+    function eliminarByArray($conexion, $condicion, $tablaCentroTrabajoHraes)
     {
-        $pgs_delete = pg_delete($conexion, $tablaCentroTrabajo, $condicion);
+        $pgs_delete = pg_delete($conexion, $tablaCentroTrabajoHraes, $condicion);
         return $pgs_delete;
     }
 

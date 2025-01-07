@@ -30,7 +30,7 @@ if (isset($_FILES[$fileExel]) && $_FILES[$fileExel]['error'] === UPLOAD_ERR_OK) 
     $numero_columnas = count($sheetData[1]); ///NUMERO DE COLUMNAS DEL ARCHIVO
     $totalFilas = 1; ///NUMERO TOTAL DE FILAS DE REGISTROS
 
-    if ($numero_columnas == 11) {///VALIDAR EL NUMERO DE EL NUMERO DE COLUMNAS COINCIDA
+    if ($numero_columnas >= 2) {///VALIDAR EL NUMERO DE EL NUMERO DE COLUMNAS COINCIDA
         foreach ($sheetData as $row) {
             if ($totalFilas != 1) {///VALIDACION PARA NO EJECUTAR ENCABEZADO Y TEXTO
                 $tiempo = trim(pg_escape_string($row['A'])) ? trim(pg_escape_string($row['A'])) : null;//
@@ -65,7 +65,8 @@ if (isset($_FILES[$fileExel]) && $_FILES[$fileExel]['error'] === UPLOAD_ERR_OK) 
             $totalFilas++;
         }
 
-      
+       
+
     } else {
         $bool = false;
         $message = 'Las columnas del archivo cargado no corresponden con las columnas del formato requerido.';
@@ -78,3 +79,4 @@ $var = [
     'message' => $message,
 ];
 echo json_encode($var);
+
