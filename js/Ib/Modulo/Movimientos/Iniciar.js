@@ -23,7 +23,7 @@ function iniciarTabla_mv(busqueda, paginador, id_tbl_empleados_hraes) {
     );
 }
 
-function agregarEditarMovimiento(id_object){
+function    (id_object){
     $("#id_object").val(id_object);
     let titulo = document.getElementById("tituloMovimiento");
     titulo.textContent = 'Modificar';

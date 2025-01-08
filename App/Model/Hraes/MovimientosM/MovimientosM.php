@@ -61,7 +61,7 @@ class ModelMovimientosM
         $listado = pg_query("SELECT id_tbl_plazas_empleados_hraes,fecha_inicio,
                                     fecha_termino,id_tbl_movimientos,fecha_movimiento,
                                     id_tbl_control_plazas_hraes,id_tbl_empleados_hraes,
-                                    observaciones, motivo_estatus,id_cat_caracter_nom_hraes
+                                    observaciones, motivo_estatus
                              FROM public.tbl_plazas_empleados_hraes
                              WHERE id_tbl_plazas_empleados_hraes = $idMovimiento;");
         return $listado;
@@ -77,7 +77,7 @@ class ModelMovimientosM
             'fecha_movimiento' => null,
             'id_tbl_control_plazas_hraes' => null,
             'id_tbl_empleados_hraes' => null,
-            'id_cat_caracter_nom_hraes' => null,
+            
             'motivo_estatus' => null,
             'observaciones' => null,
         ];
