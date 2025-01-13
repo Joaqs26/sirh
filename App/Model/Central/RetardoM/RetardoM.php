@@ -46,7 +46,7 @@ class ModelRetardoM
             'id_cat_retardo_estatus' => null,
             'id_tbl_empleados_hraes' => null,
             'id_user' => null,
-            'id_cat_quincenas' => null
+            
         ];
     }
 
@@ -108,7 +108,7 @@ ORDER BY central.ctrl_retardo.fecha DESC
                                         id_cat_retardo_estatus, 
                                         id_tbl_empleados_hraes, 
                                         id_user, 
-                                        id_cat_quincenas
+                                        --id_cat_quincenas
                                     )
                                     SELECT 
                                         entrada.fecha, 
@@ -118,7 +118,7 @@ ORDER BY central.ctrl_retardo.fecha DESC
                                         5 AS id_cat_retardo_estatus,  -- Tipo-Entrada | Estatus-Congelada
                                         entrada.id_empleado, 
                                         NULL AS id_user, 
-                                        central.cat_quincenas.id_cat_quincenas AS id_quincena
+                                       -- central.cat_quincenas.id_cat_quincenas AS id_quincena
                                     FROM 
                                         (
                                             SELECT 
