@@ -14,12 +14,16 @@ if ($faltaModelM->process_1()) {
                 if ($faltaModelM->process_5()) {
                     if ($faltaModelM->process_6()) {
                         if ($faltaModelM->process_7()) {
-                    $bool = true;
+                            if ($faltaModelM->process_8()) {
+                                $bool = true;
+                            } else {
+                                $message = 'Error en p8';
+                            }
                         } else {
                             $message = 'Error en p7';
-                         }
+                        }
                     } else {
-                     $message = 'Error en p6';
+                        $message = 'Error en p6';
                     }
                 } else {
                     $message = 'Error en p5';
@@ -42,4 +46,3 @@ $var = [
     'message' => $message,
 ];
 echo json_encode($var);
-
