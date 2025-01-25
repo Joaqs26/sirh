@@ -19,8 +19,8 @@ if ($id_object != null) {///MODIFICAR
     $caracter = $catNombramientoC->selectByAll($catNombramientoM->listarByAll());
     $plaza = $catSelectC->selectByEditCatalogo($modelPlazasHraes->plazaVacante(), $row->returnArrayById($modelPlazasHraes->plazaVacanteEdit($response['id_tbl_control_plazas_hraes'])));
     $detallesPlaza = $row->returnArrayById($modelPlazasHraes->infoPlazaCentro($response['id_tbl_control_plazas_hraes']));
-    if($response['id_cat_caracter_nom_hraes'] != null){
-        $caracter = $catNombramientoC->selectById($catNombramientoM->listarByAll(), $row->returnArrayById($catNombramientoM->listarByIdEdit($response['id_cat_caracter_nom_hraes'])));
+    if($response['id_cat_caracter_nombramiento'] != null){
+        $caracter = $catNombramientoC->selectById($catNombramientoM->listarByAll(), $row->returnArrayById($catNombramientoM->listarByIdEdit($response['id_cat_caracter_nombramiento'])));
     }
     $var = [
         'response' => $response,

@@ -11,9 +11,9 @@ $bool = false;
 $message = 'ok';
 
 ///VALUE
-$tableName = 'public.masivo_ctrl_faltas_hraes';
-$tableNameNovel = 'public.ctrl_faltas_hraes';
-$tableNameEmployee = 'public.tbl_empleados_hraes';
+$tableName = 'central.masivo_ctrl_faltas_hraes';
+$tableNameNovel = 'central.ctrl_faltas';
+$tableNameEmployee = 'central.tbl_empleados_hraes';
 $fileExel = 'file';
 
 //Actions

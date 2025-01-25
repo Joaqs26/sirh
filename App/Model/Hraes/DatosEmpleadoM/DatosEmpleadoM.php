@@ -4,7 +4,7 @@ class modelDatosEmpleadoM{
 
     public function countDatosEmpleado($id_object){
         $listado = pg_query("SELECT COUNT (*)
-                             FROM tbl_datos_empleado_hraes
+                             FROM tbl_empleados_hraes
                              WHERE id_tbl_empleados_hraes = $id_object;");
         return $listado;
     }
@@ -12,7 +12,7 @@ class modelDatosEmpleadoM{
     public function listarByIdEdit($id_object){
         $listado = pg_query("SELECT id_tbl_datos_empleado_hraes, pais_nacimiento, 
                                     id_tbl_empleados_hraes, id_cat_genero_hraes, id_cat_estado_civil_hraes
-                            FROM tbl_datos_empleado_hraes
+                            FROM tbl_empleados_hraes
                             WHERE id_tbl_empleados_hraes = $id_object");
         return $listado;
     }
@@ -28,17 +28,17 @@ class modelDatosEmpleadoM{
     }
 
     function editarByArray($conexion, $datos, $condicion){
-        $pg_update = pg_update($conexion, 'tbl_datos_empleado_hraes', $datos, $condicion);
+        $pg_update = pg_update($conexion, 'tbl_empleados_hraes', $datos, $condicion);
         return $pg_update;
     }
 
     function agregarByArray($conexion, $datos){
-        $pg_add = pg_insert($conexion, 'tbl_datos_empleado_hraes', $datos);
+        $pg_add = pg_insert($conexion, 'tbl_empleados_hraes', $datos);
         return $pg_add;
     }
 
     function eliminarByArray($conexion, $condicion){
-        $pgs_delete = pg_delete($conexion,'tbl_datos_empleado_hraes',$condicion);
+        $pgs_delete = pg_delete($conexion,'tbl_empleados_hraes',$condicion);
         return $pgs_delete;
     }
 

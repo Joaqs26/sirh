@@ -16,7 +16,7 @@ class ModelMovimientosM
                             INNER JOIN tbl_movimientos
                             ON public.tbl_plazas_empleados_hraes.id_tbl_movimientos = 
                                 tbl_movimientos.id_tbl_movimientos
-                            INNER JOIN public.tbl_control_plazas_hraes
+                            INNER JOIN public.tbl_control_plazas_hraes  
                             ON public.tbl_plazas_empleados_hraes.id_tbl_control_plazas_hraes =
                                 public.tbl_control_plazas_hraes.id_tbl_control_plazas_hraes
                             WHERE public.tbl_plazas_empleados_hraes.id_tbl_empleados_hraes = $idEmpleado
@@ -61,7 +61,7 @@ class ModelMovimientosM
         $listado = pg_query("SELECT id_tbl_plazas_empleados_hraes,fecha_inicio,
                                     fecha_termino,id_tbl_movimientos,fecha_movimiento,
                                     id_tbl_control_plazas_hraes,id_tbl_empleados_hraes,
-                                    observaciones, motivo_estatus,id_cat_caracter_nom_hraes
+                                    observaciones, motivo_estatus
                              FROM public.tbl_plazas_empleados_hraes
                              WHERE id_tbl_plazas_empleados_hraes = $idMovimiento;");
         return $listado;
@@ -77,7 +77,6 @@ class ModelMovimientosM
             'fecha_movimiento' => null,
             'id_tbl_control_plazas_hraes' => null,
             'id_tbl_empleados_hraes' => null,
-            'id_cat_caracter_nom_hraes' => null,
             'motivo_estatus' => null,
             'observaciones' => null,
         ];
@@ -107,17 +106,20 @@ class ModelMovimientosM
         return $listado;
     }
 
-    function editarByArray($conexion, $datos, $condicion, $name)
-    {
-        $pg_update = pg_update($conexion, $name, $datos, $condicion);
-        return $pg_update;
-    }
-
     function agregarByArray($conexion, $datos, $name)
     {
-        $pg_add = pg_insert($conexion, $name, $datos);
+        // Obtener las columnas válidas de la tabla
+        $columnasTabla = pg_meta_data($conexion, $name);
+    
+        // Filtrar los datos para que solo incluyan columnas válidas
+        $datosFiltrados = array_intersect_key($datos, $columnasTabla);
+    
+        // Realizar la inserción con los datos filtrados
+        $pg_add = pg_insert($conexion, $name, $datosFiltrados);
+    
         return $pg_add;
     }
+    
 
     function eliminarByArray($conexion, $condicion, $name)
     {

@@ -1,8 +1,8 @@
 <?php
 include '../../../View/validar_sesion.php';
-include '../../../Model/Hraes/BitacoraM/BitacoraM.php';
+include '../../../Model/Central/BitacoraM/BitacoraM.php';
 include '../../../../conexion.php';
-include '../../../Model/Hraes/CentroTrabajoM/CentroTrabajoM.php';
+include '../../../Model/Central/CentroTrabajoM/CentroTrabajoM.php';
 
 $model = new modelCentroTrabajoHraes();
 $bitacoraM = new BitacoraM();

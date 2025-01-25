@@ -1,6 +1,9 @@
 <?php
 include '../librerias.php';
 
+// Obtener la fecha actual
+$fechaActual = date('Y-m-d');
+
 ///ESTANCIAS DE CLASES 
 $row = new Row();
 $bitacoraM = new BitacoraM();
@@ -18,19 +21,22 @@ $movimiento_general = $_POST['movimiento_general'];
 $num_plaza = $_POST['num_plaza'];
 $id_cat_situacion_plaza_hraes = $_POST['id_cat_situacion_plaza_hraes'];
 
-///SE OBTIENE EL MOVIMIENTO GENERAL, ES DECIR BAJA = 1, ALTA = 2, MOVIMIENTO 3 --  EJEMPLO
+// Validar si no hay una fecha de movimiento enviada y establecer la fecha actual
+$fecha_movimiento = !empty($_POST['fecha_movimiento']) ? $_POST['fecha_movimiento'] : $fechaActual;
+
+///SE OBTIENE EL MOVIMIENTO GENERAL, ES DECIR BAJA = 1, ALTA = 2, MOVIMIENTO 3 -- EJEMPLO
 $idMovimiento = $row->returnArrayById($catMovimientoM->listadoIdMovimiento($_POST['id_tbl_movimientos']));
 $ultimoMovimientoCount = $row->returnArrayById($modelMovimientosM->countUltimoMovimiento($_POST['id_tbl_empleados_hraes'])); ///VALIDA EL ULTIMO MOVIMIENTO
 
-$idPlazaA = 0; ///VARIABLE CON EL NOMBRE DE PLAZA ANTERIOR, REPRESANTA EL ULTIMO ID DE PLAZA
+$idPlazaA = 0; ///VARIABLE CON EL NOMBRE DE PLAZA ANTERIOR, REPRESENTA EL ULTIMO ID DE PLAZA
 if ($ultimoMovimientoCount[0] != 0) { ///VALIDA SI EXISTEN MOVIMIENTOS EN LA TABLA
-    $ultimoIdPlaza = $row->returnArrayById($modelMovimientosM->idPlazaMovimiento($_POST['id_tbl_empleados_hraes'])); ///OPTIE LA LISTA DE ID DE PLAZA
+    $ultimoIdPlaza = $row->returnArrayById($modelMovimientosM->idPlazaMovimiento($_POST['id_tbl_empleados_hraes'])); ///OBTIENE LA LISTA DE ID DE PLAZA
     $idPlazaA = $ultimoIdPlaza[0]; ////ULTIMO ID DE PLAZA EN TBL_PLAZAS_EMPLEADOS_HRAES
 }
 
 $id_tbl_control_plazas_hraes = $_POST['id_tbl_control_plazas_hraes']; ///ID DE PLAZA SELECCIONADA
 if ($movimiento_general == $movimientoBaja) { ///VALIDA QUE EL MOVIMIENTO SELECCIONADO SEA IGUAL A BAJA
-    $id_tbl_control_plazas_hraes = $idPlazaA; /////VALIDACION: Si el movimiento es baja, se toma como base el ultimo movimiento de la tabla tbl_plazas_empleados_hraes, el id de la plaza para usarse commo baja
+    $id_tbl_control_plazas_hraes = $idPlazaA; /////VALIDACION: Si el movimiento es baja, se toma como base el último movimiento de la tabla tbl_plazas_empleados_hraes, el id de la plaza para usarse como baja
 }
 
 if ($idMovimiento[0] != $movimientoBaja) {///MODIFICAR EL NUMERO DE EMPLEADO (Donde 3 = baja)
@@ -53,12 +59,12 @@ $condicion = [ ///SE CREA LA CONDICION PARA MODIFICAR/AGREGAR INFORMACION TBL_PL
 
 $datos = [ ///INFORMACION A GUARDAR 
     'id_tbl_movimientos' => $_POST['id_tbl_movimientos'],
-    'fecha_movimiento' => $_POST['fecha_movimiento'],
+    'fecha_movimiento' => $fecha_movimiento, // USAR LA FECHA OBTENIDA
     'id_tbl_control_plazas_hraes' => $id_tbl_control_plazas_hraes,
     'fecha_inicio' => $_POST['fecha_inicio'],
     'fecha_termino' => $_POST['fecha_termino'],
-    'id_cat_caracter_nom_hraes' => $_POST['id_cat_caracter_nom_hraes'],
-    'motivo_estatus' => $_POST['motivo_estatus'],
+   // 'id_cat_caracter_nombramiento' => $_POST['id_cat_caracter_nombramiento'],
+  //  'motivo_estatus' => $_POST['motivo_estatus'],
     'observaciones' => $_POST['observaciones'],
     'id_tbl_empleados_hraes' => $_POST['id_tbl_empleados_hraes'],
 ];
@@ -70,11 +76,11 @@ $var = [
 ];
 
 ///MODIFICAR ESTATUS DE PLAZA    
-modificarPlaza($connectionDBsPro, $movimientoBaja, $movimientoAlta, $movimientoMov, $movimiento_general, $_POST['id_tbl_control_plazas_hraes'], $idPlazaA, $_POST['id_tbl_empleados_hraes'], $_POST['fecha_movimiento'], $num_plaza, $id_cat_situacion_plaza_hraes);
+modificarPlaza($connectionDBsPro, $movimientoBaja, $movimientoAlta, $movimientoMov, $movimiento_general, $_POST['id_tbl_control_plazas_hraes'], $idPlazaA, $_POST['id_tbl_empleados_hraes'], $fecha_movimiento, $num_plaza, $id_cat_situacion_plaza_hraes);
 if ($_POST['id_object'] != null) { //Modificar
     if ($modelMovimientosM->editarByArray($connectionDBsPro, $datos, $condicion, $nombreTabla)) {
         $dataBitacora = [
-            'nombre_tabla' => 'central.tbl_plazas_empleados_hraes',
+            'nombre_tabla' => '<central.tbl_plazas_empleados_hraes',
             'accion' => 'MODIFICAR',
             'valores' => json_encode($var),
             'fecha' => $timestamp,
@@ -83,7 +89,6 @@ if ($_POST['id_object'] != null) { //Modificar
         $bitacoraM->agregarByArray($connectionDBsPro, $dataBitacora, 'central.bitacora_hraes');
         echo 'edit';
     }
-
 } else { //Agregar
     if ($modelMovimientosM->agregarByArray($connectionDBsPro, $datos, $nombreTabla)) {
         $dataBitacora = [
@@ -162,4 +167,3 @@ function actualizarPlaza($connectionDBsPro, $id_cat_plazas, $id_tbl_control_plaz
 
     $model->editarByArray($connectionDBsPro, $datos, $condicion);
 }
-

@@ -38,7 +38,6 @@
 
 <?php include 'AgregarEditar.php' ?>
 
-
 <!--
 <div class="row">
     <div class="col-1">

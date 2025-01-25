@@ -1,7 +1,7 @@
 <?php
 
 include '../../../Model/Central/CentroTrabajoM/CentroTrabajoM.php';
-include '../../../Controllers/Hrae/GlobalC/ArrayC.php';
+include '../../../Controllers/Central/GlobalC/ArrayC.php';
 include '../../../../conexion.php';
 
 $modelCentroTrabajoHraes = new modelCentroTrabajoHraes();

@@ -7,7 +7,7 @@ class CatNombramientoC
     {
         $options = '<option value="">Seleccione</option>';
         while ($row = pg_fetch_object($resultados)) {
-            $options .= '<option value="' . $row->id_cat_caracter_nom_hraes . '">' . $row->caracter_nom . '</option>';
+            $options .= '<option value="' . $row->id_cat_caracter_nombramiento . '">' . $row->nombre . '</option>';
         }
         return $options;
     }
@@ -16,8 +16,8 @@ class CatNombramientoC
     {
         $options = '<option value="' . $var[0] . '">' . $var[1] . '</option>';
         while ($row = pg_fetch_object($resultados)) {
-            if ($row->id_cat_caracter_nom_hraes != $var[0]) {
-                $options .= '<option value="' . $row->id_cat_caracter_nom_hraes . '">' . $row->caracter_nom . '</option>';
+            if ($row->id_cat_caracter_nombramiento != $var[0]) {
+                $options .= '<option value="' . $row->id_cat_caracter_nombramiento . '">' . $row->nombre . '</option>';
             }
         }
         return $options;

@@ -111,38 +111,38 @@ ORDER BY central.ctrl_retardo.fecha DESC
                                         --id_cat_quincenas
                                     )
                                     SELECT 
-                                        entrada.fecha, 
-                                        entrada.hora, 
-                                        NULL AS Observaciones, 
-                                        1 AS id_cat_retardo_tipo, 
-                                        5 AS id_cat_retardo_estatus,  -- Tipo-Entrada | Estatus-Congelada
-                                        entrada.id_empleado, 
-                                        NULL AS id_user, 
-                                       -- central.cat_quincenas.id_cat_quincenas AS id_quincena
-                                    FROM 
-                                        (
-                                            SELECT 
-                                                MIN(central.ctrl_asistencia.hora) AS hora,  -- Trae el primer registro por Fecha y Empleado
-                                                central.ctrl_asistencia.fecha AS fecha, 
-                                                central.ctrl_asistencia.id_tbl_empleados_hraes AS id_empleado
-                                            FROM central.ctrl_asistencia
-                                            GROUP BY 
-                                                central.ctrl_asistencia.fecha, 
-                                                central.ctrl_asistencia.id_tbl_empleados_hraes
-                                        ) AS entrada
-                                    INNER JOIN central.cat_quincenas 
-                                        ON entrada.fecha BETWEEN central.cat_quincenas.fecha_inicio AND central.cat_quincenas.fecha_fin
-                                    LEFT JOIN central.ctrl_retardo AS existente
-                                        ON entrada.fecha = existente.fecha 
-                                        AND entrada.hora = existente.hora
-                                        AND entrada.id_empleado = existente.id_tbl_empleados_hraes
-                                    WHERE 
-                                        entrada.hora >= '09:16:00'  -- Para el horario establecido como Falta
-                                        AND entrada.hora <= '09:30:59'
-                                        AND existente.id_tbl_empleados_hraes IS NULL  -- Filtra para excluir registros ya existentes
-                                    ORDER BY 
-                                        entrada.fecha, 
-                                        entrada.hora;");
+    entrada.fecha, 
+    entrada.hora, 
+    NULL AS Observaciones, 
+    1 AS id_cat_retardo_tipo, 
+    5 AS id_cat_retardo_estatus,  -- Tipo-Entrada | Estatus-Congelada
+    entrada.id_empleado, 
+    NULL AS id_user
+    -- central.cat_quincenas.id_cat_quincenas AS id_quincena
+FROM 
+    (
+        SELECT 
+            MIN(ctrl_asistencia.hora) AS hora,  -- Trae el primer registro por Fecha y Empleado
+            ctrl_asistencia.fecha AS fecha, 
+            ctrl_asistencia.id_tbl_empleados_hraes AS id_empleado
+        FROM central.ctrl_asistencia
+        GROUP BY 
+            ctrl_asistencia.fecha, 
+            ctrl_asistencia.id_tbl_empleados_hraes
+    ) AS entrada
+INNER JOIN central.cat_quincenas 
+    ON entrada.fecha BETWEEN central.cat_quincenas.fecha_inicio AND central.cat_quincenas.fecha_fin
+LEFT JOIN central.ctrl_retardo AS existente
+    ON entrada.fecha = existente.fecha 
+    AND entrada.hora = existente.hora
+    AND entrada.id_empleado = existente.id_tbl_empleados_hraes
+WHERE 
+    entrada.hora >= '09:16:00'  -- Para el horario establecido como Falta
+    AND entrada.hora <= '09:30:59'
+    AND existente.id_tbl_empleados_hraes IS NULL  -- Filtra para excluir registros ya existentes
+ORDER BY 
+    entrada.fecha, 
+    entrada.hora;");
         return $query;
     }
 

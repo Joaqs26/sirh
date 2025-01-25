@@ -24,13 +24,9 @@ $datos = [
     'id_tbl_centro_trabajo_hraes' => $_POST['id_tbl_centro_trabajo_hraes'],
     'id_cat_puesto_hraes' => $_POST['id_cat_puesto_hraes'],
     'id_cat_aux_puesto' => $isValue[0],
-    'id_cat_situacion_plaza_hraes' => $_POST['id_cat_situacion_plaza_hraes'],
     'id_cat_unidad' => $_POST['id_cat_unidad'],
     'id_cat_coordinacion' => $_POST['id_cat_coordinacion'],
-    'id_cat_tipo_trabajador' => $_POST['id_cat_tipo_trabajador'],
-    'id_cat_tipo_contratacion' => $_POST['id_cat_tipo_contratacion'],
     'id_cat_tipo_programa' => $_POST['id_cat_tipo_programa'],
-    'id_cat_caracter_nombramiento' => $_POST['id_cat_caracter_nombramiento'],
     'fecha_inicio' => $_POST['fecha_inicio'],
     'fecha_fin' => $_POST['fecha_fin'],
     'id_user' => $_SESSION['id_user'],
@@ -54,7 +50,6 @@ if ($_POST['id_object'] != null) { //Modificar
         $bitacoraM->agregarByArray($connectionDBsPro, $dataBitacora, 'public.bitacora_hraes');
         echo 'edit';
     }
-
 } else { //Agregar
     if ($model->agregarByArray($connectionDBsPro, $datos)) {
         $dataBitacora = [

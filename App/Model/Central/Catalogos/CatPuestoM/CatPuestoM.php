@@ -63,6 +63,10 @@ class catalogoPuestoM
     }
 
     public function getEditCatAux($isId){
+        if (empty($isId) || !is_numeric($isId)) {
+            return false; // Evita la ejecución de la consulta si el ID no es válido
+        }
+    
         $query = pg_query("SELECT 
                                 central.cat_aux_puesto.id_cat_aux_puesto,
                                 central.cat_aux_puesto.id_cat_puesto_hraes,
@@ -72,7 +76,7 @@ class catalogoPuestoM
                             WHERE central.cat_aux_puesto.id_cat_aux_puesto = $isId;");
         return $query;
     }
-
+    
     public function editSpecificName($id){
         $query = pg_query("SELECT 
                                 central.cat_puesto_nombre_especifico.id_cat_puesto_nombre_especifico,

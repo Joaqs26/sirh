@@ -1,7 +1,7 @@
 <?php
 $password = "630545";
 $username = "postgres";
-$dbname = "ultima_prod_asis";
+$dbname = "tabuador_fin";
 $host = "localhost";
 $port = "5432";
 $options = "--client_encoding=UTF8";

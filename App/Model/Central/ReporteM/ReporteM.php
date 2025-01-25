@@ -72,13 +72,13 @@ class ReporteM
 				UPPER(central.cat_puesto_hraes.codigo_puesto) AS codigo_puesto,
 				UPPER(central.cat_puesto_hraes.nivel) AS nivel,
 				UPPER(central.cat_puesto_hraes.nombre_posicion) AS nombre_posicion,
-				CONCAT(UPPER(public.cat_tipo_contratacion_hraes.tipo_contratacion), ' ', UPPER(public.cat_subtipo_contratacion_hraes.subtipo)) AS tipo_contratacion,
+				--CONCAT(UPPER(public.cat_tipo_contratacion_hraes.tipo_contratacion), ' ', UPPER(public.cat_subtipo_contratacion_hraes.subtipo)) AS tipo_contratacion,
 				UPPER(public.cat_nivel_estudios.nivel_estudios) AS ultimo_grado,
 				UPPER(public.cat_carrera_hraes.carrera) AS des_ultimo_grado,
 				REPLACE(central.ctrl_estudios_hraes.cedula, ' ', '')  AS cedula,
 				UPPER(public.cat_especialidad_hraes.especialidad) AS especialidad,
 				REPLACE(central.ctrl_especialidad_hraes.cedula, ' ', '') AS cedula_esp,
-				UPPER(public.capacidad.capacidad) AS capacidad_dif,
+				--UPPER(public.capacidad.capacidad) AS capacidad_dif,
 				CONCAT(UPPER(public.cat_lengua.identificador), ' ',UPPER(public.cat_lengua.descripcion)) AS lengua
 			FROM central.tbl_empleados_hraes
 			LEFT JOIN public.cat_estado_civil
@@ -132,21 +132,10 @@ class ReporteM
 			LEFT JOIN central.cat_puesto_hraes
 				ON central.tbl_control_plazas_hraes.id_cat_puesto_hraes = 
 					central.cat_puesto_hraes.id_cat_puesto_hraes
-			LEFT JOIN public.cat_tipo_subtipo_contratacion_hraes
-				ON public.cat_tipo_subtipo_contratacion_hraes.id_cat_tipo_subtipo_contratacion_hraes =
-					central.tbl_control_plazas_hraes.id_cat_tipo_subtipo_contratacion_hraes
-			LEFT JOIN public.cat_tipo_contratacion_hraes
-				ON public.cat_tipo_contratacion_hraes.id_cat_tipo_contratacion_hraes =
-					public.cat_tipo_subtipo_contratacion_hraes.id_cat_tipo_contratacion_hraes
-			LEFT JOIN public.cat_subtipo_contratacion_hraes	
-				ON public.cat_subtipo_contratacion_hraes.id_cat_subtipo_contratacion_hraes =
-					public.cat_tipo_subtipo_contratacion_hraes.id_cat_subtipo_contratacion_hraes
 			LEFT JOIN central.ctrl_capacidad_dif_hraes
 				ON central.ctrl_capacidad_dif_hraes.id_tbl_empleados_hraes =
 					central.tbl_empleados_hraes.id_tbl_empleados_hraes
-			LEFT JOIN public.capacidad
-				ON public.capacidad.id_capacidad =
-					central.ctrl_capacidad_dif_hraes.id_cat_capacidad_dif_hraes
+			
 			LEFT JOIN central.ctrl_lengua
 				ON central.ctrl_lengua.id_tbl_empleados_hraes =
 					central.tbl_empleados_hraes.id_tbl_empleados_hraes

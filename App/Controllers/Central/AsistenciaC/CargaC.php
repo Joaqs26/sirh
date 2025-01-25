@@ -49,15 +49,7 @@ if (isset($_FILES[$fileExel]) && $_FILES[$fileExel]['error'] === UPLOAD_ERR_OK) 
                     $tableName,
                     $tiempo,
                     $id_usuario,
-                    $nombre,
-                    $apellido,
-                    $num_tarjeta,
-                    $dispositivo,
-                    $punto_evento,
-                    $verificacion,
-                    $estado,
-                    $evento,
-                    $notas,
+                   
                 ) ? true : false;
 
                 $message = $bool ? 'ok' : 'Error al insertar en tabla temporal';

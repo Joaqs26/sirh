@@ -319,53 +319,66 @@ WHERE NOT EXISTS (
 
         public function process_2() {
             $query = pg_query("INSERT INTO central.ctrl_faltas (
-                    id_tbl_empleados_hraes,
-                    observaciones,
-                    es_por_retardo,
-                    id_cat_retardo_tipo,
-                    id_cat_retardo_estatus,
-                    id_user,
-                    fecha,
-                    hora,
-                    cantidad
-                )
-                SELECT 
-                    Entradas.id_tbl_empleados_hraes,
-                    NULL AS observaciones,
-                    TRUE AS es_por_retardo,
-                    1 AS id_cat_retardo_tipo, 
-                    7 AS id_cat_retardo_estatus,
-                    NULL AS id_user,
-                    Entradas.fecha,
-                    Entradas.hora,
-                    1 AS cantidad
-                FROM (
-                    SELECT 
-                        MIN(ctrl_asistencia.hora) AS hora,
-                        ctrl_asistencia.fecha,
-                        ctrl_asistencia.id_tbl_empleados_hraes
-                    FROM central.ctrl_asistencia
-                   GROUP BY ctrl_asistencia.fecha, ctrl_asistencia.id_tbl_empleados_hraes
-                ) AS Entradas
-                WHERE Entradas.hora > '09:30:00' 
-                  AND NOT EXISTS (
-                        SELECT 1
-                        FROM central.ctrl_faltas
-                        WHERE ctrl_faltas.fecha = Entradas.fecha
-                          AND ctrl_faltas.hora = Entradas.hora
-                          AND ctrl_faltas.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
-                  )
-                  AND NOT EXISTS (
-                        SELECT 1
-                        FROM central.masivo_ctrl_temp_faltas_just
-                        WHERE rfc = (
-                            SELECT rfc 
-                            FROM central.tbl_empleados_hraes 
-                            WHERE id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
-                        )
-                        AND fecha::text = Entradas.fecha::text -- Conversión explícita
-                        
-                  );");
+    id_tbl_empleados_hraes,
+    observaciones,
+    es_por_retardo,
+    id_cat_retardo_tipo, -- 1-Entrada
+    id_cat_retardo_estatus, -- 7-Retardo Mayor
+    id_user,
+    fecha,
+    hora,
+    cantidad
+)
+SELECT 
+    Entradas.id_tbl_empleados_hraes,
+    NULL AS observaciones,
+    TRUE AS es_por_retardo,
+    1 AS id_cat_retardo_tipo,
+    7 AS id_cat_retardo_estatus,
+    NULL AS id_user,
+    Entradas.fecha,
+    Entradas.hora,
+    1 AS cantidad
+FROM (
+    SELECT 
+        Minimo.hora, 
+        Minimo.fecha, 
+        Minimo.id_tbl_empleados_hraes
+    FROM (
+        SELECT 
+            central.ctrl_asistencia.fecha, 
+            MIN(central.ctrl_asistencia.hora) AS hora,
+            central.ctrl_asistencia.id_tbl_empleados_hraes
+        FROM central.ctrl_asistencia
+        WHERE central.ctrl_asistencia.fecha NOT IN (
+            SELECT fecha 
+            FROM central.cat_dias_festivos
+        )
+        GROUP BY 
+            central.ctrl_asistencia.fecha, 
+            central.ctrl_asistencia.id_tbl_empleados_hraes
+    ) AS Minimo
+    WHERE Minimo.hora > (
+        SELECT cat_asistencia_config.hora_max_retardo 
+        FROM central.cat_asistencia_config
+        WHERE id_cat_asistencia_config = (
+            SELECT id_cat_asistencia_config 
+            FROM central.ctrl_asistencia_info AI 
+            WHERE AI.id_tbl_empleados_hraes = Minimo.id_tbl_empleados_hraes
+        )
+    )
+) AS Entradas
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM central.masivo_ctrl_temp_faltas_just
+    WHERE rfc = (
+        SELECT rfc 
+        FROM central.tbl_empleados_hraes 
+        WHERE id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
+    )
+    AND fecha::text = Entradas.fecha::text
+);");
+
             return $query;
         }
         
@@ -382,7 +395,7 @@ WHERE NOT EXISTS (
                     hora,
                     cantidad
                 )
-               SELECT 
+                SELECT 
                     Salidas.id_tbl_empleados_hraes,
                     NULL AS observaciones,
                     TRUE AS es_por_retardo,
@@ -390,24 +403,28 @@ WHERE NOT EXISTS (
                     4 AS id_cat_retardo_estatus, -- Falta por salida anticipada
                     NULL AS id_user,
                     Salidas.fecha,
-                    Salidas.hora,
+                    Salidas.salida AS hora, -- Uso de la columna salida
                     1 AS cantidad
                 FROM (
                     SELECT 
-                        MAX(ctrl_asistencia.hora) AS hora,
+                        MIN(ctrl_asistencia.hora) AS entrada,
+                        MAX(ctrl_asistencia.hora) AS salida,
                         ctrl_asistencia.fecha,
                         ctrl_asistencia.id_tbl_empleados_hraes
                     FROM central.ctrl_asistencia
-                    WHERE ctrl_asistencia.fecha NOT IN (SELECT fecha FROM central.cat_dias_festivos)
-                      AND ctrl_asistencia.fecha BETWEEN '2024/12/01' AND '2024/12/15'
+                    WHERE ctrl_asistencia.fecha NOT IN (
+                        SELECT fecha FROM central.cat_dias_festivos
+                    )
                     GROUP BY ctrl_asistencia.fecha, ctrl_asistencia.id_tbl_empleados_hraes
                 ) AS Salidas
-                WHERE Salidas.hora < '19:00:00'
+                WHERE Salidas.salida < '19:00:00' -- Verifica si la última checada es menor a las 7:00 PM
+                  AND Salidas.entrada != Salidas.salida -- Asegura que haya al menos dos registros
+                  AND Salidas.fecha NOT IN ('2024-12-24', '2024-12-31', '2025-01-10') -- Excluir fechas específicas
                   AND NOT EXISTS (
                         SELECT 1
                         FROM central.ctrl_faltas
                         WHERE ctrl_faltas.fecha = Salidas.fecha
-                          AND ctrl_faltas.hora = Salidas.hora
+                          AND ctrl_faltas.hora = Salidas.salida -- Verifica contra la salida
                           AND ctrl_faltas.id_tbl_empleados_hraes = Salidas.id_tbl_empleados_hraes
                   )
                   AND NOT EXISTS (
@@ -418,8 +435,7 @@ WHERE NOT EXISTS (
                             FROM central.tbl_empleados_hraes 
                             WHERE id_tbl_empleados_hraes = Salidas.id_tbl_empleados_hraes
                         )
-                        AND fecha::text = Salidas.fecha::text --rsión explícita
-                        
+                        AND fecha::text = Salidas.fecha::text
                   );");
             return $query;
         }
@@ -572,6 +588,63 @@ WHERE a.fecha IS NULL
   );");
             return $query;
         }
+
+        public function process_8() {
+            $query = pg_query("INSERT INTO central.ctrl_faltas (
+                    id_tbl_empleados_hraes,
+                    observaciones,
+                    es_por_retardo,
+                    id_cat_retardo_tipo,
+                    id_cat_retardo_estatus,
+                    id_user,
+                    fecha,
+                    hora,
+                    cantidad
+                )
+                SELECT 
+                    Entradas.id_tbl_empleados_hraes,
+                    'FALTA POR OMISIÓN DE SALIDA' AS observaciones,
+                    FALSE AS es_por_retardo,
+                    3 AS id_cat_retardo_tipo, -- Falta por omisión de salida
+                    8 AS id_cat_retardo_estatus, -- Estatus de falta por omisión
+                    NULL AS id_user,
+                    Entradas.fecha,
+                    Entradas.hora,
+                    1 AS cantidad
+                FROM (
+                    SELECT 
+                        ctrl_asistencia.fecha,
+                        MIN(ctrl_asistencia.hora) AS hora,
+                        ctrl_asistencia.id_tbl_empleados_hraes,
+                        COUNT(ctrl_asistencia.hora) AS registros
+                    FROM central.ctrl_asistencia
+                    WHERE ctrl_asistencia.fecha NOT IN (
+                        SELECT fecha FROM central.cat_dias_festivos
+                    )
+                    GROUP BY ctrl_asistencia.fecha, ctrl_asistencia.id_tbl_empleados_hraes
+                ) AS Entradas
+                WHERE Entradas.registros = 1 -- Verifica si solo hay un registro (entrada)
+                  AND Entradas.fecha NOT IN ('2024-12-24', '2024-12-31', '2024-01-10') -- Excluir fechas específicas
+                  AND NOT EXISTS (
+                        SELECT 1
+                        FROM central.ctrl_faltas
+                        WHERE ctrl_faltas.fecha = Entradas.fecha
+                          AND ctrl_faltas.hora = Entradas.hora
+                          AND ctrl_faltas.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
+                  )
+                  AND NOT EXISTS (
+                        SELECT 1
+                        FROM central.masivo_ctrl_temp_faltas_just
+                        WHERE rfc = (
+                            SELECT rfc 
+                            FROM central.tbl_empleados_hraes 
+                            WHERE id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
+                        )
+                        AND fecha::text = Entradas.fecha::text
+                  );");
+            return $query;
+        }
+
 
     public function truncateTableTmpFaltas()
     {

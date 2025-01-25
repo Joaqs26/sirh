@@ -1,6 +1,6 @@
 <?php 
 include '../../../../conexion.php';
-include '../../../Model/Hraes/EmpleadosM/EmpleadosM.php';
+include '../../../Model/Central/EmpleadosM/EmpleadosM.php';
 
 $model = new modelEmpleadosHraes();
 

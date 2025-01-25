@@ -18,6 +18,7 @@ function iniciarTabla_mv(busqueda, paginador, id_tbl_empleados_hraes) {
         id_tbl_empleados_hraes:id_tbl_empleados_hraes
     },
         function (data) {
+            console.log(data);
             $("#tabla_movimientos").html(data); 
         }
     );
@@ -36,6 +37,7 @@ function agregarEditarMovimiento(id_object){
         id_object: id_object
     },
         function (data) {
+            console.log(data);
             let jsonData = JSON.parse(data);
             let entity = jsonData.response;
             let caracter = jsonData.caracter;
@@ -48,8 +50,8 @@ function agregarEditarMovimiento(id_object){
             $('#movimiento_general').empty();
             $('#movimiento_general').html(general); 
 
-            $('#id_cat_caracter_nom_hraes').empty();
-            $('#id_cat_caracter_nom_hraes').html(caracter); 
+            $('#id_cat_caracter_nombramiento').empty();
+            $('#id_cat_caracter_nombramiento').html(caracter); 
             
             $('#id_tbl_control_plazas_hraes').empty();
             $('#id_tbl_control_plazas_hraes').html(plaza); 
@@ -85,38 +87,44 @@ function salirAgregarEditarMovimiento(){
 
 
 function guardarMovimiento() {
+    var id_tbl_empleados_hraes = $('#id_tbl_empleados_hraes').val();
+
+    if (!id_tbl_empleados_hraes) {
+        mensajeError("El ID del empleado no está definido. No se puede guardar el movimiento.");
+        return;
+    }
+
     $.post("../../../../App/Controllers/Central/MovimientosC/AgregarEditarC.php", {
         id_tbl_movimientos: $("#id_tbl_movimientos").val(),
         fecha_movimiento: $("#fecha_movimiento").val(),
         id_tbl_control_plazas_hraes: $("#id_tbl_control_plazas_hraes").val(),
         fecha_inicio: $("#fecha_inicio").val(),
         fecha_termino: $("#fecha_termino").val(),
-        id_cat_caracter_nom_hraes: $("#id_cat_caracter_nom_hraes").val(),
+        id_cat_caracter_nombramiento: $("#id_cat_caracter_nombramiento").val(),
         motivo_estatus: $("#motivo_estatus").val(),
         observaciones: $("#observaciones").val(),
-        id_tbl_empleados_hraes:id_tbl_empleados_hraes,
+        id_tbl_empleados_hraes: id_tbl_empleados_hraes, // Asegúrate de que este valor no sea vacío
         id_object: $("#id_object").val(),
         movimiento_general: $("#movimiento_general").val(),
         num_plaza: $("#num_plaza_new").val(),
         id_cat_situacion_plaza_hraes: $("#situacionPlaza").val(),
-        movimientoBaja:movimientoBaja,
-        movimientoAlta:movimientoAlta,
-        movimientoMov:movimientoMov,
-    },
-        function (data) {
-            if (data == 'edit'){
-                mensajeExito('Movimiento modificado con éxito');
-            } else if (data == 'add') {
-                mensajeExito('Movimiento agregado con éxito');  
-            } else {
-                mensajeError(data);
-            }
-            $("#agregar_editar_movimiento").modal("hide");
-            buscarMovimiento();
-            buscarInfoEmpleado(id_tbl_empleados_hraes);
+        movimientoBaja: movimientoBaja,
+        movimientoAlta: movimientoAlta,
+        movimientoMov: movimientoMov,
+    }, function (data) {
+        console.log(data);
+        if (data === 'edit') {
+            mensajeExito('Movimiento modificado con éxito');
+        } else if (data === 'add') {
+            mensajeExito('Movimiento agregado con éxito');
+        } else {
+            mensajeError(data);
         }
-    );
+        $("#agregar_editar_movimiento").modal("hide");
+        buscarMovimiento();
+    });
 }
+
 
 function eliminarMovimiento(id_object) {//ELIMINAR USUARIO
     if(validarAccion()){
@@ -135,6 +143,7 @@ function eliminarMovimiento(id_object) {//ELIMINAR USUARIO
                 id_object: id_object
             },
             function (data) {
+                console.log(data);
                 if (data == 'delete'){
                     mensajeExito('Movimiento eliminado con éxito')
                 } else {

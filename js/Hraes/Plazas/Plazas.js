@@ -159,7 +159,7 @@ function agregarEditarByDb() {
         id_cat_aux_puesto: $("#id_cat_aux_puesto").val(),
         id_cat_categoria_puesto: $("#id_cat_categoria_puesto").val(),
         id_cat_tipo_trabajador: $("#id_cat_tipo_trabajador").val(),
-        id_cat_tipo_contratacion: $("#id_cat_tipo_contratacion").val(),
+        // id_cat_tipo_contratacion: $("#id_cat_tipo_contratacion").val(),
         id_cat_tipo_programa: $("#id_cat_tipo_programa").val(),
         id_cat_unidad: $("#id_cat_unidad").val(),
         id_cat_coordinacion: $("#id_cat_coordinacion").val(),
@@ -287,7 +287,7 @@ function listarTablaHistori(id_tbl_control_plazas_hraes) {
         id_tbl_control_plazas_hraes: id_tbl_control_plazas_hraes,
     },
         function (data) {
-            console-log(data);
+            console - log(data);
             $('#tabla_historia_plaza_empleado_ix').html(data);
         }
     );
@@ -312,4 +312,81 @@ function abrirModalAdd() {
 
 function cerrarModalAdd() {
     $("#exampleModal").modal("hide");
+}
+
+$(document).ready(function () {
+    // Asumiendo que el botón "VerTabulacion" tiene una clase o ID específica
+    $('.btn-ver-verTabulacion').on('click', function () {
+        console.log('entro button');
+        // Obtener el ID de la plaza desde un atributo data del botón
+        var plazaId = $(this).data('plaza-id');
+
+        // Realizar una solicitud AJAX para obtener la información del tabulador
+        $.ajax({
+            url: '../../../../App/Controllers/Hrae/PlazasC/Tabulador.php',
+            type: 'POST',
+            data: { id_plaza: plazaId },
+            success: function (response) {
+                var data = JSON.parse(response);
+                // Rellenar los campos de la ventana modal con los datos obtenidos
+                $('#codigo_puesto_actual').val(data.codigo_puesto_actual);
+                $('#sueldo_base').val(data.sueldo_base);
+                $('#ayuda_gastos_actualizacion').val(data.ayuda_gastos_actualizacion);
+                $('#compensacion_garantizada').val(data.compensacion_garantizada);
+                $('#asignacion_bruta').val(data.asignacion_bruta);
+                $('#compensacion_servicios').val(data.compensacion_servicios);
+                $('#compensacion_polivalencia').val(data.compensacion_polivalencia);
+                $('#total_bruto_mensual').val(data.total_bruto_mensual);
+                $('#total_neto_mensual').val(data.total_neto_mensual);
+                $('#sueldo_quincenal_neto').val(data.sueldo_quincenal_neto);
+                // Mostrar la ventana modal
+                $('#verTabulacion').modal('show');
+            },
+            error: function () {
+                alert('Error al obtener los detalles del tabulador.');
+            }
+        });
+    });
+});
+
+
+function verTabulacion(id_object) {
+
+
+    // Establecer el título del modal
+    let titulo = document.getElementById("titulo_plazas");
+    titulo.textContent = "Tabulador Salarial";
+
+
+    $.ajax({
+        url: '../../../../App/Controllers/Hrae/PlazasC/Tabulador.php', // Ruta real al controlador PHP
+        type: 'POST',
+        data: { id: id_object },
+        dataType: 'json',
+        success: function (response) {
+            console.log('success');
+            console.log('Respuesta recibida:'.response);
+            console.log('Respuesta recibida:', response[0]);
+
+            // Llenar los campos con los valores obtenidos del servidor
+            $('#codigo_puesto').val(response.codigo_puesto|| 'No disponible');
+            $('#sueldo_base').val(response.sueldo_base);
+            $('#ayuda_gastos_actualizacion').val(response.ayuda_gastos_actualizacion || '0.00');
+            $('#compensacion_garantizada').val(response.compensacion_garantizada || '0.00');
+            $('#asignacion_bruta').val(response.asignacion_bruta || '0.00');
+            $('#compensacion_servicios').val(response.compensacion_servicios || '0.00');
+            $('#compensacion_polivalencia').val(response.compensacion_polivalencia || '0.00');
+            $('#total_bruto_mensual').val(response.total_bruto_mensual || '0.00');
+            $('#total_neto_mensual').val(response.total_neto_mensual || '0.00');
+            $('#sueldo_quincenal_neto').val(response.sueldo_quincenal_neto || '0.00');
+            $('#zona_economica_tabulador').val(response.zona_economica_tabulador || 'No disponible');
+
+            // Mostrar el modal
+            $("#verTabulacion").modal("show");
+        },
+        error: function (xhr, status, error) {
+            console.error("Error en la solicitud AJAX:", error);
+            alert("Error al obtener los datos del tabulador.");
+        }
+    });
 }

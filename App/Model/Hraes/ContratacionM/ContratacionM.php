@@ -42,6 +42,16 @@ class ContratacionM
         return $query;
     }
 
+    public function  Contratacionlist () {
+        $query = pg_query("SELECT   
+                                public.cat_tipo_contratacion.id_cat_tipo_contratacion,
+                                UPPER(public.cat_tipo_contratacion.descripcion)
+                            FROM public.cat_tipo_contratacion;");
+        return $query;
+    }
+
+
+
     public function listarByAllContratacion($id_cat_tipo_trabajador)
     {
         $query = pg_query("SELECT 
