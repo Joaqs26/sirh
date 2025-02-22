@@ -78,29 +78,6 @@ function activeCargaMasiva(){
     $("#modalAgregarAsistencia").modal("hide");
     mostrarModalCargaAsistencia();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function agregarEditarDetalles(id_object) { //SE OBTIENEN INFO DE ID SELECCIONADO
     $("#id_object").val(id_object);
     let titulo = document.getElementById("titulo_centro_trabajo");
@@ -243,25 +220,31 @@ function validarNumero(input) {
     input.value = input.value.replace(/[^\d]/g, '');
 }
 
-
-
-
-
-
-
-/*
-document.addEventListener('DOMContentLoaded', function () {
-    tippy('#centro_trabajo_plazas', {
-      content: 'Consultas las plazas asignadas al centro de trabajo.',
-      theme: 'green',
-    });
-  });
-
-
-  document.addEventListener('DOMContentLoaded', function () {
-    tippy('#agregar_clue', {
-        content: 'Agregar centro de trabajo.',
-        theme: 'green',
+$(document).ready(function () {
+    console(data);
+    $("#truncatetable").click(function () {
+        truncatetable();
     });
 });
-*/
+
+function truncatetable() {
+    if (confirm("¿Estás seguro de que deseas truncar la tabla? Esta acción no se puede deshacer.")) {
+        $.ajax({
+            url: "../../../../App/Controllers/Central/AsistenciaC/truncate.php",
+            type: "POST",
+            data: {},
+            success: function (response) {
+                try {
+                    let result = JSON.parse(response);
+                    alert(result.message);
+                } catch (error) {
+                    alert("Error en la respuesta del servidor.");
+                }
+            },
+            error: function () {
+                alert("Error en la petición al servidor.");
+            }
+        });
+    }
+}
+

@@ -97,7 +97,7 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button onclick="ocultarModal();" type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <button onclick="ocultarModalTab();" type="button" class="btn btn-secondary" data-dismiss="modal">
                             <i class="fas fa-times"></i> Cancelar
                         </button>
                         <input type="hidden" id="id_object">

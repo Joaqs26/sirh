@@ -348,8 +348,6 @@ $(document).ready(function () {
         });
     });
 });
-
-
 function verTabulacion(id_object) {
 
 
@@ -389,4 +387,7 @@ function verTabulacion(id_object) {
             alert("Error al obtener los datos del tabulador.");
         }
     });
+}
+function ocultarModalTab() {
+    $("#verTabulacion").modal("hide"); // Oculta cualquier modal activo
 }

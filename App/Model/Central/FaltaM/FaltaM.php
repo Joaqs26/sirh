@@ -248,13 +248,15 @@ class FaltaModelM
 
         ///SCRIP PARA CALCULO DE FLATAS DE FORMA MASIVApublic function process_1()
         public function process_1() {
-            $query = pg_query(" INSERT INTO central.ctrl_retardo (	fecha, 
-                                                                hora,
-                                                                observaciones,
-                                                                id_cat_retardo_tipo, 					-- 1-Entrada 
-                                                                id_cat_retardo_estatus, 				-- 5-Por Aplicar
-                                                                id_tbl_empleados_hraes, 
-                                                                id_user)
+            $query = pg_query("INSERT INTO central.ctrl_retardo (
+    fecha, 
+    hora,
+    observaciones,
+    id_cat_retardo_tipo, -- 1-Entrada 
+    id_cat_retardo_estatus, -- 5-Por Aplicar
+    id_tbl_empleados_hraes, 
+    id_user
+)
 SELECT 
     Entradas.fecha,
     Entradas.hora, 
@@ -292,6 +294,7 @@ FROM (
                 WHERE AI.id_tbl_empleados_hraes = Minimo.id_tbl_empleados_hraes
             )
         )
+      AND Minimo.hora <= '09:30' -- Limite de las 9:30
       AND Minimo.hora <= (
             SELECT cat_asistencia_config.hora_max_retardo
             FROM central.cat_asistencia_config

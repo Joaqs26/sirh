@@ -387,3 +387,7 @@ function verTabulacion(id_object) {
         }
     });
 }
+function ocultarModalTab() {
+    $("#verTabulacion").modal("hide"); // Oculta cualquier modal activo
+}
+

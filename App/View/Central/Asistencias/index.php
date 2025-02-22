@@ -14,6 +14,10 @@
                     </div>
                     <div class="col-auto">
                         <button class="btn btn-light btn-circle" type="button" data-toggle="tooltip"
+                            title="Eliminar Registros de Asistencia"  onclick="truncatetable();">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <button class="btn btn-light btn-circle" type="button" data-toggle="tooltip"
                             title="Justificar faltas" onclick="mostrarModalFaltas();">
                             <i class="fa fa-upload"></i>
                         </button>
@@ -38,7 +42,8 @@
                 <div class="col-6">
                     <h2 class="card-title tittle-card-index">Administración de Asistencias</h2>
                 </div>
-                <div class="row div-spacing ">
+
+                <div class="row div-spacing">
                     <div class="col-12">
                         <nav>
                             <div class="nav nav-tabs justify-content-center" id="nav-tab" role="tablist">
@@ -55,12 +60,14 @@
                                     Retardos</a>
                             </div>
                         </nav>
+                    
                         <div class="tab-content" id="nav-tabContent">
                             <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
                                 aria-labelledby="nav-home-tab">
                                 <div class="div-spacing"></div>
                                 <?php include 'Asistencias/index.php' ?>
                             </div>
+
                             <div class="tab-pane fade" id="nav-profile" role="tabpanel"
                                 aria-labelledby="nav-profile-tab">
                                 <div class="div-spacing"></div>
@@ -72,6 +79,8 @@
                                 <?php include 'Retardos/index.php' ?>
                             </div>
                         </div>
+                   
+
                     </div>
                 </div>
             </div>
@@ -81,16 +90,19 @@
 
 
 
+
 <?php include '../../librerias.php' ?>
 <?php include 'Carga.php' ?>
 <?php include 'CargaFaltas.php' ?>
 <?php include 'ModalUsuario.php' ?>
+
 
 <!-- -->
 <script src="../../../../js/Ib/Asistencias/Reporte/Reporte.js"></script>
 
 <script src="../../../../js/Ib/Asistencias/Asistencias/Listado.js"></script>
 <script src="../../../../js/Ib/Asistencias/Asistencias/Busqueda.js"></script>
+<script src="../../../../js/Ib/Asistencias/Asistencias/truncate.js"></script>
 
 <script src="../../../../js/Ib/Asistencias/Falta/Listado.js"></script>
 <script src="../../../../js/Ib/Asistencias/Falta/Busqueda.js"></script>
@@ -103,3 +115,5 @@
 <!-- -->
 <script src="../../../../js/Ib/Asistencias/Inicio.js"></script>
 <script src="../../../../js/Ib/Asistencias/Carga.js"></script>
+<script src="../../../../js/Ib/Asistencias/Asistencias/truncate.js"></script>
+

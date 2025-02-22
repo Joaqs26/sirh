@@ -121,8 +121,7 @@ $(document).ready(function () {
     });
 });
 function Tabulacion(id_object) {
-    console.log(id_object);
-    console.log('entro 123');
+        
     $.post("../../../../App/Controllers/Central/PlazasC/Tabulador.php", {
         id: id_object,
     },

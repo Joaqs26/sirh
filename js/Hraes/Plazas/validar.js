@@ -121,12 +121,11 @@ $(document).ready(function () {
     });
 });
 function Tabulacion(id_object) {
-    console.log(id_object);
-    console.log('entro 123');
+  
     $.post("../../../../App/Controllers/Hrae/PlazasC/Tabulador.php", {
         id: id_object,
     },
-        f   unction (data) {
+        function (data) {
             console.log(data);
             $("#Tabulacion").modal("show");
         }

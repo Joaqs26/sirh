@@ -32,6 +32,4 @@ function clearElement(value){
 }
 
 ///LA FUNCION RETORNA EL TOTAL DE CARACTERES DEL VALOR
-function lengthValue(value){
-    return value.length;
-}
+

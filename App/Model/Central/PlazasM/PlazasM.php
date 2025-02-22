@@ -413,6 +413,14 @@ public function listarByLike($id_tbl_centro_trabajo_hraes, $busqueda, $paginator
                 return $listado;
             }
 
+            function truncatetable()
+            {
+                $query = "TRUNCATE TABLE central.ctrl_temp_asistencia RESTART IDENTITY;";
+                $result = pg_query($query);
+            
+                return $result;
+            }
+            
 
            
         }
