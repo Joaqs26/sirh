@@ -45,33 +45,38 @@
                             <div class="line"></div>
                         </div>
                     </div>
-
                     <!-- Segunda fila: Número de plaza y fechas -->
-                    <div id="ocultar_model">
-                        <div class="div-spacing"></div>
-                        <div class="row mx-1">
-                            <div class="col-3">
-                                <label for="id_tbl_control_plazas_hraes" class="form-label input-text-form">N&uacute;m. Plaza (VACANTES)</label>
-                                <label class="text-required">*</label>
-                                <select class="form-control div-spacing selectpicker" data-live-search="true"
-                                    id="id_tbl_control_plazas_hraes" data-none-results-text="Sin resultados"></select>
-                            </div>
+                    <div class="div-spacing"></div>
+                    <div class="row mx-1">
 
-                            <div class="col-3">
-                                <label for="fecha_inicio" class="form-label input-text-form">Fecha de inicio</label>
-                                <label class="text-required">*</label>
-                                <input type="date" class="form-control custom-input" id="fecha_inicio">
-                                <div class="line"></div>
-                            </div>
-
-                            <div class="col-4">
-                                <label for="fecha_termino" class="form-label input-text-form">Fecha de t&eacute;rmino</label>
-                                <input type="date" class="form-control custom-input" id="fecha_termino">
-                                <div class="line"></div>
-                            </div>
+                        <!-- 📌 Número de plaza (VACANTES) - Se ocultará en Baja -->
+                        <div class="col-3" id="ocultar_model">
+                            <label for="id_tbl_control_plazas_hraes" class="form-label input-text-form">N&uacute;m. Plaza (VACANTES)</label>
+                            <label class="text-required">*</label>
+                            <select class="form-control div-spacing selectpicker" data-live-search="true"
+                                id="id_tbl_control_plazas_hraes" data-none-results-text="Sin resultados"></select>
                         </div>
+
+                        <!-- 📌 Fechas de inicio y término - Siempre visibles -->
+                        <div class="col-3">
+                            <label for="fecha_inicio" class="form-label input-text-form">Fecha de inicio</label>
+                            <label class="text-required">*</label>
+                            <input type="date" class="form-control custom-input" id="fecha_inicio">
+                            <div class="line"></div>
+                        </div>
+
+                        <div class="col-4">
+                            <label for="fecha_termino" class="form-label input-text-form">Fecha de t&eacute;rmino</label>
+                            <input type="date" class="form-control custom-input" id="fecha_termino">
+                            <div class="line"></div>
+                        </div>
+                        <div id="campo_tipo_trabajador" style="display: none;">
+                        <label for="id_cat_tipo_trabajador" class="form-label input-text-form">Tipo de trabajador</label>
+                        <label class="text-required">*</label>
+                        <select class="form-control div-spacing custom-select" id="id_cat_tipo_trabajador" required></select>
                     </div>
 
+                   </div>
                     <!-- Tercera fila: Observaciones -->
                     <div class="div-spacing"></div>
                     <div class="row mx-1">
@@ -82,58 +87,6 @@
                             <div class="line"></div>
                         </div>
                     </div>
-
-                    <!-- Aviso y número de plaza provisional -->
-                    <div id="ocultar_model_plaza">
-                        <div class="div-spacing"></div>
-                        <div class="row mx-1">
-                            <div class="col-12">
-                                <label for="observaciones" class="form-label input-text-form">Observaciones</label>
-                                <input type="text" class="form-control custom-input" id="observaciones" placeholder="Observaciones"
-                                    maxlength="70" onkeyup="convertirAMayusculas(event,'observaciones')">
-                                <div class="line"></div>
-                            </div>
-                        </div>
-
-                    <!-- Tercera fila: Observaciones -->
-                    <div class="div-spacing"></div>
-                    <div class="row mx-1">
-                        <div class="col-9">
-                            <label for="observaciones" class="form-label input-text-form">Observaciones</label>
-                            <input type="text" class="form-control custom-input" id="observaciones" placeholder="Observaciones"
-                                maxlength="70" onkeyup="convertirAMayusculas(event,'observaciones')">
-                            <div class="line"></div>
-                        </div>
-
-                    </div>
-
-                    <!-- Aviso y número de plaza provisional -->
-                    <div id="ocultar_model_plaza">
-                        <div class="div-spacing"></div>
-                        <div class="row mx-1">
-                            <div class="col-12">
-                                <div class="custom-alert">
-                                    <div class="d-flex align-items-center">
-                                        <div class="mr-3" style="border-right: 2px solid #B87400;"></div>
-                                        <p class="font-weight-bold">Importante: La plaza seleccionada es provisional, por favor ingresa el nuevo número de plaza asignado.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mx-1">
-                            <div class="col-4">
-                                <label for="num_plaza_new" class="form-label input-text-form">N&uacute;mero de plaza</label>
-                                <label class="text-required">*</label>
-                                <input type="number" class="form-control custom-input" id="num_plaza_new" placeholder="N&uacute;m. Plaza"
-                                    maxlength="15" oninput="validarNumero(this)">
-                                <div class="line"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
                 </div>
             </div>
 

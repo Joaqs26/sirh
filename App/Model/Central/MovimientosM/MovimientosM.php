@@ -191,6 +191,20 @@ class ModelMovimientosM
         return $listado;
     }
 
+    public function obtenerTiposTrabajador()
+{
+    $query = "SELECT id_cat_tipo_trabajador, descripcion FROM central.cat_tipo_trabajador ORDER BY descripcion ASC";
+    $result = pg_query($query);
+    
+    $tiposTrabajador = [];
+    while ($row = pg_fetch_assoc($result)) {
+        $tiposTrabajador[] = $row;
+    }
+    
+    return $tiposTrabajador;
+}
+
+
    //La funcion retorna el id de la plaza a la que esta actualmente asociado
    public function getMaxIdPlaza($schema, $idEmpleado){
     $isQuery = pg_query("SELECT 
@@ -208,3 +222,4 @@ class ModelMovimientosM
     return $isQuery;
 }
 }   
+

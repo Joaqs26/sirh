@@ -1,5 +1,4 @@
- 
-//validacion al momento de agregar la informacion
+ //validacion al momento de agregar la informacion
 function validarIncidencia(){
     let id_cat_incidencias_ins = document.getElementById('id_cat_incidencias_ins').value;
     let fecha_inicio_ins = document.getElementById('fecha_inicio_ins').value;

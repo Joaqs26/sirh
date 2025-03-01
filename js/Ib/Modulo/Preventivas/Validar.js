@@ -1,4 +1,3 @@
-
 function validarPreventiva() {
     let fecha_inicio_pv = document.getElementById('fecha_inicio_pv').value;
     let fecha_fin_pv = document.getElementById('fecha_fin_pv').value;
