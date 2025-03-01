@@ -1,7 +1,7 @@
 <?php
 
 include '../librerias.php';
-include '../../../Model/Hrae/Catalogos/CatPuestoM/CatPuestoM.php';
+include '../../../Model/Hraes/Catalogos/CatPuestoM/CatPuestoM.php';
 
 /*
 |--------------------------------------------------------------------------
