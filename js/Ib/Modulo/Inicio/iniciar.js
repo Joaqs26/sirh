@@ -19,7 +19,6 @@ function buscarInfoEmpleado(id_tbl_empleados_hraes) {
     let codPuesto = document.getElementById("codPuesto");
     let isNivel = document.getElementById("isNivel");
     let nomPuesto = document.getElementById("nomPuesto");
-
     let numPlaza = document.getElementById("numPlaza");
     let isClue = document.getElementById("isClue");
     let zonaPag = document.getElementById("zonaPag");
@@ -28,8 +27,8 @@ function buscarInfoEmpleado(id_tbl_empleados_hraes) {
         id_tbl_empleados_hraes: id_tbl_empleados_hraes
     },
         function (data) {
-            console.log(data);
             let jsonData = JSON.parse(data);
+            console.log(data)
             let nombre_ = jsonData.nombre;
             let curp_ = jsonData.curp;
             let rfc_ = jsonData.rfc;

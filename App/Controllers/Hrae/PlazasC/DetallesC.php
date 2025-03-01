@@ -1,7 +1,17 @@
 <?php
 
 include '../librerias.php';
-include '../../../Model/Hraes/Catalogos/CatPuestoM/CatPuestoM.php';
+include '../../../Model/Hrae/Catalogos/CatPuestoM/CatPuestoM.php';
+
+/*
+|--------------------------------------------------------------------------
+| Funcion para obtener el id de usuario y fecha
+|--------------------------------------------------------------------------
+| La funcion obtiene el id de usuario y fecha, si alguno de los dos trae datos en 0, es decir datos vacios
+| se agregara un _ caso contrario se asignara el valor y se llamara la funcion la cual traera el nombre de usuario
+| y la fecha de captura.
+|
+*/
 
 $catalogoPlazasM = new catalogoPlazasM();
 $catalogoPlazasC = new catalogoPlazasC();
@@ -30,7 +40,12 @@ if ($id_object != null) {
 
     $entity = $row->returnArray($modelPlazasHraes->listarByIdEdit($id_object));
     $niveles = $row->returnArrayById($catalogoPuestoM->nameOfPuesto($entity['id_cat_puesto_hraes']));
-    $isValueAux = $row->returnArrayById($catalogoPuestoM->getEditCatAux($entity['id_cat_aux_puesto']));
+    if (!empty($entity['id_cat_aux_puesto'])) {
+        $isValueAux = $row->returnArrayById($catalogoPuestoM->getEditCatAux($entity['id_cat_aux_puesto']));
+    } else {
+        $isValueAux = null; // No se ejecuta la consulta
+    }
+    
     $zona = $row->returnArrayById($catalogoPuestoM->getEntity($id_object));
 
     $plazas = $catalogoPlazasC->returnCatPlazas($catalogoPlazasM->listarByAll());
@@ -104,17 +119,22 @@ if ($id_object != null) {
     $zona = $row->returnArrayById($modelCentroTrabajoHraes->getEntityZona($id_tbl_centro_trabajo_hraes));
     $nomEspecifico = $catSelectC->selecStaticByNull();
     $programa = $catSelectC->selectByAllCatalogo($contratacionM->listarByAllPrograma());
+    $trabajador = $catSelectC->selectByAllCatalogo($contratacionM->listarByAllTrabajador());
     $contratacion = $catSelectC->selecStaticByNull();
 
 
     $raw = [
-        'entity' => $entity, 
-        'unidadAdmin' => $unidadAdmin,
+        'entity' => $entity,
+        'niveles' => 'NIVEL',
         'zona' => $zona[0],
+        'plazas' => $plazas,
+        'puesto' => $puesto,
+        'unidadCoor' => $unidadCoor,
+        'unidadAdmin' => $unidadAdmin,
         'nomEspecifico' => $nomEspecifico,
+
         'programa' => $programa,
         'contratacion' => $contratacion
-
 
     ];
     echo json_encode($raw);

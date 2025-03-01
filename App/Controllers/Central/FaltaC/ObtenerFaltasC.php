@@ -14,12 +14,8 @@ if ($faltaModelM->process_1()) {
                 if ($faltaModelM->process_5()) {
                     if ($faltaModelM->process_6()) {
                         if ($faltaModelM->process_7()) {
-                            if ($faltaModelM->process_8()) {
-                                $bool = true;
-                            } else {
-                                $message = 'Error en p8';
-                            }
-                        } else {
+                            $bool = true;
+                             } else {
                             $message = 'Error en p7';
                         }
                     } else {

@@ -124,14 +124,17 @@ if ($id_object != null) {
 
 
     $raw = [
-        'entity' => $entity, 
-        'unidadAdmin' => $unidadAdmin,
+        'entity' => $entity,
+        'niveles' => 'NIVEL',
         'zona' => $zona[0],
+        'plazas' => $plazas,
+        'puesto' => $puesto,
+        'unidadCoor' => $unidadCoor,
+        'unidadAdmin' => $unidadAdmin,
         'nomEspecifico' => $nomEspecifico,
-        'puestoCategoria' => $nomEspecifico,
+
         'programa' => $programa,
         'contratacion' => $contratacion
-
 
     ];
     echo json_encode($raw);

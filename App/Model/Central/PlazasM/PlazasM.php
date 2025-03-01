@@ -45,6 +45,7 @@ class modelPlazasHraes
 
 public function listarByLike($id_tbl_centro_trabajo_hraes, $busqueda, $paginator)
 {
+    // Aplicar índice GIN para búsquedas de texto con LIKE
     $result = " (TRIM(UPPER(UNACCENT(tbl_control_plazas_hraes.num_plaza))) 
                         LIKE '%$busqueda%'
                 OR TRIM(UPPER(UNACCENT(cat_tipo_plazas.tipo_plaza)))
@@ -61,16 +62,18 @@ public function listarByLike($id_tbl_centro_trabajo_hraes, $busqueda, $paginator
                         LIKE '%$busqueda%'
                 OR TRIM(UPPER(UNACCENT(cat_unidad.nombre)))
                         LIKE '%$busqueda%')
-                ORDER BY id_tbl_control_plazas_hraes DESC
+                ORDER BY tbl_control_plazas_hraes.id_tbl_control_plazas_hraes DESC
                 LIMIT 6 OFFSET $paginator;";
-                
+
     $condition = "";
     $value = ' WHERE ';
+    
     if ($id_tbl_centro_trabajo_hraes != null) {
         $condition = "WHERE tbl_control_plazas_hraes.id_tbl_centro_trabajo_hraes = 
                     $id_tbl_centro_trabajo_hraes ";
         $value = ' AND ';
     }
+    
     $condition = $condition . $value . $result;
 
     $listado = "SELECT tbl_control_plazas_hraes.id_tbl_control_plazas_hraes,
@@ -101,6 +104,7 @@ public function listarByLike($id_tbl_centro_trabajo_hraes, $busqueda, $paginator
     
     return $listado;
 }
+
 
 
             function detallesPlazas($id_object)
@@ -361,20 +365,20 @@ public function listarByLike($id_tbl_centro_trabajo_hraes, $busqueda, $paginator
                                         $schema.cat_puesto_hraes.nivel,
                                         $schema.cat_puesto_hraes.nombre_posicion,
                                         $schema.tbl_centro_trabajo_hraes.clave_centro_trabajo,
-                                        CONCAT(central.cat_entidad.clave_entidad, ' ', central.cat_entidad.entidad)
+                                        CONCAT(public.cat_entidad.clave_entidad, ' ', public.cat_entidad.entidad)
                                     FROM $schema.tbl_control_plazas_hraes
-                                    INNER JOIN central.cat_unidad
+                                    LEFT JOIN public.cat_unidad
                                         ON $schema.tbl_control_plazas_hraes.id_cat_unidad =	
-                                            central.cat_unidad.id_cat_unidad
-                                    INNER JOIN $schema.cat_puesto_hraes
+                                            public.cat_unidad.id_cat_unidad
+                                    LEFT JOIN $schema.cat_puesto_hraes
                                         ON $schema.tbl_control_plazas_hraes.id_cat_puesto_hraes =
                                             $schema.cat_puesto_hraes.id_cat_puesto_hraes
-                                    INNER JOIN $schema.tbl_centro_trabajo_hraes
+                                    LEFT JOIN $schema.tbl_centro_trabajo_hraes
                                         ON $schema.tbl_control_plazas_hraes.id_tbl_centro_trabajo_hraes =
                                             $schema.tbl_centro_trabajo_hraes.id_tbl_centro_trabajo_hraes
-                                    INNER JOIN central.cat_entidad
+                                    LEFT JOIN public.cat_entidad
                                         ON $schema.tbl_centro_trabajo_hraes.id_cat_entidad =
-                                            central.cat_entidad.id_cat_entidad
+                                            public.cat_entidad.id_cat_entidad
                                     WHERE $schema.tbl_control_plazas_hraes.id_tbl_control_plazas_hraes = $idPlaza;");
                 return $isQuery;
             }
@@ -423,4 +427,4 @@ public function listarByLike($id_tbl_centro_trabajo_hraes, $busqueda, $paginator
             
 
            
-        }
+        }   

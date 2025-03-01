@@ -78,78 +78,78 @@ class modelEmpleadosHraes
         LEFT JOIN central.ctrl_cuenta_clabe_hraes cc 
             ON e.id_tbl_empleados_hraes = cc.id_tbl_empleados_hraes
     
-        ORDER BY pe.fecha_movimiento DESC
+        ORDER BY pe.fecha_movimiento asc
         LIMIT 10;";
     
         return $query;
     }
     
     public function listarByLike($busqueda, $paginador)
-    {
-        $query = "SELECT 
-            e.id_tbl_empleados_hraes, 
-            cp.num_plaza, 
-            ce.entidad AS zona_pagadora,
-            e.rfc, 
-            e.curp, 
-            e.nombre, 
-            e.primer_apellido,
-            e.segundo_apellido, 
-            m.codigo AS codigo_mov, 
-            m.nombre_movimiento AS nombre_movimiento,
-            ct.clave_centro_trabajo, 
-            ct.nombre AS nombre_centro,
-            cc.clabe AS clabe,
-            e.num_empleado,
-            pe.fecha_movimiento
-    
-        FROM central.tbl_empleados_hraes e
-    
-        LEFT JOIN central.tbl_plazas_empleados_hraes pe 
-            ON e.id_tbl_empleados_hraes = pe.id_tbl_empleados_hraes
-            AND pe.fecha_movimiento = (
-                SELECT MAX(pe2.fecha_movimiento) 
-                FROM central.tbl_plazas_empleados_hraes pe2
-                WHERE pe2.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
-            )
-    
-        LEFT JOIN central.tbl_control_plazas_hraes cp 
-            ON pe.id_tbl_control_plazas_hraes = cp.id_tbl_control_plazas_hraes
-    
-        LEFT JOIN central.tbl_centro_trabajo_hraes ct 
-            ON cp.id_tbl_centro_trabajo_hraes = ct.id_tbl_centro_trabajo_hraes
-    
-        LEFT JOIN public.cat_entidad ce 
-            ON ct.id_cat_entidad = ce.id_cat_entidad
-    
-        LEFT JOIN public.tbl_movimientos m 
-            ON pe.id_tbl_movimientos = m.id_tbl_movimientos
-            AND m.id_tipo_movimiento <> 3 -- Excluir bajas
-    
-        LEFT JOIN central.ctrl_cuenta_clabe_hraes cc 
-            ON e.id_tbl_empleados_hraes = cc.id_tbl_empleados_hraes
-            AND (cc.id_cat_estatus = 1 OR cc.id_cat_estatus IS NULL)
-    
-        WHERE 
-            (
-                TRIM(UPPER(UNACCENT(cp.num_plaza))) LIKE '%$busqueda%' OR
-                TRIM(UPPER(UNACCENT(ce.entidad))) LIKE '%$busqueda%' OR
-                TRIM(UPPER(UNACCENT(e.rfc))) LIKE '%$busqueda%' OR
-                TRIM(UPPER(UNACCENT(e.curp))) LIKE '%$busqueda%' OR
-                TRIM(UPPER(UNACCENT(e.nombre))) LIKE '%$busqueda%' OR
-                TRIM(UPPER(UNACCENT(e.primer_apellido))) LIKE '%$busqueda%' OR
-                TRIM(UPPER(UNACCENT(e.segundo_apellido))) LIKE '%$busqueda%' OR
-                TRIM(UPPER(UNACCENT(CONCAT(m.codigo, ' - ', m.nombre_movimiento)))) LIKE '%$busqueda%' OR
-                TRIM(UPPER(UNACCENT(CONCAT(ct.clave_centro_trabajo, ' - ', ct.nombre)))) LIKE '%$busqueda%' OR
-                TRIM(UPPER(UNACCENT(cc.clabe))) LIKE '%$busqueda%' OR
-                TRIM(UPPER(UNACCENT(e.num_empleado))) LIKE '%$busqueda%'
-            )
-    
-        ORDER BY pe.fecha_movimiento DESC
-        LIMIT 6 OFFSET $paginador;";
-    
-        return $query;
-    }
+{
+    $result = " (TRIM(UPPER(UNACCENT(cp.num_plaza))) LIKE '%$busqueda%'
+                OR TRIM(UPPER(UNACCENT(ce.entidad))) LIKE '%$busqueda%'
+                OR TRIM(UPPER(UNACCENT(e.rfc))) LIKE '%$busqueda%'
+                OR TRIM(UPPER(UNACCENT(e.curp))) LIKE '%$busqueda%'
+                OR TRIM(UPPER(UNACCENT(e.nombre))) LIKE '%$busqueda%'
+                OR TRIM(UPPER(UNACCENT(e.primer_apellido))) LIKE '%$busqueda%'
+                OR TRIM(UPPER(UNACCENT(e.segundo_apellido))) LIKE '%$busqueda%'
+                OR TRIM(UPPER(UNACCENT(CONCAT(m.codigo, ' - ', m.nombre_movimiento)))) LIKE '%$busqueda%'
+                OR TRIM(UPPER(UNACCENT(CONCAT(ct.clave_centro_trabajo, ' - ', ct.nombre)))) LIKE '%$busqueda%'
+                OR TRIM(UPPER(UNACCENT(cc.clabe))) LIKE '%$busqueda%'
+                OR TRIM(UPPER(UNACCENT(e.num_empleado))) LIKE '%$busqueda%')
+                ORDER BY pe.fecha_movimiento DESC
+                LIMIT 6 OFFSET $paginador;";
+
+    $listado = "SELECT 
+                    e.id_tbl_empleados_hraes, 
+                    cp.num_plaza, 
+                    ce.entidad AS zona_pagadora,
+                    e.rfc, 
+                    e.curp, 
+                    e.nombre, 
+                    e.primer_apellido,
+                    e.segundo_apellido, 
+                    m.codigo AS codigo_mov, 
+                    m.nombre_movimiento AS nombre_movimiento,
+                    ct.clave_centro_trabajo, 
+                    ct.nombre AS nombre_centro,
+                    cc.clabe AS clabe,
+                    e.num_empleado,
+                    pe.fecha_movimiento
+
+                FROM central.tbl_empleados_hraes e
+
+                LEFT JOIN central.tbl_plazas_empleados_hraes pe 
+                    ON e.id_tbl_empleados_hraes = pe.id_tbl_empleados_hraes
+                    AND pe.fecha_movimiento = (
+                        SELECT MAX(pe2.fecha_movimiento) 
+                        FROM central.tbl_plazas_empleados_hraes pe2
+                        WHERE pe2.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
+                    )
+
+                LEFT JOIN central.tbl_control_plazas_hraes cp 
+                    ON pe.id_tbl_control_plazas_hraes = cp.id_tbl_control_plazas_hraes
+
+                LEFT JOIN central.tbl_centro_trabajo_hraes ct 
+                    ON cp.id_tbl_centro_trabajo_hraes = ct.id_tbl_centro_trabajo_hraes
+
+                LEFT JOIN public.cat_entidad ce 
+                    ON ct.id_cat_entidad = ce.id_cat_entidad
+
+                LEFT JOIN public.tbl_movimientos m 
+                    ON pe.id_tbl_movimientos = m.id_tbl_movimientos
+                    AND m.id_tipo_movimiento <> 3 -- Excluir bajas
+
+                LEFT JOIN central.ctrl_cuenta_clabe_hraes cc 
+                    ON e.id_tbl_empleados_hraes = cc.id_tbl_empleados_hraes
+                    AND (cc.id_cat_estatus = 1 OR cc.id_cat_estatus IS NULL) 
+                
+                WHERE " . $result;
+
+    return $listado;
+}
+
+
     
     public function listarByIdEdit($id_object)
     {

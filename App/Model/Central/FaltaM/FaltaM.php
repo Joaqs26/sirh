@@ -495,41 +495,10 @@ WHERE NOT EXISTS (
                 WHERE id_cat_asistencia_config = 1;");
          return $query;
         }
-        
-        public function process_6()
-        {
-            $query = pg_query("INSERT INTO central.ctrl_faltas (
-                    id_tbl_empleados_hraes,
-                    es_por_retardo,
-                    id_cat_retardo_tipo,
-                    id_cat_retardo_estatus,
-                    fecha
-                )
-                SELECT 
-                    id_tbl_empleados_hraes,
-                    TRUE AS es_por_retardo,
-                    3 AS id_cat_retardo_tipo, -- Tipo de retardo
-                    CASE 
-                        WHEN (NoRet >= 3 AND NoRet < 6) THEN 1
-                        WHEN (NoRet >= 6 AND NoRet < 9) THEN 2
-                        WHEN (NoRet >= 9 AND NoRet < 12) THEN 3
-                        WHEN (NoRet >= 12) THEN 4
-                    END AS id_cat_retardo_estatus,
-                    CURRENT_DATE AS fecha
-                FROM (
-                    SELECT 
-                        id_tbl_empleados_hraes,
-                        COUNT(*) AS NoRet
-                    FROM central.ctrl_retardo
-                    --ERE fecha BETWEEN '2024/12/01' AND '2024/12/31' -- Filtro por rango de fechas
-                    GROUP BY id_tbl_empleados_hraes
-                    HAVING COUNT(*) >= 3
-                ) AS Retardos;");
-            return $query;
-        }
+             
         
         
-        public function process_7() {
+        public function process_6() {
             $query = pg_query("INSERT INTO central.ctrl_faltas (
                     id_tbl_empleados_hraes,
                     observaciones,
@@ -592,7 +561,7 @@ WHERE a.fecha IS NULL
             return $query;
         }
 
-        public function process_8() {
+        public function process_7() {
             $query = pg_query("INSERT INTO central.ctrl_faltas (
                     id_tbl_empleados_hraes,
                     observaciones,

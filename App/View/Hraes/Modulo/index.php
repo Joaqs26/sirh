@@ -144,7 +144,8 @@ if ($id_tbl_empleados_hraes == null) {
                             <h5>Informaci&oacuten personal</h5>
                             <?php include 'PersonalBancarioM/index.php' ?>
                         </div>
-                        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        <div class="tab-pane fade" id="nav-profile" role="tabpanel" 
+                            aria-labelledby="nav-profile-tab">
                             <div class="div-spacing"></div>
                             <h5>Medios de contacto</h5>
                             <?php include 'MediosContactoM/index.php' ?>
@@ -174,7 +175,8 @@ if ($id_tbl_empleados_hraes == null) {
                             <?php include 'PercepcionesM/index.php' ?>
                         
                         </div>
-                        <div class="tab-pane fade" id="nav-programas" role="tabpanel" aria-labelledby="nav-contact-tab">
+                        <div class="tab-pane fade" id="nav-programas" role="tabpanel" 
+                            aria-labelledby="nav-contact-tab">
                             <div class="div-spacing"></div>
                             <h5 class="card-title tittle-card-index">Programas</h5>
                             <?php include 'ProgramasM/index.php' ?>
