@@ -1,7 +1,7 @@
 <?php
 $password = "630545";
 $username = "postgres";
-$dbname = "elfolix";
+$dbname = "produccion_sirh";
 $host = "localhost";
 $port = "5432";
 $options = "--client_encoding=UTF8";
