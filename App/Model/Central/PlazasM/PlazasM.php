@@ -45,7 +45,6 @@ class modelPlazasHraes
 
 public function listarByLike($id_tbl_centro_trabajo_hraes, $busqueda, $paginator)
 {
-    // Aplicar índice GIN para búsquedas de texto con LIKE
     $result = " (TRIM(UPPER(UNACCENT(tbl_control_plazas_hraes.num_plaza))) 
                         LIKE '%$busqueda%'
                 OR TRIM(UPPER(UNACCENT(cat_tipo_plazas.tipo_plaza)))
@@ -62,18 +61,16 @@ public function listarByLike($id_tbl_centro_trabajo_hraes, $busqueda, $paginator
                         LIKE '%$busqueda%'
                 OR TRIM(UPPER(UNACCENT(cat_unidad.nombre)))
                         LIKE '%$busqueda%')
-                ORDER BY tbl_control_plazas_hraes.id_tbl_control_plazas_hraes DESC
+                ORDER BY id_tbl_control_plazas_hraes DESC
                 LIMIT 6 OFFSET $paginator;";
-
+                
     $condition = "";
     $value = ' WHERE ';
-    
     if ($id_tbl_centro_trabajo_hraes != null) {
         $condition = "WHERE tbl_control_plazas_hraes.id_tbl_centro_trabajo_hraes = 
                     $id_tbl_centro_trabajo_hraes ";
         $value = ' AND ';
     }
-    
     $condition = $condition . $value . $result;
 
     $listado = "SELECT tbl_control_plazas_hraes.id_tbl_control_plazas_hraes,
@@ -104,7 +101,6 @@ public function listarByLike($id_tbl_centro_trabajo_hraes, $busqueda, $paginator
     
     return $listado;
 }
-
 
 
             function detallesPlazas($id_object)
@@ -376,7 +372,7 @@ public function listarByLike($id_tbl_centro_trabajo_hraes, $busqueda, $paginator
                                     LEFT JOIN $schema.tbl_centro_trabajo_hraes
                                         ON $schema.tbl_control_plazas_hraes.id_tbl_centro_trabajo_hraes =
                                             $schema.tbl_centro_trabajo_hraes.id_tbl_centro_trabajo_hraes
-                                    LEFT JOIN public.cat_entidad
+                                     JOIN public.cat_entidad
                                         ON $schema.tbl_centro_trabajo_hraes.id_cat_entidad =
                                             public.cat_entidad.id_cat_entidad
                                     WHERE $schema.tbl_control_plazas_hraes.id_tbl_control_plazas_hraes = $idPlaza;");
