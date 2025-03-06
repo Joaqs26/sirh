@@ -2,13 +2,14 @@
 class CatTipotrabajadorM
 {
     public function listarByAllGeneral()
-    {
-        $listado = pg_query("SELECT DISTINCT(descripcion),descripcion, 
-                                   id_cat_tipo_trabajador
-                             FROM central.cat_tipo_trabajador
-                             ORDER BY descripcion ASC");
-        return $listado;
-    }
+        {
+            $listado = pg_query("SELECT id_cat_tipo_trabajador, descripcion 
+                                FROM central.cat_tipo_trabajador 
+                                ORDER BY descripcion ASC");
+
+            return $listado;
+        }
+
 
     public function listarByIdGeneral($id){
         $listado = pg_query("SELECT id_cat_tipo_trabajador,descripcion

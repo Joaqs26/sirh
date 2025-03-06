@@ -75,6 +75,7 @@
                         <label class="text-required">*</label>
                         <select class="form-control div-spacing custom-select" id="id_cat_tipo_trabajador" required></select>
                     </div>
+
                    </div>
                     <!-- Tercera fila: Observaciones -->
                     <div class="div-spacing"></div>

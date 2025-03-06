@@ -71,8 +71,7 @@ function agregarEditarMovimiento(id_object){
             $('#tipo_contratacion_mx').val(contratacion); 
             $('#centro_trabajo_mx').val(centroTrabajo);
 
-            mostrarContenido('ocultar_model');
-            ocultarContenido('ocultar_model_plaza');
+            
             $('#situacionPlaza').val(null);
         }
     );

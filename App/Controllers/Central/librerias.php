@@ -53,6 +53,8 @@ include '../../../Model/Central/CapacidadesDifM/CapacidadesDifM.php';
 include '../../../Model/Central/CentroTrabajoM/CentroTrabajoM.php';
 include '../../../Model/Catalogos/CatRegionM/CatRegionM.php';
 include '../../../Model/Catalogos/CatEntidadM/CatEntidadM.php';
+//include '../../../../App/Model/Catalogos/CatTipotrabajadorM/CatTipotrabajadorM.php';
+
 
 ///CONTROLLERS
 include '../../../Controllers/Hrae/GlobalC/ArrayC.php';

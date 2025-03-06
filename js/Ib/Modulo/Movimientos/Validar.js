@@ -136,26 +136,51 @@ document.getElementById("movimiento_general").addEventListener("change", functio
     );
 });
 
+function cargarTiposTrabajador() {
+    $.post("../../../../App/Controllers/Central/MovimientosC/CatTipotrabajadorC.php", 
+        function (data) {
+            try {
+                if (!data || data.trim() === "") {
+                    throw new Error("La respuesta del servidor está vacía.");
+                }
 
-/// FUNCIONES AUXILIARES
-//function ocultarContenido(text) {
-   // let x = document.getElementById(text);
-   // x.style.display = "none";
-//}
+                let jsonData = JSON.parse(data);
+                let select = document.getElementById("id_cat_tipo_trabajador");
 
-function mostrarContenido(text) {
-    let x = document.getElementById(text);
-    x.style.display = "block";
-}
+                if (!select) {
+                    console.error("Elemento 'id_cat_tipo_trabajador' no encontrado en el DOM.");
+                    return;
+                }
 
-function messageLarge(text) {
-    Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: text,
+                select.innerHTML = '<option value="">Seleccione un tipo de trabajador</option>';
+
+                jsonData.forEach(tipo => {
+                    let option = document.createElement("option");
+                    option.value = tipo.id_cat_tipo_trabajador;
+                    option.textContent = tipo.descripcion;
+                    select.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error("Error al procesar los tipos de trabajador:", error, data);
+            }
+        }
+    ).fail(function (xhr, status, error) {
+        console.error("Error en la solicitud AJAX:", xhr.responseText);
     });
 }
 
+// Cargar la lista desplegable cuando se abra el modal
+$('#agregar_editar_movimiento').on('shown.bs.modal', function () {
+    cargarTiposTrabajador();
+});
+
+
+
+// Llamar a la función cuando el modal se abra
+$('#agregar_editar_movimiento').on('shown.bs.modal', function () {
+    cargarTiposTrabajador();
+});
 
 function limpiarBaja() { /// LIMPIAR CAMPOS PARA MOVIMIENTO DE BAJA
     $('#id_tbl_control_plazas_hraes').val('');
@@ -164,4 +189,4 @@ function limpiarBaja() { /// LIMPIAR CAMPOS PARA MOVIMIENTO DE BAJA
     $('#fecha_inicio').val('');
     $('#fecha_termino').val('');
     $('#id_cat_caracter_nombramiento').val('');
-}
+}  
