@@ -93,17 +93,41 @@ document.getElementById("id_tbl_control_plazas_hraes").addEventListener("change"
 /// EVENTO AL CAMBIAR MOVIMIENTO GENERAL
 document.getElementById("movimiento_general").addEventListener("change", function () {
     let movimiento_general = this.value;
+    let campoTipoTrabajador = document.getElementById("campo_tipo_trabajador");
+
     if (movimiento_general == movimientoBaja) {
-        ocultarContenido('ocultar_model');
-    } else {
-        mostrarContenido('ocultar_model');
+        $('#situacionPlaza').val(null);
+
+        // ✅ Ocultar todo el contenedor de "Número de Plaza (VACANTES)"
+        document.getElementById("ocultar_model").style.display = "none";
+
+        // ✅ Mostrar los campos de fecha de inicio y término
+        document.getElementById("fecha_inicio").closest('.col-3').style.display = "block";
+        document.getElementById("fecha_termino").closest('.col-4').style.display = "block";
+
+        // ❌ Ocultar el campo de "Tipo de Trabajador"
+        campoTipoTrabajador.style.display = "none";
+
+    } else { // ALTA O MOVIMIENTO
+        // ✅ Mostrar el contenedor de "Número de Plaza (VACANTES)"
+        document.getElementById("ocultar_model").style.display = "block";
+
+        // ✅ Mostrar los campos de fecha de inicio y término
+        document.getElementById("fecha_inicio").closest('.col-3').style.display = "block";
+        document.getElementById("fecha_termino").closest('.col-4').style.display = "block";
+
+        if (movimiento_general == movimientoAlta) {
+            // ✅ Mostrar el campo de "Tipo de Trabajador"
+            campoTipoTrabajador.style.display = "block";
+        } else {
+            // ❌ Ocultar el campo de "Tipo de Trabajador" en otros casos
+            campoTipoTrabajador.style.display = "none";
+        }
     }
 
     $.post(
         "../../../../App/Controllers/Central/MovimientosC/MEspecificoC.php",
-        {
-            movimiento_general: movimiento_general,
-        },
+        { movimiento_general: movimiento_general },
         function (data) {
             console.log(data);
             let jsonData = JSON.parse(data);
@@ -112,11 +136,12 @@ document.getElementById("movimiento_general").addEventListener("change", functio
     );
 });
 
+
 /// FUNCIONES AUXILIARES
-function ocultarContenido(text) {
-    let x = document.getElementById(text);
-    x.style.display = "none";
-}
+//function ocultarContenido(text) {
+   // let x = document.getElementById(text);
+   // x.style.display = "none";
+//}
 
 function mostrarContenido(text) {
     let x = document.getElementById(text);
@@ -130,6 +155,7 @@ function messageLarge(text) {
         text: text,
     });
 }
+
 
 function limpiarBaja() { /// LIMPIAR CAMPOS PARA MOVIMIENTO DE BAJA
     $('#id_tbl_control_plazas_hraes').val('');

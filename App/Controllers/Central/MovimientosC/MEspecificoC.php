@@ -1,7 +1,7 @@
 <?php
 include '../librerias.php';
 
-$catSelectC = new CatSelectC();
+$catSelectC = new CatSelectC(); 
 $catMovimientoM = new CatMovimientoM();
 $row = new Row();
 
