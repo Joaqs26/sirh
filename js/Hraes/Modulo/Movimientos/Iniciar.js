@@ -24,64 +24,63 @@ function iniciarTabla_mv(busqueda, paginador, id_tbl_empleados_hraes) {
     );
 }
 
-function agregarEditarMovimiento(id_object){
+function agregarEditarMovimiento(id_object) {
     $("#id_object").val(id_object);
     let titulo = document.getElementById("tituloMovimiento");
     titulo.textContent = 'Modificar';
-    if (id_object == null){
+
+    if (id_object == null) {
         titulo.textContent = 'Agregar';
         $("#agregar_editar_movimiento").find("input,textarea,select").val("");
     }
 
     $.post("../../../../App/Controllers/Hrae/MovimientosC/DetallesC.php", {
         id_object: id_object
-    },
-        function (data) {
-            console.log(data);
-            let jsonData = JSON.parse(data);
-            let entity = jsonData.response;
-            let caracter = jsonData.caracter;
-            let general = jsonData.general;
-            let especifico = jsonData.especifico;
-            let plaza = jsonData.plaza;
-            let contratacion = jsonData.contratacion;
-            let centroTrabajo = jsonData.centroTrabajo;
+    }, function (data) {
+        console.log(data);
+        let jsonData = JSON.parse(data);
+        let entity = jsonData.response;
+        let caracter = jsonData.caracter;
+        let general = jsonData.general;
+        let especifico = jsonData.especifico;
+        let plaza = jsonData.plaza;
+        let contratacion = jsonData.contratacion;
+        let centroTrabajo = jsonData.centroTrabajo;
+        let tipoTrabajador = jsonData.tipo_trabajador; // ✅ Se agrega tipo de trabajador
 
-            $('#movimiento_general').empty();
-            $('#movimiento_general').html(general); 
+        $('#movimiento_general').empty();
+        $('#movimiento_general').html(general);
 
-            $('#id_cat_caracter_nombramiento').empty();
-            $('#id_cat_caracter_nombramiento').html(caracter); 
-            
-            $('#id_tbl_control_plazas_hraes').empty();
-            $('#id_tbl_control_plazas_hraes').html(plaza); 
-            $('#id_tbl_control_plazas_hraes').selectpicker('refresh');
-            $('.selectpicker').selectpicker();
+        $('#id_cat_caracter_nombramiento').empty();
+        $('#id_cat_caracter_nombramiento').html(caracter);
 
-            $('#id_tbl_movimientos').empty();
-            $('#id_tbl_movimientos').html(especifico); 
+        $('#id_tbl_control_plazas_hraes').empty();
+        $('#id_tbl_control_plazas_hraes').html(plaza);
+        $('#id_tbl_control_plazas_hraes').selectpicker('refresh');
+        $('.selectpicker').selectpicker();
 
-            $('#fecha_movimiento').val(entity.fecha_movimiento); 
-            $('#fecha_inicio').val(entity.fecha_inicio); 
-            $('#fecha_termino').val(entity.fecha_termino);
-            $('#id_plaza').val(entity.id_tbl_control_plazas_hraes); 
-            $('#motivo_estatus').val(entity.motivo_estatus);
-            $('#observaciones').val(entity.observaciones); 
+        $('#id_tbl_movimientos').empty();
+        $('#id_tbl_movimientos').html(especifico);
 
-            $('#tipo_contratacion_mx').val(contratacion); 
-            $('#centro_trabajo_mx').val(centroTrabajo);
+        $('#fecha_movimiento').val(entity.fecha_movimiento);
+        $('#fecha_inicio').val(entity.fecha_inicio);
+        $('#fecha_termino').val(entity.fecha_termino);
+        $('#id_plaza').val(entity.id_tbl_control_plazas_hraes);
+        $('#motivo_estatus').val(entity.motivo_estatus);
+        $('#observaciones').val(entity.observaciones);
 
-            mostrarContenido('ocultar_model');
-            ocultarContenido('ocultar_model_plaza');
-            $('#situacionPlaza').val(null);
-        }
-    );
+        $('#tipo_contratacion_mx').val(contratacion);
+        $('#centro_trabajo_mx').val(centroTrabajo);
+        $('#id_cat_tipo_trabajador').val(tipoTrabajador); // ✅ Se agrega el valor en el select
+
+        $('#situacionPlaza').val(null);
+    });
 
     $("#agregar_editar_movimiento").modal("show");
 }
 
 
-function salirAgregarEditarMovimiento(){
+function salirAgregarEditarMovimiento() {
     $("#agregar_editar_movimiento").modal("hide");
 }
 
@@ -103,11 +102,12 @@ function guardarMovimiento() {
         id_cat_caracter_nombramiento: $("#id_cat_caracter_nombramiento").val(),
         motivo_estatus: $("#motivo_estatus").val(),
         observaciones: $("#observaciones").val(),
-        id_tbl_empleados_hraes: id_tbl_empleados_hraes, // Asegúrate de que este valor no sea vacío
+        id_tbl_empleados_hraes: id_tbl_empleados_hraes, // ✅ Validación para que no sea vacío
         id_object: $("#id_object").val(),
         movimiento_general: $("#movimiento_general").val(),
         num_plaza: $("#num_plaza_new").val(),
         id_cat_situacion_plaza_hraes: $("#situacionPlaza").val(),
+        id_cat_tipo_trabajador: $("#id_cat_tipo_trabajador").val(), // ✅ Se agrega el tipo de trabajador
         movimientoBaja: movimientoBaja,
         movimientoAlta: movimientoAlta,
         movimientoMov: movimientoMov,
@@ -126,34 +126,31 @@ function guardarMovimiento() {
 }
 
 
-function eliminarMovimiento(id_object) {//ELIMINAR USUARIO
-    if(validarAccion()){
-    Swal.fire({
-        title: "¿Está seguro?",
-        text: "¡No podrás revertir esto!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Si, eliminar",
-        cancelButtonText: "Cancelar"
-      }).then((result) => {
-        if (result.isConfirmed) {
-        $.post("../../../../App/Controllers/Hrae/MovimientosC/EliminarC.php", {
-                id_object: id_object
-            },
-            function (data) {
-                console.log(data);
-                if (data == 'delete'){
-                    mensajeExito('Movimiento eliminado con éxito')
-                } else {
-                    mensajeError(data);
-                }
-                buscarMovimiento();
+function eliminarMovimiento(id_object) {
+    if (validarAccion()) {
+        Swal.fire({
+            title: "¿Está seguro?",
+            text: "¡No podrás revertir esto!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.post("../../../../App/Controllers/Hrae/MovimientosC/EliminarC.php", {
+                    id_object: id_object
+                }, function (data) {
+                    console.log(data);
+                    if (data == 'delete') {
+                        mensajeExito('Movimiento eliminado con éxito');
+                    } else {
+                        mensajeError(data);
+                    }
+                    buscarMovimiento();
+                });
             }
-        );
+        });
     }
-    });
 }
-}
-
