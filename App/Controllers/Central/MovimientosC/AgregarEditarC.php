@@ -11,6 +11,7 @@ $modelMovimientosM = new ModelMovimientosM();
 $catMovimientoM = new CatMovimientoM();
 $modelEmpleadosHraes = new modelEmpleadosHraes();
 $modelPlazasHraes = new modelPlazasHraes();
+$modelMovimientosM = new ModelMovimientosM();
 
 // Variables recibidas desde el formulario
 $nombreTabla = 'central.tbl_plazas_empleados_hraes';

@@ -4,7 +4,7 @@ include '../librerias.php';
 // Obtener la fecha actual
 $fechaActual = date('Y-m-d');
 
-// Instancias de clases
+///ESTANCIAS DE CLASES 
 $row = new Row();
 $bitacoraM = new BitacoraM();
 $modelMovimientosM = new ModelMovimientosM();
@@ -27,7 +27,7 @@ $fecha_movimiento = !empty($_POST['fecha_movimiento']) ? $_POST['fecha_movimient
 
 // Obtener el movimiento general
 $idMovimiento = $row->returnArrayById($catMovimientoM->listadoIdMovimiento($_POST['id_tbl_movimientos']));
-$ultimoMovimientoCount = $row->returnArrayById($modelMovimientosM->countUltimoMovimiento($_POST['id_tbl_empleados_hraes']));
+$ultimoMovimientoCount = $row->returnArrayById($modelMovimientosM->countUltimoMovimiento($_POST['id_tbl_empleados_hraes'])); ///VALIDA EL ULTIMO MOVIMIENTO
 
 $idPlazaA = 0;
 if ($ultimoMovimientoCount[0] != 0) { 
@@ -66,7 +66,7 @@ $condicion = [
 // Datos a insertar en la tabla
 $datos = [
     'id_tbl_movimientos' => $_POST['id_tbl_movimientos'],
-    'fecha_movimiento' => $fecha_movimiento,
+    'fecha_movimiento' => $fecha_movimiento, // USAR LA FECHA OBTENIDA
     'id_tbl_control_plazas_hraes' => $id_tbl_control_plazas_hraes,
     'fecha_inicio' => $_POST['fecha_inicio'],
     'fecha_termino' => $_POST['fecha_termino'],
@@ -137,10 +137,12 @@ function modificarPlaza($connectionDBsPro, $movimientoBaja, $movimientoAlta, $mo
         $idMovimientoVal = $ocupada;
     } else if ($movimiento_general == $movimientoMov) {
         $idMovimientoVal = $congelada;
+        //agregarMovimiento($connectionDBsPro,20,$idPlazaAnte,$idEmpleados,$fecha);
         actualizarPlaza($connectionDBsPro, $idMovimientoVal, $idPlazaAnte, $num_plaza, 1);
         $idMovimientoVal = $ocupada;
     }
 
+    //UPDATE PLAZA
     actualizarPlaza($connectionDBsPro, $idMovimientoVal, $idPlaza, $num_plaza, $id_cat_situacion_plaza_hraes);
 }
 

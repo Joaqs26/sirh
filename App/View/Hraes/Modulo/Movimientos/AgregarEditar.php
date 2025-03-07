@@ -56,6 +56,7 @@
                             <select class="form-control div-spacing selectpicker" data-live-search="true"
                                 id="id_tbl_control_plazas_hraes" data-none-results-text="Sin resultados"></select>
                         </div>
+                    </div>
 
                         <!-- 📌 Fechas de inicio y término - Siempre visibles -->
                         <div class="col-3">
