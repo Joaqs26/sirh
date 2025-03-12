@@ -59,7 +59,6 @@ function agregarEditarDetalles(id_object) { //SE OBTIENEN INFO DE ID SELECCIONAD
         id_tbl_centro_trabajo_hraes: id_tbl_centro_trabajo_hraes
     },
         function (data) {
-            console.log(data);
             let jsonData = JSON.parse(data);//se obtiene el json
             let entity = jsonData.entity; //Se agrega a emtidad 
             let plazas = jsonData.plazas;
@@ -119,13 +118,18 @@ function agregarEditarDetalles(id_object) { //SE OBTIENEN INFO DE ID SELECCIONAD
             $("#is_fecha_fin").val(entity.fecha_fin);
             $("#id_tbl_centro_trabajo_hraes_aux").val(entity.id_tbl_centro_trabajo_hraes);
 
-            
-           
+            /*
+            let bool = entity.id_cat_situacion_plaza_hraes != 1 ? true : false;
+            checkbox.checked = bool;
+            checkbox_disabled.disabled = !bool;
+            checkbox_disabled_num_plaza.disabled = !bool;
+            */
         }
     );
 
     $("#agregar_editar_modal").modal("show");
 }
+
 
 function agregarEditarByDb() {
     /*

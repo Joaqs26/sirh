@@ -39,11 +39,12 @@ function iniciarTablaEmpleados(busqueda, paginador) { ///INGRESA LA TABLA
     });
 }
 
-function agregarEditarDetalles(id_object) { //SE OBTIENEN INFO DE ID SELECCIONADO
+function agregarEditarDetalles(id_object) {
     var titulo = document.getElementById("titulo");
     titulo.textContent = 'Modificar';
     $("#id_object").val(id_object);
-    if (id_object == null){
+
+    if (id_object == null) {
         $("#agregar_editar_modal").find("input,textarea,select").val("");
         titulo.textContent = 'Agregar';
     }
@@ -51,48 +52,39 @@ function agregarEditarDetalles(id_object) { //SE OBTIENEN INFO DE ID SELECCIONAD
     $.post("../../../../App/Controllers/Central/EmpleadoC/DetallesC.php", {
         id_object: id_object
     },
-        function (data) {
-            let jsonData = JSON.parse(data);//se obtiene el json
-            let entity = jsonData.response; //Se agrega a emtidad 
-            //let genero = jsonData.genero;
-            let estadoCivil = jsonData.estadoCivil;
-            let pais = jsonData.pais;
-            let estado = jsonData.estado;
-            let nacionalidad = jsonData.nacionalidad;
+    function (data) {
+        let jsonData = JSON.parse(data);
+        let entity = jsonData.response; 
+        let estadoCivil = jsonData.estadoCivil;
+        let pais = jsonData.pais;
+        let estado = jsonData.estado;
+        let nacionalidad = jsonData.nacionalidad;
 
-            //Empleado
-            $('#nacionalidad').empty();
-            $('#nacionalidad').html(nacionalidad); 
+        // Llenar selectores
+        $('#nacionalidad').empty().html(nacionalidad);
+        $('#id_cat_estado_civil').empty().html(estadoCivil);
+        $('#id_cat_pais_nacimiento').empty().html(pais);
+        $('#id_cat_estado_nacimiento').empty().html(estado);
 
-            $('#id_cat_estado_civil').empty();
-            $('#id_cat_estado_civil').html(estadoCivil); 
+        // Refrescar selectores
+        $('#nacionalidad, #id_cat_estado_civil, #id_cat_pais_nacimiento, #id_cat_estado_nacimiento').selectpicker('refresh');
+        $('.selectpicker').selectpicker();
 
-            $('#id_cat_pais_nacimiento').empty();
-            $('#id_cat_pais_nacimiento').html(pais); 
-
-            $('#id_cat_estado_nacimiento').empty();
-            $('#id_cat_estado_nacimiento').html(estado); 
-
-            $('#nacionalidad').selectpicker('refresh');
-            $('#id_cat_estado_civil').selectpicker('refresh');
-            $('#id_cat_pais_nacimiento').selectpicker('refresh');
-            $('#id_cat_estado_nacimiento').selectpicker('refresh');
-            $('.selectpicker').selectpicker();
-
-            if (entity.curp != null){
-                $("#genero_x").val(generoCurp(entity.curp));
-            }
-            
-            $("#nombre").val(entity.nombre);
-            $("#rfc").val(entity.rfc);
-            $("#primer_apellido").val(entity.primer_apellido);
-            $("#curp").val(entity.curp);
-            $("#segundo_apellido").val(entity.segundo_apellido);
-            $("#nss").val(entity.nss);
-            $("#num_empleado").val(entity.num_empleado);
-
+        if (entity.curp != null) {
+            $("#genero_x").val(generoCurp(entity.curp));
         }
-    );
+
+        $("#nombre").val(entity.nombre);
+        $("#rfc").val(entity.rfc);
+        $("#primer_apellido").val(entity.primer_apellido);
+        $("#curp").val(entity.curp);
+        $("#segundo_apellido").val(entity.segundo_apellido);
+        $("#nss").val(entity.nss);
+        $("#num_empleado").val(entity.num_empleado);
+
+        // ✅ Corregido: Obtener id_rusp
+        $("#id_rusp").val(entity.id_rusp ?? '');
+    });
 
     $("#agregar_editar_modal").modal("show");
 }
