@@ -60,46 +60,75 @@ function validarUnique(rfc,curp,numEmpleado,id_object){
     );
 }
 
-function obtenerGenero(){
+function obtenerGenero() {
     let curp = document.getElementById('curp').value.trim();
     let textoEnMayusculas = curp.toUpperCase();
     document.getElementById("curp").value = textoEnMayusculas;
 
-    $("#genero_x").val(generoCurp(curp));
+    let genero = generoCurp(curp);
+    console.log("Género detectado:", genero);
+    $("#genero_x").val(genero);
 }
 
-function generoCurp(curp){
+function generoCurp(curp) {
     let result = curp.substring(10, 11);
     let message = 'NO ENCONTRADO';
 
-    if(result.toUpperCase() == 'M'){
-        message = 'FEMENINO';
-    } else if (result.toUpperCase() == 'H'){
+    if (result.toUpperCase() === 'M') {
+        message = 'FEMENINO';   
+    } else if (result.toUpperCase() === 'H') {
         message = 'MASCULINO';
-    } else if (result.toUpperCase() == 'X'){
+    } else if (result.toUpperCase() === 'X') {
         message = 'OTRO';
     }
     return message;
 }
-/*
-document.getElementById("id_cat_pais_nacimiento").addEventListener("change", function() {
-    let id_cat_pais_nacimiento = this.value;
-    $.post("../../../../App/Controllers/Hrae/EmpleadoC/EstadoC.php", {
-        id_cat_pais_nacimiento: id_cat_pais_nacimiento,
-    },
-        function (data) {
-            console.log(data);
-            let jsonData = JSON.parse(data);
-            let estado = jsonData.estado; 
+function obtenerEntidad() {
+    let curp = document.getElementById('curp').value.trim().toUpperCase();
+    document.getElementById("curp").value = curp;
 
-            $('#id_cat_estado_nacimiento').empty();
-            $('#id_cat_estado_nacimiento').html(estado); 
-            $('#id_cat_estado_nacimiento').selectpicker('refresh');
-            $('.selectpicker').selectpicker 
-        }
-    );
-  });
-  */
+    if (curp.length >= 13) {
+        console.log("📌 Enviando CURP al servidor...");
+
+        $.post("../../../../App/Controllers/Central/EmpleadoC/obtenerEntidad.php", {
+            curp: curp
+        }, function (data) {
+            try {
+                // Verificar si la respuesta es JSON válido
+                let jsonData = JSON.parse(data);
+
+                if (jsonData.error) {
+                    console.error("❌ Error recibido:", jsonData.error);
+                    return;
+                }
+
+                console.log("✅ Respuesta recibida:", jsonData);
+
+                // Autocompletar los campos
+                $("#id_cat_pais_nacimiento").val(jsonData.pais_nacimiento).trigger("change");
+
+                // Esperar 500ms antes de asignar la Entidad
+                setTimeout(() => {
+                    console.log("📌 Asignando Entidad de Nacimiento...");
+                    $("#id_cat_estado_nacimiento").val(jsonData.entidad_nacimiento).trigger("change");
+                }, 500);
+                
+                $("#nacionalidad").val(jsonData.nacionalidad).trigger("change");
+
+            } catch (e) {
+                console.error("❌ Error en el JSON recibido:", e, data);
+            }
+
+            $('.selectpicker').selectpicker('refresh');
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.error("❌ Error en la petición AJAX:", textStatus, errorThrown);
+        });
+
+    } else {
+        console.log("⚠️ CURP inválido, lista desplegable activa");
+    }
+}
+
 
 
   document.addEventListener("DOMContentLoaded", function() {

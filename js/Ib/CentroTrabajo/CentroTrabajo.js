@@ -114,9 +114,10 @@ function agregarEditarByDb() {
         id_estatus_centro: $("#id_estatus_centro").val(),
     },
         function (data) {
-            if (data == 'edit') {
+           console.log('respuesta:'+data);
+            if (data == 1) {
                 notyf.success('Centro de trabajo modificado con éxito');
-            } else if (data == 'add') {
+            } else if (data == 2) {
                 notyf.success('Centro de trabajo agregado con éxito');
             } else {
                 mensajeError(mensajeSalida);

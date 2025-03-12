@@ -7,7 +7,7 @@ class AsistenciaM
     {
         $query = pg_query("SELECT
                                 central.ctrl_asistencia_info.id_ctrl_asistencia_info,
-                                central.ctrl_asistencia_info.no_dispositivo,
+                                central.ctrl_asistencia_info.no_dispositivo,    
                                 UPPER(central.cat_asistencia_ubicacion.descripcion),
                                 UPPER(central.cat_asistencia_estatus.descripcion),
                                 UPPER(central.ctrl_asistencia_info.observaciones)
@@ -100,8 +100,11 @@ class AsistenciaM
                             WHERE no_dispositivo = $no_dispositivo
                             AND id_tbl_empleados_hraes <> $id_tbl_empleados_hraes;");
         return $query;
-    }
 
+
+
+    }
+    
     public function listadoAsistenciaAll($idEmpleado, $paginator)
     {
         $query = pg_query("WITH MinMaxHoras AS (

@@ -44,7 +44,8 @@ function mostrarModalConfigAsistencia(){
                 $("#fecha_inicio_ss").val(jsonData.fecha_inicio_ass);
                 $("#fecha_fin_ss").val(jsonData.fecha_fin_ass);  
             } else {
-                ocultarContenido('id_estatus_is_div');
+                //ocultarContenido('id_estatus_is_div');
+                
             }
 
             $("#no_dispositivo_ass").val(jsonData.no_dispositivo_ass);

@@ -43,7 +43,7 @@ if ($_POST['id_object'] != null) { //Modificar
             'id_users' => $_SESSION['id_user']
         ];
         pg_insert($connectionDBsPro, 'central.bitacora_hraes', $dataBitacora);
-        echo 'edit';
+        echo 1;
     }
 
 } else { //Agregar
@@ -56,6 +56,6 @@ if ($_POST['id_object'] != null) { //Modificar
             'id_users' => $_SESSION['id_user']
         ];
         pg_insert($connectionDBsPro, 'central.bitacora_hraes', $dataBitacora);
-        echo 'add';
+        echo 2;
     }
 }

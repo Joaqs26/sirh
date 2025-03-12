@@ -53,27 +53,38 @@ function agregarEditarDetalles(id_object) {
         id_object: id_object
     },
     function (data) {
+        console.log("Datos recibidos:", data); // Verifica los datos recibidos
         let jsonData = JSON.parse(data);
-        let entity = jsonData.response; 
+        let entity = jsonData.response;
         let estadoCivil = jsonData.estadoCivil;
         let pais = jsonData.pais;
         let estado = jsonData.estado;
         let nacionalidad = jsonData.nacionalidad;
-
+    
+        console.log("Datos obtenidos del servidor:", jsonData);
+    
         // Llenar selectores
         $('#nacionalidad').empty().html(nacionalidad);
         $('#id_cat_estado_civil').empty().html(estadoCivil);
         $('#id_cat_pais_nacimiento').empty().html(pais);
         $('#id_cat_estado_nacimiento').empty().html(estado);
-
+    
         // Refrescar selectores
         $('#nacionalidad, #id_cat_estado_civil, #id_cat_pais_nacimiento, #id_cat_estado_nacimiento').selectpicker('refresh');
         $('.selectpicker').selectpicker();
-
+    
         if (entity.curp != null) {
-            $("#genero_x").val(generoCurp(entity.curp));
+            console.log("🔹 CURP obtenido:", entity.curp);
+    
+            // ✅ Autollenar Género
+            let genero = generoCurp(entity.curp);
+            console.log("✅ Género detectado:", genero);
+            $("#genero_x").val(genero);
+    
+            // ✅ Autollenar Entidad Federativa
+            obtenerEntidad(); // 🚀 Llamamos a la función para extraer la entidad del CURP
         }
-
+    
         $("#nombre").val(entity.nombre);
         $("#rfc").val(entity.rfc);
         $("#primer_apellido").val(entity.primer_apellido);
@@ -81,13 +92,13 @@ function agregarEditarDetalles(id_object) {
         $("#segundo_apellido").val(entity.segundo_apellido);
         $("#nss").val(entity.nss);
         $("#num_empleado").val(entity.num_empleado);
-
-        // ✅ Corregido: Obtener id_rusp
         $("#id_rusp").val(entity.id_rusp ?? '');
     });
-
+    
     $("#agregar_editar_modal").modal("show");
 }
+
+
 
 
 function agregarEditarByDb() {

@@ -55,9 +55,10 @@ function uniqueNoBiometrico(){
     },
         function (data) {
             if (data){
-                notyf.error('El No biométrico* ya se encuentra asociado a un empleado'); 
-            } else {
                 agregarActualizarAsistencia();
+                
+            } else {
+                notyf.error('El No biométrico* ya se encuentra asociado a un empleado'); 
             }
             }
     );
@@ -70,7 +71,7 @@ document.getElementById("id_cat_asistencia_estatus").addEventListener("change", 
     if ( id_cat_asistencia_estatus == idExcluido){
         mostrarContenido('id_estatus_is_div');
     } else {
-        ocultarContenido('id_estatus_is_div');
+      //  ocultarContenido('id_estatus_is_div');
     }
   });
 

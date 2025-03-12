@@ -16,8 +16,7 @@ class ModelEspecialidadM
                             LIMIT 3 OFFSET $paginator;");
         return $listado;
     }
-
-    function listarByBusqueda($id_object, $busqueda,$paginator)
+   function listarByBusqueda($id_object, $busqueda,$paginator)
     {
         $listado = pg_query("SELECT ctrl_especialidad_hraes.id_ctrl_especialidad_hraes,
                                     cat_especialidad_hraes.especialidad,
