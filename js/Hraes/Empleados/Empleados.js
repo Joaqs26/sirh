@@ -94,7 +94,7 @@ function agregarEditarDetalles(id_object) { //SE OBTIENEN INFO DE ID SELECCIONAD
         }
     );
 
-    $("#agregar_editar_modal").modal("show");
+    $("#agregar_seditar_modal").modal("show");
 }
 
 

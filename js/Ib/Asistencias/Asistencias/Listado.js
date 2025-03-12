@@ -216,7 +216,7 @@ function convertirAMayusculas(event, inputId) {
 }
 
 
-function validarNumero(input) {
+function x(input) {
     input.value = input.value.replace(/[^\d]/g, '');
 }
 

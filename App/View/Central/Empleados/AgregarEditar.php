@@ -164,6 +164,12 @@
                                 id="nss" placeholder="Número de seguro social">
                             <div class="line"></div>
                         </div>
+                        <div class="col-3">
+                        <label for="id_rusp" class="form-label input-text-form">Rusp</label>
+                        <input type="number" oninput="validarNumero(this)" class="form-control custom-input"
+                            id="id_rusp" placeholder="Id Rusp">
+                        <div class="line"></div>
+                    </div>
                     </div>
                 </div>
             </div>
