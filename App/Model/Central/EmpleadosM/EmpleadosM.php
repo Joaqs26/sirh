@@ -42,44 +42,60 @@ class modelEmpleadosHraes
     public function listarByAll($paginador)
     {
         $query = "SELECT 
-            e.id_tbl_empleados_hraes, 
-            cp.num_plaza, 
-            ce.entidad AS zona_pagadora,
-            e.rfc, 
-            e.curp, 
-            e.nombre, 
-            e.primer_apellido,
-            e.segundo_apellido, 
-            m.codigo AS codigo_mov, 
-            m.nombre_movimiento AS nombre_movimiento,
-            ct.clave_centro_trabajo, 
-            ct.nombre AS nombre_centro,
-            cc.clabe AS clabe,
-            e.num_empleado,
-            pe.fecha_movimiento
-    
-        FROM central.tbl_empleados_hraes e
-    
-        LEFT JOIN central.tbl_plazas_empleados_hraes pe 
-            ON e.id_tbl_empleados_hraes = pe.id_tbl_empleados_hraes
-    
-        LEFT JOIN central.tbl_control_plazas_hraes cp 
-            ON pe.id_tbl_control_plazas_hraes = cp.id_tbl_control_plazas_hraes
-    
-        LEFT JOIN central.tbl_centro_trabajo_hraes ct 
-            ON cp.id_tbl_centro_trabajo_hraes = ct.id_tbl_centro_trabajo_hraes
-    
-        LEFT JOIN public.cat_entidad ce 
-            ON ct.id_cat_entidad = ce.id_cat_entidad
-    
-        LEFT JOIN public.tbl_movimientos m 
-            ON pe.id_tbl_movimientos = m.id_tbl_movimientos
-    
-        LEFT JOIN central.ctrl_cuenta_clabe_hraes cc 
-            ON e.id_tbl_empleados_hraes = cc.id_tbl_empleados_hraes
-    
-        ORDER BY pe.fecha_movimiento asc
-        LIMIT 10;";
+    e.id_tbl_empleados_hraes,
+    e.rfc,
+    e.curp,
+    e.nombre,
+    e.primer_apellido,
+    e.segundo_apellido,
+    COALESCE(m.codigo::text, '-') AS codigo_mov,
+COALESCE(m.nombre_movimiento, '-') AS nombre_movimiento,
+COALESCE(ct.clave_centro_trabajo, '-') AS clave_centro_trabajo,
+COALESCE(ct.nombre, '-') AS nombre_centro,
+COALESCE(ce.entidad, '-') AS entidad,
+COALESCE(cc.clabe, '-') AS clabe,
+
+    e.num_empleado,
+    pe.fecha_movimiento,
+       CASE 
+        WHEN m.id_tipo_movimiento = 3 THEN '-'
+        ELSE COALESCE(cp.num_plaza, '-')
+    END AS num_plaza,
+
+    -- Mostrar zona pagadora igual a entidad, con validación de movimiento
+    CASE 
+        WHEN m.id_tipo_movimiento = 3 THEN '-'
+        ELSE COALESCE(ce.entidad, '-')
+    END AS zona_pagadora
+
+FROM central.tbl_empleados_hraes e
+
+LEFT JOIN LATERAL (
+    SELECT *
+    FROM central.tbl_plazas_empleados_hraes pe2
+    WHERE pe2.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
+    ORDER BY pe2.fecha_movimiento DESC
+    LIMIT 1
+) pe ON true
+
+LEFT JOIN central.tbl_control_plazas_hraes cp 
+    ON pe.id_tbl_control_plazas_hraes = cp.id_tbl_control_plazas_hraes
+
+LEFT JOIN central.tbl_centro_trabajo_hraes ct 
+    ON cp.id_tbl_centro_trabajo_hraes = ct.id_tbl_centro_trabajo_hraes
+
+LEFT JOIN public.cat_entidad ce 
+    ON ct.id_cat_entidad = ce.id_cat_entidad
+
+LEFT JOIN public.tbl_movimientos m 
+    ON pe.id_tbl_movimientos = m.id_tbl_movimientos
+
+LEFT JOIN central.ctrl_cuenta_clabe_hraes cc 
+    ON e.id_tbl_empleados_hraes = cc.id_tbl_empleados_hraes
+    AND (cc.id_cat_estatus = 1 OR cc.id_cat_estatus IS NULL)
+
+ORDER BY e.id_tbl_empleados_hraes
+                LIMIT 10;";
     
         return $query;
     }
@@ -100,50 +116,77 @@ class modelEmpleadosHraes
                 ORDER BY pe.fecha_movimiento DESC
                 LIMIT 6 OFFSET $paginador;";
 
-    $listado = "SELECT 
-                    e.id_tbl_empleados_hraes, 
-                    cp.num_plaza, 
-                    ce.entidad AS zona_pagadora,
-                    e.rfc, 
-                    e.curp, 
-                    e.nombre, 
-                    e.primer_apellido,
-                    e.segundo_apellido, 
-                    m.codigo AS codigo_mov, 
-                    m.nombre_movimiento AS nombre_movimiento,
-                    ct.clave_centro_trabajo, 
-                    ct.nombre AS nombre_centro,
-                    cc.clabe AS clabe,
-                    e.num_empleado,
-                    pe.fecha_movimiento
+                    $listado = "SELECT 
+    e.id_tbl_empleados_hraes, 
+    CASE 
+        WHEN m.id_tipo_movimiento = 3 THEN '-' 
+        ELSE COALESCE(cp.num_plaza, '-')
+    END AS num_plaza,
 
-                FROM central.tbl_empleados_hraes e
+    CASE 
+        WHEN m.id_tipo_movimiento = 3 THEN '-' 
+        ELSE COALESCE(ce.entidad, '-')
+    END AS zona_pagadora,
 
-                LEFT JOIN central.tbl_plazas_empleados_hraes pe 
-                    ON e.id_tbl_empleados_hraes = pe.id_tbl_empleados_hraes
-                    AND pe.fecha_movimiento = (
-                        SELECT MAX(pe2.fecha_movimiento) 
-                        FROM central.tbl_plazas_empleados_hraes pe2
-                        WHERE pe2.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
-                    )
+    e.rfc, 
+    e.curp, 
+    e.nombre, 
+    e.primer_apellido,
+    e.segundo_apellido, 
+    m.codigo AS codigo_mov, 
+    m.nombre_movimiento AS nombre_movimiento,
 
-                LEFT JOIN central.tbl_control_plazas_hraes cp 
-                    ON pe.id_tbl_control_plazas_hraes = cp.id_tbl_control_plazas_hraes
+    CASE 
+        WHEN m.id_tipo_movimiento = 3 THEN '-' 
+        ELSE COALESCE(ct.clave_centro_trabajo, '-')
+    END AS clave_centro_trabajo,
 
-                LEFT JOIN central.tbl_centro_trabajo_hraes ct 
-                    ON cp.id_tbl_centro_trabajo_hraes = ct.id_tbl_centro_trabajo_hraes
+    CASE 
+        WHEN m.id_tipo_movimiento = 3 THEN '-' 
+        ELSE COALESCE(ct.nombre, '-')
+    END AS nombre_centro,
 
-                LEFT JOIN public.cat_entidad ce 
-                    ON ct.id_cat_entidad = ce.id_cat_entidad
+    CASE 
+        WHEN m.id_tipo_movimiento = 3 THEN '-' 
+        ELSE COALESCE(ce.entidad, '-')
+    END AS entidad,
 
-                LEFT JOIN public.tbl_movimientos m 
-                    ON pe.id_tbl_movimientos = m.id_tbl_movimientos
-                    AND m.id_tipo_movimiento <> 3 -- Excluir bajas
+    COALESCE(cc.clabe, '-') AS clabe,
+    e.num_empleado,
+    pe.fecha_movimiento
 
-                LEFT JOIN central.ctrl_cuenta_clabe_hraes cc 
-                    ON e.id_tbl_empleados_hraes = cc.id_tbl_empleados_hraes
-                    AND (cc.id_cat_estatus = 1 OR cc.id_cat_estatus IS NULL) 
-                
+FROM central.tbl_empleados_hraes e
+
+LEFT JOIN central.tbl_plazas_empleados_hraes pe 
+    ON e.id_tbl_empleados_hraes = pe.id_tbl_empleados_hraes
+    AND pe.fecha_movimiento = (
+        SELECT MAX(pe2.fecha_movimiento) 
+        FROM central.tbl_plazas_empleados_hraes pe2
+        WHERE pe2.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
+    )
+
+LEFT JOIN central.tbl_control_plazas_hraes cp 
+    ON pe.id_tbl_control_plazas_hraes = cp.id_tbl_control_plazas_hraes
+
+LEFT JOIN central.tbl_centro_trabajo_hraes ct 
+    ON cp.id_tbl_centro_trabajo_hraes = ct.id_tbl_centro_trabajo_hraes
+
+LEFT JOIN public.cat_entidad ce 
+    ON ct.id_cat_entidad = ce.id_cat_entidad
+
+LEFT JOIN public.tbl_movimientos m 
+    ON pe.id_tbl_movimientos = m.id_tbl_movimientos
+
+LEFT JOIN central.ctrl_cuenta_clabe_hraes cc 
+    ON e.id_tbl_empleados_hraes = cc.id_tbl_empleados_hraes
+    AND (cc.id_cat_estatus = 1 OR cc.id_cat_estatus IS NULL)
+
+                -- 🔽 Aquí va el filtro corregido
+                --WHERE cp.num_plaza IS  NULL 
+                --AND TRIM(UPPER(UNACCENT(cp.num_plaza))) <> ''
+                --ORDER BY pe.fecha_movimiento DESC;
+
+                            
                 WHERE " . $result;
 
     return $listado;

@@ -5,8 +5,7 @@ if ($id_tbl_empleados_hraes == null) {
 }
 ?>
 
-<link rel="stylesheet" href="../../../../assets/bootstrap-select/dist/css/bootstrap-select.min.css">
-<?php include '../../nav-menu.php' ?>
+
 <link rel="stylesheet" href="../../../../assets/styles/nav.css">
 
 <div class="container-fluid bg-image-module nav-padding">
