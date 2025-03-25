@@ -59,6 +59,7 @@ function agregarEditarDetalles(id_object) { //SE OBTIENEN INFO DE ID SELECCIONAD
         id_tbl_centro_trabajo_hraes: id_tbl_centro_trabajo_hraes
     },
         function (data) {
+            console.log(data);
             let jsonData = JSON.parse(data);//se obtiene el json
             let entity = jsonData.entity; //Se agrega a emtidad 
             let plazas = jsonData.plazas;
@@ -159,7 +160,7 @@ function agregarEditarByDb() {
         id_cat_aux_puesto: $("#id_cat_aux_puesto").val(),
         id_cat_categoria_puesto: $("#id_cat_categoria_puesto").val(),
         id_cat_tipo_trabajador: $("#id_cat_tipo_trabajador").val(),
-        // id_cat_tipo_contratacion: $("#id_cat_tipo_contratacion").val(),
+         id_cat_tipo_contratacion: $("#id_cat_tipo_contratacion").val(),
         id_cat_tipo_programa: $("#id_cat_tipo_programa").val(),
         id_cat_unidad: $("#id_cat_unidad").val(),
         id_cat_coordinacion: $("#id_cat_coordinacion").val(),
@@ -168,6 +169,7 @@ function agregarEditarByDb() {
         fecha_fin: $("#is_fecha_fin").val(),
     },
         function (data) {
+            console.log(data);
             if (data == 'edit') {
                 notyf.success('Plaza modificada con éxito');
             } else if (data == 'add') {

@@ -10,7 +10,7 @@ class CatTipotrabajadorM
             return $listado;
         }
 
-
+    
     public function listarByIdGeneral($id){
         $listado = pg_query("SELECT id_cat_tipo_trabajador,descripcion
                             FROM central.cat_tipo_trabajador

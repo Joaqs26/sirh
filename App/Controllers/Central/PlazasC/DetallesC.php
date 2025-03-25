@@ -3,6 +3,16 @@
 include '../librerias.php';
 include '../../../Model/Central/Catalogos/CatPuestoM/CatPuestoM.php';
 
+/*
+|--------------------------------------------------------------------------
+| Funcion para obtener el id de usuario y fecha
+|--------------------------------------------------------------------------
+| La funcion obtiene el id de usuario y fecha, si alguno de los dos trae datos en 0, es decir datos vacios
+| se agregara un _ caso contrario se asignara el valor y se llamara la funcion la cual traera el nombre de usuario
+| y la fecha de captura.
+|
+*/
+
 $catalogoPlazasM = new catalogoPlazasM();
 $catalogoPlazasC = new catalogoPlazasC();
 $modelPlazasHraes = new modelPlazasHraes();
@@ -27,90 +37,115 @@ $contratacionM = new ContratacionM();
 $id_object = $_POST['id_object'];
 
 if ($id_object != null) {
+
     $entity = $row->returnArray($modelPlazasHraes->listarByIdEdit($id_object));
     $niveles = $row->returnArrayById($catalogoPuestoM->nameOfPuesto($entity['id_cat_puesto_hraes']));
+    $isValueAux = $row->returnArrayById($catalogoPuestoM->getEditCatAux($entity['id_cat_aux_puesto']));
     $zona = $row->returnArrayById($catalogoPuestoM->getEntity($id_object));
 
-    // ✅ Verificar Plazas
-    $plazas = $catalogoPlazasC->returnCatPlazas($catalogoPlazasM->listarByAll());
-    if (!empty($entity['id_cat_tipo_plazas'])) {
-        $plazasData = $row->returnArrayById($catalogoPlazasM->obtenerElemetoById($entity['id_cat_tipo_plazas']));
-        $plazas = (!empty($plazasData)) ? $catalogoPlazasC->returnCatPLazasByIdObject($catalogoPlazasM->listarByAll(), $plazasData) : $plazas;
+    $plazas = $catalogoPlazasC->returnCatPlazas($catalogoPlazasM->listarByAll()); //ok
+    if ($entity['id_cat_tipo_plazas'] != '') {
+        $plazas = $catalogoPlazasC->returnCatPLazasByIdObject($catalogoPlazasM->listarByAll(), $row->returnArrayById($catalogoPlazasM->obtenerElemetoById($entity['id_cat_tipo_plazas'])));
     }
 
-    // ✅ Verificar Puesto
     $puesto = $catSelectC->selectByAllCatalogo($catalogoPuestoM->listarByAllPuesto());
-    if (!empty($entity['id_cat_puesto_hraes'])) {
-        $puestoData = $row->returnArrayById($catalogoPuestoM->editByAllPuesto($entity['id_cat_puesto_hraes']));
-        $puesto = (!empty($puestoData)) ? $catSelectC->selectByEditCatalogo($catalogoPuestoM->listarByAllPuesto(), $puestoData) : $puesto;
+    if ($entity['id_cat_aux_puesto'] != '') {
+        $puesto = $catSelectC->selectByEditCatalogo($catalogoPuestoM->listarByAllPuesto(), $row->returnArrayById($catalogoPuestoM->editByAllPuesto($isValueAux[1])));
     }
 
-    // ✅ Verificar Puesto Específico
-    $puesto_especifico = $catSelectC->selecStaticByNull();
-    if (!empty($entity['id_cat_aux_puesto'])) {
-        $puestoEspecificoData = $row->returnArrayById($catalogoPuestoM->editSpecificName($entity['id_cat_aux_puesto']));
-        $puesto_especifico = (!empty($puestoEspecificoData)) ? $catSelectC->selectByEditCatalogo($catalogoPuestoM->listOfSpecificName($entity['id_cat_puesto_hraes']), $puestoEspecificoData) : $puesto_especifico;
-    }
-
-    // ✅ Verificar Unidad de Coordinación
     $unidadCoor = $catSelectC->selectByAllCatalogo($catUnidadAdM->listOfCatCoordinacion());
-    if (!empty($entity['id_cat_coordinacion'])) {
-        $unidadCoorData = $row->returnArrayById($catUnidadAdM->editOfCatCoordinacion($entity['id_cat_coordinacion']));
-        $unidadCoor = (!empty($unidadCoorData)) ? $catSelectC->selectByEditCatalogo($catUnidadAdM->listOfCatCoordinacion(), $unidadCoorData) : $unidadCoor;
+    if ($entity['id_cat_coordinacion'] != '') {
+        $unidadCoor = $catSelectC->selectByEditCatalogo($catUnidadAdM->listOfCatCoordinacion(), $row->returnArrayById($catUnidadAdM->editOfCatCoordinacion($entity['id_cat_coordinacion'])));
     }
 
-    // ✅ Verificar Unidad Administrativa
     $unidadAdmin = $catSelectC->selectByAllCatalogo($catUnidadAdM->lisOfCatUnidad());
-    if (!empty($entity['id_cat_unidad'])) {
-        $unidadAdminData = $row->returnArrayById($catUnidadAdM->editOfCatUnidad($entity['id_cat_unidad']));
-        $unidadAdmin = (!empty($unidadAdminData)) ? $catSelectC->selectByEditCatalogo($catUnidadAdM->lisOfCatUnidad(), $unidadAdminData) : $unidadAdmin;
+    if ($entity['id_cat_unidad'] != '') {
+        $unidadAdmin = $catSelectC->selectByEditCatalogo($catUnidadAdM->lisOfCatUnidad(), $row->returnArrayById($catUnidadAdM->editOfCatUnidad($entity['id_cat_unidad'])));
     }
 
-    // ✅ Verificar Programa
+    $nomEspecifico = $catSelectC->selecStaticByNull();
+    if ($entity['id_cat_aux_puesto'] != '') {
+        $nomEspecifico = $catSelectC->selectByEditCatalogo($catalogoPuestoM->listOfSpecificName($isValueAux[1]), $row->returnArrayById($catalogoPuestoM->editSpecificName($isValueAux[2])));
+    }
+
+    $puestoCategoria = $catSelectC->selecStaticByNull();
+    if ($entity['id_cat_aux_puesto'] != '') {
+        $puestoCategoria = $catSelectC->selectByEditCatalogo($catalogoPuestoM->listOfCategoName($isValueAux[1], $isValueAux[2]), $row->returnArrayById($catalogoPuestoM->editCatName($isValueAux[3])));
+    }
+
     $programa = $catSelectC->selectByAllCatalogo($contratacionM->listarByAllPrograma());
-    if (!empty($entity['id_cat_tipo_programa'])) {
-        $programaData = $row->returnArrayById($contratacionM->listarByEditPrograma($entity['id_cat_tipo_programa']));
-        $programa = (!empty($programaData)) ? $catSelectC->selectByEditCatalogo($contratacionM->listarByAllPrograma(), $programaData) : $programa;
+    if ($entity['id_cat_tipo_programa'] != '') {
+        $programa = $catSelectC->selectByEditCatalogo($contratacionM->listarByAllPrograma(), $row->returnArrayById($contratacionM->listarByEditPrograma($entity['id_cat_tipo_programa'])));
     }
 
-    // ✅ Verificar Contratación
     $contratacion = $catSelectC->selectByAllCatalogo($contratacionM->Contratacionlist());
-    if (!empty($entity['id_cat_tipo_contratacion']) && !empty($entity['id_cat_tipo_trabajador'])) {
-        $contratacionData = $row->returnArrayById($contratacionM->listarByEditContratacion($entity['id_cat_tipo_contratacion']));
-        $contratacion = (!empty($contratacionData)) ? $catSelectC->selectByEditCatalogo($contratacionM->listarByAllContratacion($entity['id_cat_tipo_trabajador']), $contratacionData) : $contratacion;
+    if (!empty($entity['id_cat_tipo_contratacion'])) {
+                $contratacion = $catSelectC->selectByEditCatalogo(
+            $contratacionM->listarByAll(),
+            $row->returnArrayById($contratacionM->listarByAllContratacion2($entity['id_cat_tipo_contratacion']))
+        );
     }
 
-    // ✅ Generar JSON con validaciones
+    $trabajador = $catSelectC->selectByAllCatalogo($contratacionM->listarByAllTrabajador());
+    /*if ($entity['id_cat_tipo_trabajador'] != '') {
+        $trabajador = $catSelectC->selectByEditCatalogo($contratacionM->listarByAllTrabajador(), $row->returnArrayById($contratacionM->listarByAEditTrabajador($entity['id_cat_tipo_trabajador'])));
+    }*/
+
+   // $contratacion = $catSelectC->selecStaticByNull();
+   /* if ($entity['id_cat_tipo_contratacion'] != '' && $entity['id_cat_tipo_trabajador'] != '') {
+        $contratacion = $catSelectC->selectByEditCatalogo($contratacionM->listarByAllContratacion($entity['id_cat_tipo_trabajador']), $row->returnArrayById($contratacionM->listarByEditContratacion($entity['id_cat_tipo_contratacion'])));
+    }*/
+
+    /*$caracterNom = $catSelectC->selectByAllCatalogo($contratacionM->listarCatCaracter());
+    if($entity['id_cat_caracter_nombramiento'] != ''){
+        $caracterNom = $catSelectC->selectByEditCatalogo($contratacionM->listarCatCaracter(), $row->returnArrayById($contratacionM->editCatCaracter($entity['id_cat_caracter_nombramiento'])));
+    }*/
+
     $raw = [
         'entity' => $entity,
         'niveles' => 'NIVEL',
-        'zona' => $zona[0] ?? null,
+        'zona' => $zona[0],
         'plazas' => $plazas,
         'puesto' => $puesto,
-        'puesto_especifico' => $puesto_especifico,
         'unidadCoor' => $unidadCoor,
         'unidadAdmin' => $unidadAdmin,
+        'nomEspecifico' => $nomEspecifico,
+        'puestoCategoria' => $puestoCategoria,
         'programa' => $programa,
-        'contratacion' => $contratacion
+        'trabajador' => $trabajador,
+        'contratacion' => $contratacion,
+        //'caracterNom' => $caracterNom
     ];
-
     echo json_encode($raw);
 
-} else {
-    // ✅ Si no hay ID, mostrar listas completas
-    $raw = [
-        'entity' => null,
-        'niveles' => 'NIVEL',
-        'zona' => null,
-        'plazas' => $catalogoPlazasC->returnCatPlazas($catalogoPlazasM->listarByAll()),
-        'puesto' => $catSelectC->selectByAllCatalogo($catalogoPuestoM->listarByAllPuesto()),
-        'puesto_especifico' => $catSelectC->selecStaticByNull(),
-        'unidadCoor' => $catSelectC->selectByAllCatalogo($catUnidadAdM->listOfCatCoordinacion()),
-        'unidadAdmin' => $catSelectC->selectByAllCatalogo($catUnidadAdM->lisOfCatUnidad()),
-        'programa' => $catSelectC->selectByAllCatalogo($contratacionM->listarByAllPrograma()),
-        'contratacion' => $catSelectC->selectByAllCatalogo($contratacionM->Contratacionlist())
-    ];
+} else { ///Agregar
+    $entity = $modelPlazasHraes->listarByNull();
+    $id_tbl_centro_trabajo_hraes = $_POST['id_tbl_centro_trabajo_hraes']; //ok
+    $plazas = $catalogoPlazasC->returnCatPlazas($catalogoPlazasM->listarByAll()); //ok
+    $puesto = $catSelectC->selectByAllCatalogo($catalogoPuestoM->listarByAllPuesto());
+    $unidadCoor = $catSelectC->selectByAllCatalogo($catUnidadAdM->listOfCatCoordinacion());
+    $unidadAdmin = $catSelectC->selectByAllCatalogo($catUnidadAdM->lisOfCatUnidad());
+    $zona = $row->returnArrayById($modelCentroTrabajoHraes->getEntityZona($id_tbl_centro_trabajo_hraes));
+    $nomEspecifico = $catSelectC->selecStaticByNull();
+    $programa = $catSelectC->selectByAllCatalogo($contratacionM->listarByAllPrograma());
+    $trabajador = $catSelectC->selectByAllCatalogo($contratacionM->listarByAllTrabajador());
+    $contratacion = $catSelectC->selecStaticByNull();
+    //$caracterNom = $catSelectC->selectByAllCatalogo($contratacionM->listarCatCaracter());
 
+    $raw = [
+        'entity' => $entity,
+        'niveles' => 'NIVEL',
+        'plazas' => $plazas,
+        'puesto' => $puesto,
+        'unidadCoor' => $unidadCoor,
+        'unidadAdmin' => $unidadAdmin,
+        'zona' => $zona[0],
+        'nomEspecifico' => $nomEspecifico,
+        'puestoCategoria' => $nomEspecifico,
+        'programa' => $programa,
+        'trabajador' => $trabajador,
+        'contratacion' => $contratacion,
+        //'caracterNom' => $caracterNom
+    ];
     echo json_encode($raw);
 }
-?>

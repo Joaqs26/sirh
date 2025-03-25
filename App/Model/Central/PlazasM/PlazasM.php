@@ -158,7 +158,7 @@ public function listarByLike($id_tbl_centro_trabajo_hraes, $busqueda, $paginator
                 return $listado;
             }
 
-            public function listarCountByNum($numPlaza)
+            public function listarCountByNum($numPlaza) 
             {
                 $listado = pg_query("SELECT COUNT (id_tbl_control_plazas_hraes)
                                     FROM central.tbl_control_plazas_hraes
@@ -296,6 +296,19 @@ public function listarByLike($id_tbl_centro_trabajo_hraes, $busqueda, $paginator
                                     FROM central.tbl_control_plazas_hraes  
                                     WHERE id_tbl_control_plazas_hraes = $idPlaza");
                 return $listado;
+            }
+
+            public function idTipoTrabajador($idEmpleado)
+            {
+                $query = "SELECT pe.id_cat_tipo_trabajador, tt.descripcion
+                          FROM tbl_plazas_empleados_hraes pe
+                          LEFT JOIN central.cat_tipo_trabajador tt 
+                          ON pe.id_cat_tipo_trabajador = tt.id_cat_tipo_trabajador
+                          WHERE pe.id_tbl_empleados_hraes = $idEmpleado
+                          ORDER BY pe.fecha_movimiento DESC
+                          LIMIT 1;";
+                
+                return pg_fetch_assoc(pg_query($query));
             }
 
             public function infoPlazaCentro($idPlaza)

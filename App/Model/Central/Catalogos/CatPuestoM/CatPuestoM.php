@@ -18,41 +18,117 @@ class catalogoPuestoM
         return $listado;
     }
 
-    public function nameOfPuesto($id){
+    public function nameOfPuesto($id)
+    {
         $query = pg_query("SELECT nivel
                              FROM central.cat_puesto_hraes
                              WHERE id_cat_puesto_hraes = $id;");
         return $query;
     }
 
-    public function listOfSpecificName($id){
-        $query = pg_query ("SELECT 
-                                DISTINCT central.cat_puesto_nombre_especifico.id_cat_puesto_nombre_especifico,
-                                UPPER(central.cat_puesto_nombre_especifico.nombre) AS is_specific_name
-                            FROM central.cat_aux_puesto
-                            INNER JOIN central.cat_puesto_nombre_especifico
-                                ON central.cat_aux_puesto.id_cat_puesto_nombre_especifico =
-                                central.cat_puesto_nombre_especifico.id_cat_puesto_nombre_especifico
-                            WHERE central.cat_aux_puesto.id_cat_puesto_hraes = $id
+    public function categpues($id)
+    {
+        $query = pg_query("SELECT 
+                        cat_puesto_categoria.id_cat_puesto_categoria,
+                        cat_puesto_categoria.nombre AS categoria_nombre
+                    FROM central.tbl_control_plazas_hraes
+                    INNER JOIN central.cat_aux_puesto
+                        ON cat_aux_puesto.id_cat_aux_puesto = tbl_control_plazas_hraes.id_cat_aux_puesto
+                    INNER JOIN central.cat_puesto_categoria
+                        ON cat_aux_puesto.id_cat_puesto_categoria = cat_puesto_categoria.id_cat_puesto_categoria
+                    WHERE tbl_control_plazas_hraes.id_tbl_control_plazas_hraes = $id
+                    LIMIT 1;");
+        return $query;
+    }
+    public function categpues2($id)
+{
+    if (empty($id) || !is_numeric($id)) {
+        return false;
+    }
+
+    $query = pg_query("SELECT 
+                        cat_puesto_categoria.id_cat_puesto_categoria,
+                        cat_puesto_categoria.nombre AS categoria_nombre
+                    FROM central.tbl_control_plazas_hraes
+                    INNER JOIN central.cat_aux_puesto
+                        ON cat_aux_puesto.id_cat_aux_puesto = tbl_control_plazas_hraes.id_cat_aux_puesto
+                    INNER JOIN central.cat_puesto_categoria
+                        ON cat_aux_puesto.id_cat_puesto_categoria = cat_puesto_categoria.id_cat_puesto_categoria
+                    WHERE tbl_control_plazas_hraes.id_tbl_control_plazas_hraes = $id
+                    LIMIT 1;");
+    return $query;
+}
+
+
+    public function listOfSpecificName($id)
+    {
+        $query = pg_query("SELECT 
+                                    DISTINCT central.cat_puesto_nombre_especifico.id_cat_puesto_nombre_especifico,
+                                    UPPER(central.cat_puesto_nombre_especifico.nombre) AS is_specific_name
+                                FROM central.cat_aux_puesto
+                                INNER JOIN central.cat_puesto_nombre_especifico
+                                    ON central.cat_aux_puesto.id_cat_puesto_nombre_especifico =
+                                    central.cat_puesto_nombre_especifico.id_cat_puesto_nombre_especifico
+                                WHERE central.cat_aux_puesto.id_cat_puesto_hraes = $id
                             ORDER BY is_specific_name ASC;");
         return $query;
     }
 
-    public function listOfCategoName($id_cat_puesto_hraes,$id_cat_puesto_nombre_especifico){
-        $query = pg_query ("SELECT 
+    public function listOfCategoName($id_cat_puesto_hraes, $id_cat_puesto_nombre_especifico)
+    {
+        $query = pg_query("SELECT 
+                                    DISTINCT central.cat_puesto_categoria.id_cat_puesto_categoria,
+                                    UPPER (central.cat_puesto_categoria.nombre) AS is_name_especific
+                                FROM central.cat_aux_puesto
+                                INNER JOIN central.cat_puesto_categoria
+                                    ON central.cat_aux_puesto.id_cat_puesto_categoria =
+                                        central.cat_puesto_categoria.id_cat_puesto_categoria
+                                WHERE central.cat_aux_puesto.id_cat_puesto_hraes = $id_cat_puesto_hraes
+                                AND central.cat_aux_puesto.id_cat_puesto_nombre_especifico = $id_cat_puesto_nombre_especifico
+                            ORDER BY is_name_especific ASC;");
+        return $query;
+    }
+
+    public function getCategoriasPorPuesto($id)
+    {
+        $query = pg_query("SELECT 
+                cat_puesto_categoria.id_cat_puesto_categoria,
+                cat_puesto_categoria.nombre
+            FROM central.cat_aux_puesto
+            INNER JOIN central.cat_puesto_categoria 
+                ON cat_aux_puesto.id_cat_puesto_categoria = cat_puesto_categoria.id_cat_puesto_categoria
+            WHERE cat_aux_puesto.id_cat_puesto_hraes = $id LIMIT 1;");
+        return $query;  
+    }
+
+
+
+    public function listOfCate()
+    {
+        $query = pg_query("SELECT 
+                                    central.cat_puesto_nombre_especifico.id_cat_puesto_nombre_especifico,
+                                    UPPER(central.cat_puesto_nombre_especifico.nombre)
+                                FROM central.cat_puesto_nombre_especifico;");
+        return $query;
+    }
+
+    public function listOfCategoName2()
+    {
+        $query = pg_query("SELECT 
                                 DISTINCT central.cat_puesto_categoria.id_cat_puesto_categoria,
                                 UPPER (central.cat_puesto_categoria.nombre) AS is_name_especific
                             FROM central.cat_aux_puesto
                             INNER JOIN central.cat_puesto_categoria
                                 ON central.cat_aux_puesto.id_cat_puesto_categoria =
                                     central.cat_puesto_categoria.id_cat_puesto_categoria
-                            WHERE central.cat_aux_puesto.id_cat_puesto_hraes = $id_cat_puesto_hraes
-                            AND central.cat_aux_puesto.id_cat_puesto_nombre_especifico = $id_cat_puesto_nombre_especifico
-                            ORDER BY is_name_especific ASC;");
+                                ORDER BY is_name_especific ASC;");
         return $query;
     }
 
-    public function getIdOfTableAux($id_cat_puesto_hraes, $id_cat_puesto_nombre_especifico, $id_cat_puesto_categoria){
+
+
+    public function getIdOfTableAux($id_cat_puesto_hraes, $id_cat_puesto_nombre_especifico, $id_cat_puesto_categoria)
+    {
         $query = pg_query("SELECT 
                                 central.cat_aux_puesto.id_cat_aux_puesto
                             FROM central.cat_aux_puesto
@@ -62,38 +138,70 @@ class catalogoPuestoM
         return $query;
     }
 
-    public function getEditCatAux($isId){
+    public function getEditCatAux($isId)
+    {
         if (empty($isId) || !is_numeric($isId)) {
             return false; // Evita la ejecución de la consulta si el ID no es válido
         }
-    
+
         $query = pg_query("SELECT 
-                                central.cat_aux_puesto.id_cat_aux_puesto,
-                                central.cat_aux_puesto.id_cat_puesto_hraes,
-                                central.cat_aux_puesto.id_cat_puesto_nombre_especifico,
-                                central.cat_aux_puesto.id_cat_puesto_categoria
-                            FROM central.cat_aux_puesto
+                                    *
+                                FROM central.cat_aux_puesto
                             WHERE central.cat_aux_puesto.id_cat_aux_puesto = $isId;");
         return $query;
     }
-    
-    public function editSpecificName($id){
+
+    public function editSpecificName($isId)
+    {
         $query = pg_query("SELECT 
-                                central.cat_puesto_nombre_especifico.id_cat_puesto_nombre_especifico,
-                                UPPER(central.cat_puesto_nombre_especifico.nombre)
-                            FROM central.cat_puesto_nombre_especifico
-                            WHERE central.cat_puesto_nombre_especifico.id_cat_puesto_nombre_especifico = $id;");
+                            cat_puesto_nombre_especifico.id_cat_puesto_nombre_especifico,
+                            cat_puesto_nombre_especifico.nombre
+                        FROM central.cat_puesto_nombre_especifico
+                        INNER JOIN central.cat_aux_puesto
+                            ON cat_aux_puesto.id_cat_puesto_nombre_especifico = cat_puesto_nombre_especifico.id_cat_puesto_nombre_especifico
+                            WHERE central.cat_aux_puesto.id_cat_aux_puesto = $isId;");
         return $query;
     }
 
-    public function editCatName($isId){
-        $query = pg_query ("SELECT 
-                                central.cat_puesto_categoria.id_cat_puesto_categoria,
-                                UPPER(central.cat_puesto_categoria.nombre)
-                            FROM central.cat_puesto_categoria
+
+    public function editSpecificName2()
+    {
+        $query = pg_query("SELECT 
+                                central.cat_puesto_nombre_especifico.id_cat_puesto_nombre_especifico,
+                                UPPER(central.cat_puesto_nombre_especifico.nombre)
+                            FROM central.cat_puesto_nombre_especifico;");
+        return $query;
+    }
+
+    public function listOfCatCoordinacion()
+    {
+        $query = pg_query("SELECT 
+                                central.cat_puesto_nombre_especifico.id_cat_puesto_nombre_especifico,
+                                UPPER(central.cat_puesto_nombre_especifico.nombre)
+                            FROM central.cat_puesto_nombre_especifico");
+
+        return $query;
+    }
+
+    public function editCatName($isId)
+    {
+            $query = pg_query("SELECT 
+                                    central.cat_puesto_categoria.id_cat_puesto_categoria,
+                                    UPPER(central.cat_puesto_categoria.nombre)
+                                FROM central.cat_puesto_categoria
                             WHERE central.cat_puesto_categoria.id_cat_puesto_categoria = $isId;");
         return $query;
     }
+
+    public function editCatNam()
+    {
+        $query = pg_query("SELECT 
+                                central.cat_puesto_categoria.id_cat_puesto_categoria,
+                                UPPER(central.cat_puesto_categoria.nombre)
+                            FROM central.cat_puesto_categoria;");
+        return $query;
+    }
+
 
     public function listarByAllPuesto()
     {
@@ -115,7 +223,8 @@ class catalogoPuestoM
         return $listado;
     }
 
-    public function getEntity($id){
+    public function getEntity($id)
+    {
         $query = pg_query("SELECT CONCAT(public.cat_entidad.clave_entidad, ' - ', public.cat_entidad.entidad)
                             FROM central.tbl_control_plazas_hraes
                             INNER JOIN central.tbl_centro_trabajo_hraes
@@ -127,5 +236,4 @@ class catalogoPuestoM
                             WHERE central.tbl_control_plazas_hraes.id_tbl_control_plazas_hraes = $id;");
         return $query;
     }
-
 }

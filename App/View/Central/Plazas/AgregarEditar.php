@@ -14,7 +14,7 @@
                                 Plaza.
                             </h1>
                             <p class="color-text-white">
-                                Este espacio está destinado a agregar o modificar información relacionada con plazas. 
+                                Este espacio está destinado a agregar o modificar información relacionada con plazas.
                                 Aquí puedes ingresar nuevos datos o actualizar los existentes según sea necesario.
                             </p>
                         </div>
@@ -84,6 +84,7 @@
                             <select class="form-control custom-select selectpicker" data-live-search="true"
                                 id="id_cat_categoria_puesto" data-none-results-text="Sin resultados">
                             </select>
+
                         </div>
                     </div>
 

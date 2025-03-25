@@ -55,16 +55,23 @@ class ContratacionM
         return $query;
     }
 
-    public function listarByEditContratacion($id)
+    public function listarByAllContratacion2($id)
     {
         $query = pg_query("SELECT
                                 central.cat_tipo_contratacion.id_cat_tipo_contratacion,
-                                UPPER(central.cat_tipo_contratacion.descripcion)
+                                central.cat_tipo_contratacion.descripcion
                             FROM central.cat_tipo_contratacion 
                             WHERE central.cat_tipo_contratacion.id_cat_tipo_contratacion = $id;");
         return $query;
     }
-
+    public function listarByAll()
+    {
+        $query = pg_query("SELECT
+                                central.cat_tipo_contratacion.id_cat_tipo_contratacion,
+                                UPPER(central.cat_tipo_contratacion.descripcion)
+                            FROM central.cat_tipo_contratacion ");
+        return $query;
+    }
     public function listarCatCaracter()
     {
         $query = pg_query("SELECT 

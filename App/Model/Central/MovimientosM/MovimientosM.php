@@ -66,12 +66,17 @@ class ModelMovimientosM
 
     public function listarByEdit($idMovimiento)
     {
-        $listado = pg_query("SELECT id_tbl_plazas_empleados_hraes,fecha_inicio,
-                                    fecha_termino,id_tbl_movimientos,fecha_movimiento,
-                                    id_tbl_control_plazas_hraes,id_tbl_empleados_hraes,
-                                    observaciones, motivo_estatus
-                             FROM central.tbl_plazas_empleados_hraes
-                             WHERE id_tbl_plazas_empleados_hraes = $idMovimiento;");
+        $listado = pg_query("SELECT 
+    pe.*, 
+    tt.descripcion 
+FROM 
+    central.tbl_plazas_empleados_hraes pe
+LEFT JOIN 
+    central.cat_tipo_trabajador tt 
+ON 
+    pe.id_cat_tipo_trabajador = tt.id_cat_tipo_trabajador
+WHERE 
+    pe.id_tbl_plazas_empleados_hraes = $idMovimiento;");
         return $listado;
     }
 
@@ -114,27 +119,26 @@ class ModelMovimientosM
         return $listado;
     }
 
+    function editarByArray($conexion, $datos, $condicion, $name)
+    {
+        $pg_update = pg_update($conexion, $name, $datos, $condicion);
+        return $pg_update;
+    }
     function agregarByArray($conexion, $datos, $name)
     {
-        // Obtener las columnas válidas de la tabla
-        $columnasTabla = pg_meta_data($conexion, $name);
-    
-        // Filtrar los datos para que solo incluyan columnas válidas
-        $datosFiltrados = array_intersect_key($datos, $columnasTabla);
-    
-        // Realizar la inserción con los datos filtrados
-        $pg_add = pg_insert($conexion, $name, $datosFiltrados);
-    
+        // Asegurarse de que $name es una cadena
+        if (is_array($name)) {
+            $name = $name[0]; // O manejar el error de otra manera según tu lógica
+        }
+        
+        $pg_add = pg_insert($conexion, $name, $datos);
         return $pg_add;
     }
-    
-
     function eliminarByArray($conexion, $condicion, $name)
     {
         $pgs_delete = pg_delete($conexion, $name, $condicion);
         return $pgs_delete;
     }
-
     public function ultimoMovimientoByVal($idPlaza)
     {
         $listado = pg_query("SELECT tbl_movimientos.id_tipo_movimiento,
@@ -198,21 +202,33 @@ class ModelMovimientosM
                                  LIMIT 1;");
         return $listado;
     }
-
     public function obtenerTiposTrabajador()
-{
-    $query = "SELECT id_cat_tipo_trabajador, descripcion FROM central.cat_tipo_trabajador ORDER BY descripcion ASC";
-    $result = pg_query($query);
+    {
+        $query = "SELECT id_cat_tipo_trabajador, descripcion 
+                  FROM central.cat_tipo_trabajador 
+                  ORDER BY descripcion ASC";
+                  
+        $result = pg_query($query);
     
-    $tiposTrabajador = [];
-    while ($row = pg_fetch_assoc($result)) {
-        $tiposTrabajador[] = $row;
+        $tiposTrabajador = [];
+        while ($row = pg_fetch_assoc($result)) {
+            $tiposTrabajador[] = $row;
+        }
+    
+        return $tiposTrabajador;
     }
     
-    return $tiposTrabajador;
+
+    public function idTipoTrabajador($idEmpleado)
+{
+    $query = "SELECT id_cat_tipo_trabajador
+              FROM tbl_plazas_empleados_hraes 
+              WHERE id_tbl_empleados_hraes = $idEmpleado
+              ORDER BY fecha_movimiento DESC
+              LIMIT 1;";
+    
+    return pg_query($query);
 }
-
-
    //La funcion retorna el id de la plaza a la que esta actualmente asociado
    public function getMaxIdPlaza($schema, $idEmpleado){
     $isQuery = pg_query("SELECT 
