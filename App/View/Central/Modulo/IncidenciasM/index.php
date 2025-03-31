@@ -4,9 +4,9 @@ if ($id_tbl_empleados_hraes == null) {
     header('Location: ../Empleados/index.php');
 }
 ?>
+    
 
 
-<link rel="stylesheet" href="../../../../assets/styles/nav.css">
 
 <div class="container-fluid bg-image-module nav-padding">
     <br>
@@ -19,10 +19,7 @@ if ($id_tbl_empleados_hraes == null) {
                     <div class="col-auto">
                         <div class="vertical-line"></div>
                     </div>
-                    <div class="col padding-left-0">
-                        <h3>Incidencias y Control de Asistencia</h3>
-                    </div>
-                    <div class="col-auto">
+                      <div class="col-auto">
                         <a href="../Empleados/index.php" class="btn btn-light" role="button">
                             <i style="color:#235B4E" class="fa fa-arrow-left icono-pequeno-tabla"></i>
                             <span class="hide-menu text-button-add">&nbsp;Regresar</span>
@@ -103,4 +100,4 @@ if ($id_tbl_empleados_hraes == null) {
     });
 </script>
 
-<script src="../../../../assets/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+

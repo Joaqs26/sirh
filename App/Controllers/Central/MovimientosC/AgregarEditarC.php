@@ -11,6 +11,8 @@ $modelMovimientosM = new ModelMovimientosM();
 $catMovimientoM = new CatMovimientoM();
 $modelEmpleadosHraes = new modelEmpleadosHraes();
 $modelPlazasHraes = new modelPlazasHraes();
+$modelMovimientosM = new ModelMovimientosM();
+
 
 
 // Variables recibidas desde el formulario

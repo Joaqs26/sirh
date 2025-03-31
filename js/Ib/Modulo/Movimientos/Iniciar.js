@@ -30,6 +30,7 @@ function agregarEditarMovimiento(id_object) {
     titulo.textContent = id_object == null ? 'Agregar' : 'Modificar';
 
     if (id_object == null) {
+
         $("#agregar_editar_movimiento").find("input,textarea,select").val("");
     }
 
@@ -108,6 +109,7 @@ function agregarEditarMovimiento(id_object) {
 function salirAgregarEditarMovimiento() {
     $("#agregar_editar_movimiento").modal("hide");
 }
+
 
 
 

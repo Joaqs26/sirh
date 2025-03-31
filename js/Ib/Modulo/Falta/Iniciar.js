@@ -37,6 +37,7 @@ function agregarEditarFalta(id_object) {
         id_object: id_object
     },
         function (data) {
+            console.log(data);
             let jsonData = JSON.parse(data);
             let entity = jsonData.response;
             let faltaEstatus = jsonData.faltaEstatus;
@@ -80,6 +81,10 @@ function agregarEditarFalta(id_object) {
             $('#id_cat_retardo_estatus_').selectpicker('refresh');
             $('#id_cat_retardo_tipo_').selectpicker('refresh');
 
+            $('#id_cat_retardo_tipo_').empty().html(faltaTipo);
+            $('#id_cat_retardo_tipo_').selectpicker('refresh');
+
+
             $('.selectpicker').selectpicker();
             $("#observaciones_").val(entity.observaciones);
         }
@@ -87,6 +92,15 @@ function agregarEditarFalta(id_object) {
 
     $("#agregar_editar_falta").modal("show");
 }
+
+function mostrarContenido(id) {
+    document.getElementById(id).style.display = 'block';
+}
+
+function ocultarContenido(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
 
 function salirAgregarEditarFalta_() {
     $("#agregar_editar_falta").modal("hide");

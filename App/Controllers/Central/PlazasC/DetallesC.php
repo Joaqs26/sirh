@@ -64,10 +64,15 @@ if ($id_object != null) {
     }
 
     $nomEspecifico = $catSelectC->selecStaticByNull();
-    if ($entity['id_cat_aux_puesto'] != '') {
+    /*if ($entity['id_cat_aux_puesto'] != '') {
         $nomEspecifico = $catSelectC->selectByEditCatalogo($catalogoPuestoM->listOfSpecificName($isValueAux[1]), $row->returnArrayById($catalogoPuestoM->editSpecificName($isValueAux[2])));
+    }*/
+    if (!empty($entity['id_cat_aux_puesto'])) {
+        $nomEspecifico = $catSelectC->selectByEditCatalogo(
+            $catalogoPuestoM->listOfCate(),
+            $row->returnArrayById($catalogoPuestoM->editSpecificName($entity['id_cat_aux_puesto']))
+        );
     }
-
     $puestoCategoria = $catSelectC->selecStaticByNull();
     if ($entity['id_cat_aux_puesto'] != '') {
         $puestoCategoria = $catSelectC->selectByEditCatalogo($catalogoPuestoM->listOfCategoName($isValueAux[1], $isValueAux[2]), $row->returnArrayById($catalogoPuestoM->editCatName($isValueAux[3])));
@@ -78,26 +83,29 @@ if ($id_object != null) {
         $programa = $catSelectC->selectByEditCatalogo($contratacionM->listarByAllPrograma(), $row->returnArrayById($contratacionM->listarByEditPrograma($entity['id_cat_tipo_programa'])));
     }
 
+    $trabajador = $catSelectC->selectByAllCatalogo($contratacionM->listarByAllTrabajador());
+    /*if ($entity['id_cat_tipo_trabajador'] != '') {
+        $trabajador = $catSelectC->selectByEditCatalogo($contratacionM->listarByAllTrabajador(), $row->returnArrayById($contratacionM->listarByAEditTrabajador($entity['id_cat_tipo_trabajador'])));
+    }*/
+    if (!empty($entity['id_cat_tipo_trabajador'])) {
+        $trabajador = $catSelectC->selectByEditCatalogo(
+            $contratacionM->listarByAllTrabajador(),
+            $row->returnArrayById($contratacionM->listarByAEditTrabajador($entity['id_cat_tipo_trabajador']))
+        );
+    }
+
+
     $contratacion = $catSelectC->selectByAllCatalogo($contratacionM->Contratacionlist());
     if (!empty($entity['id_cat_tipo_contratacion'])) {
-                $contratacion = $catSelectC->selectByEditCatalogo(
+        $contratacion = $catSelectC->selectByEditCatalogo(
             $contratacionM->listarByAll(),
             $row->returnArrayById($contratacionM->listarByAllContratacion2($entity['id_cat_tipo_contratacion']))
         );
     }
 
-    $trabajador = $catSelectC->selectByAllCatalogo($contratacionM->listarByAllTrabajador());
-    /*if ($entity['id_cat_tipo_trabajador'] != '') {
-        $trabajador = $catSelectC->selectByEditCatalogo($contratacionM->listarByAllTrabajador(), $row->returnArrayById($contratacionM->listarByAEditTrabajador($entity['id_cat_tipo_trabajador'])));
-    }*/
 
-   // $contratacion = $catSelectC->selecStaticByNull();
-   /* if ($entity['id_cat_tipo_contratacion'] != '' && $entity['id_cat_tipo_trabajador'] != '') {
-        $contratacion = $catSelectC->selectByEditCatalogo($contratacionM->listarByAllContratacion($entity['id_cat_tipo_trabajador']), $row->returnArrayById($contratacionM->listarByEditContratacion($entity['id_cat_tipo_contratacion'])));
-    }*/
-
-    /*$caracterNom = $catSelectC->selectByAllCatalogo($contratacionM->listarCatCaracter());
-    if($entity['id_cat_caracter_nombramiento'] != ''){
+    $caracterNom = $catSelectC->selectByAllCatalogo($contratacionM->listarCatCaracter());
+    /*if($entity['id_cat_caracter_nombramiento'] != ''){
         $caracterNom = $catSelectC->selectByEditCatalogo($contratacionM->listarCatCaracter(), $row->returnArrayById($contratacionM->editCatCaracter($entity['id_cat_caracter_nombramiento'])));
     }*/
 
@@ -114,10 +122,9 @@ if ($id_object != null) {
         'programa' => $programa,
         'trabajador' => $trabajador,
         'contratacion' => $contratacion,
-        //'caracterNom' => $caracterNom
+        'caracterNom' => $caracterNom
     ];
     echo json_encode($raw);
-
 } else { ///Agregar
     $entity = $modelPlazasHraes->listarByNull();
     $id_tbl_centro_trabajo_hraes = $_POST['id_tbl_centro_trabajo_hraes']; //ok
@@ -130,7 +137,7 @@ if ($id_object != null) {
     $programa = $catSelectC->selectByAllCatalogo($contratacionM->listarByAllPrograma());
     $trabajador = $catSelectC->selectByAllCatalogo($contratacionM->listarByAllTrabajador());
     $contratacion = $catSelectC->selecStaticByNull();
-    //$caracterNom = $catSelectC->selectByAllCatalogo($contratacionM->listarCatCaracter());
+    $caracterNom = $catSelectC->selectByAllCatalogo($contratacionM->listarCatCaracter());
 
     $raw = [
         'entity' => $entity,
@@ -145,7 +152,7 @@ if ($id_object != null) {
         'programa' => $programa,
         'trabajador' => $trabajador,
         'contratacion' => $contratacion,
-        //'caracterNom' => $caracterNom
+        'caracterNom' => $caracterNom
     ];
     echo json_encode($raw);
 }

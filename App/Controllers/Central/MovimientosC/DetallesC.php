@@ -1,6 +1,8 @@
 <?php
 include '../librerias.php';
 
+
+
 $id_object = $_POST['id_object'];
 
 $modelMovimientosM = new ModelMovimientosM();
@@ -10,7 +12,7 @@ $modelPlazasHraes = new modelPlazasHraes();
 $row = new row();
 $catNombramientoM = new CatNombramientoM();
 $catNombramientoC = new CatNombramientoC();
-$catTipotrabajadorM = new CatTipotrabajadorM
+$catTipotrabajadorM = new CatTipotrabajadorM();
 
 if ($id_object != null) { // ✅ MODIFICAR
     $response = $row->returnArray($modelMovimientosM->listarByEdit($id_object));

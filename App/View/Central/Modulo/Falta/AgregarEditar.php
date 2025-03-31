@@ -93,7 +93,7 @@
                                     <div class="col-md-12">
                                         <select class="form-control custom-select selectpicker"
                                             data-style="input-select-selectpicker" aria-label="Default select example"
-                                            data-live-search="true" id="id_cat_retardo_tipo_"
+                                            data-live-search="true" id="id_cat_retardo_estatus_"
                                             data-none-results-text="Sin resultados">
                                         </select>
                                     </div>
@@ -111,7 +111,7 @@
                                     <div class="col-md-12">
                                         <select class="form-control custom-select selectpicker"
                                             data-style="input-select-selectpicker" aria-label="Default select example"
-                                            data-live-search="true" id="id_cat_retardo_estatus_"
+                                            data-live-search="true" id="id_cat_retardo_tipo_"
                                             data-none-results-text="Sin resultados">
                                         </select>
                                     </div>
