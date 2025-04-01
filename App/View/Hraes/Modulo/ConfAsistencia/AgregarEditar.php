@@ -140,31 +140,7 @@
                             <div class="line"></div>
                         </div>
                     </div>
-
-                    <div id="id_estatus_is_div">
-                        <br>
-                        <div class="alert alert-warning" role="alert">
-                            El estatus 'EXCLUIDO' no considerará las asistencias durante el periodo que se detalla a
-                            continuación. Una vez finalizado dicho periodo, el estatus cambiará a 'ACTIVO' y las
-                            asistencias comenzarán a contabilizarse.
-                        </div>
-                        <div class="row">
-                            <div class="col-4">
-                                <label for="campo" class="text-input-rem form-label input-text-form">Fecha de
-                                    inicio</label><label class="text-required">*</label>
-                                <input type="date" class="form-control custom-input" id="fecha_inicio_ss"
-                                    placeholder="">
-                                <div class="line"></div>
-                            </div>
-                            <div class="col-4">
-                                <label for="campo" class="text-input-rem form-label input-text-form">Fecha
-                                    de fin</label><label class="text-required">*</label>
-                                <input type="date" class="form-control custom-input" id="fecha_fin_ss"
-                                    placeholder="">
-                                <div class="line"></div>
-                            </div>
-                        </div>
-                    </div>
+               
                 </div>
             </div>
 

@@ -11,10 +11,10 @@ $boolAss = false;
 $boolJor = false;
 
 if ($idExludio == $_POST['id_cat_asistencia_ubicacion']) {
-    $fecha_fin = $_POST['fecha_fin'];
-    $fecha_inicio = $_POST['fecha_inicio'];
-}
+    $fecha_inicio = $_POST['fecha_inicio'] ?? null;
+    $fecha_fin = $_POST['fecha_fin'] ?? null;
 
+}
 
 $fecha_fin = $_POST['fecha_fin'];
 $fecha_inicio = $_POST['fecha_inicio'];
@@ -30,7 +30,7 @@ $datos = [
     'id_cat_asistencia_estatus' => $_POST['id_cat_asistencia_estatus'],
     'id_tbl_empleados_hraes' => $_POST['id_tbl_empleados_hraes'],
     'fecha_inicio' => $fecha_inicio,
-    'fecha_fin' => $fecha_fin,
+    'fecha_fin' => $fecha_fin
 ];
 
 $datos_jornada = [
@@ -49,6 +49,15 @@ $varJor = [
     'datos' => $datos_jornada,
     'condicion' => $condicion
 ];
+
+// Obtener el id_cat_asistencia_config a partir del id_cat_jornada_horario
+$idHorario = $_POST['id_cat_jornada_horario'];
+$result = pg_query($connectionDBsPro, "SELECT id_cat_asistencia_config FROM central.cat_asistencia_config WHERE id_cat_asistencia_config = '$idHorario' LIMIT 1");
+if ($row = pg_fetch_assoc($result)) {
+    $datos['id_cat_asistencia_config'] = $row['id_cat_asistencia_config'];
+} else {
+    $datos['id_cat_asistencia_config'] = null; // o maneja el error como prefieras
+}
 
 if ($_POST['id_ctrl_asistencia_info'] != null) { //Modificar
     if ($asistenciaM->editAsistenciaInfoDB($connectionDBsPro, $datos, $condicion)) {
@@ -107,4 +116,3 @@ if ($boolAss && $boolJor) {
 } else {
     echo false;
 }
-

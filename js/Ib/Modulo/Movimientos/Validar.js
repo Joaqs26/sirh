@@ -136,7 +136,7 @@ document.getElementById("movimiento_general").addEventListener("change", functio
     );
 });
 
-function cargarTiposTrabajador() {
+/*function cargarTiposTrabajador() {
     $.post("../../../../App/Controllers/Central/MovimientosC/CatTipotrabajadorC.php", 
         function (data) {
             try {
@@ -180,7 +180,7 @@ $('#agregar_editar_movimiento').on('shown.bs.modal', function () {
 // Llamar a la función cuando el modal se abra
 $('#agregar_editar_movimiento').on('shown.bs.modal', function () {
     cargarTiposTrabajador();
-});
+});*/
 
 function limpiarBaja() { /// LIMPIAR CAMPOS PARA MOVIMIENTO DE BAJA
     $('#id_tbl_control_plazas_hraes').val('');
@@ -189,4 +189,4 @@ function limpiarBaja() { /// LIMPIAR CAMPOS PARA MOVIMIENTO DE BAJA
     $('#fecha_inicio').val('');
     $('#fecha_termino').val('');
     $('#id_cat_caracter_nombramiento').val('');
-}  
+}

@@ -18,6 +18,10 @@
                             <i class="fas fa-trash-alt"></i>
                         </button>
                         <button class="btn btn-light btn-circle" type="button" data-toggle="tooltip"
+                            title="Eliminar Registros de Asistencia"  onclick="truncatetablefr();">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                        <button class="btn btn-light btn-circle" type="button" data-toggle="tooltip"
                             title="Justificar faltas" onclick="mostrarModalFaltas();">
                             <i class="fa fa-upload"></i>
                         </button>

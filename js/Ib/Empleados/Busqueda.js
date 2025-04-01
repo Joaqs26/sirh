@@ -4,23 +4,21 @@ var buscar = document.getElementById("buscar");
 
 function siguienteValor(){
     valorInicial++;
-    textValor.textContent = valorInicial;
+    document.getElementById('idEmpleadotable').textContent = valorInicial;
     buscarEmpleado();
 }
 
 function anteriorValor(){
     valorInicial--;
-    if(valorInicial < 1){
-        valorInicial = 1;
-    }
-    textValor.textContent = valorInicial;
+    if (valorInicial < 1) valorInicial = 1;
+    document.getElementById('idEmpleadotable').textContent = valorInicial;
     buscarEmpleado();
 }
 
 function iniciarBusqueda(){
     let valorInicialAux = valorInicial;
     valorInicialAux --;
-    let valoroff = valorInicialAux * 6;//cambiar por el numero de filas
+    let valoroff = valorInicialAux * 6;
     return valoroff;
 }
 

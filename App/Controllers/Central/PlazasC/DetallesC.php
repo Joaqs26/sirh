@@ -40,7 +40,12 @@ if ($id_object != null) {
 
     $entity = $row->returnArray($modelPlazasHraes->listarByIdEdit($id_object));
     $niveles = $row->returnArrayById($catalogoPuestoM->nameOfPuesto($entity['id_cat_puesto_hraes']));
-    $isValueAux = $row->returnArrayById($catalogoPuestoM->getEditCatAux($entity['id_cat_aux_puesto']));
+    $isValueAux = null; // Inicializa la variable siempre antes del IF.
+
+    if (!empty($entity['id_cat_aux_puesto'])) {
+        $isValueAux = $row->returnArrayById($catalogoPuestoM->getEditCatAux($entity['id_cat_aux_puesto']));
+    }
+
     $zona = $row->returnArrayById($catalogoPuestoM->getEntity($id_object));
 
     $plazas = $catalogoPlazasC->returnCatPlazas($catalogoPlazasM->listarByAll()); //ok
@@ -48,9 +53,17 @@ if ($id_object != null) {
         $plazas = $catalogoPlazasC->returnCatPLazasByIdObject($catalogoPlazasM->listarByAll(), $row->returnArrayById($catalogoPlazasM->obtenerElemetoById($entity['id_cat_tipo_plazas'])));
     }
 
-    $puesto = $catSelectC->selectByAllCatalogo($catalogoPuestoM->listarByAllPuesto());
+    /*  $puesto = $catSelectC->selectByAllCatalogo($catalogoPuestoM->listarByAllPuesto());
     if ($entity['id_cat_aux_puesto'] != '') {
         $puesto = $catSelectC->selectByEditCatalogo($catalogoPuestoM->listarByAllPuesto(), $row->returnArrayById($catalogoPuestoM->editByAllPuesto($isValueAux[1])));
+    }*/
+
+    $puesto = $catSelectC->selectByAllCatalogo($catalogoPuestoM->listarByAllPuesto());
+    if (!empty($entity['id_cat_puesto_hraes'])) {
+        $puesto = $catSelectC->selectByEditCatalogo(
+            $catalogoPuestoM->listarByAllPuesto(),
+            $row->returnArrayById($catalogoPuestoM->editByAllPuesto($entity['id_cat_puesto_hraes']))
+        );
     }
 
     $unidadCoor = $catSelectC->selectByAllCatalogo($catUnidadAdM->listOfCatCoordinacion());
@@ -93,7 +106,6 @@ if ($id_object != null) {
             $row->returnArrayById($contratacionM->listarByAEditTrabajador($entity['id_cat_tipo_trabajador']))
         );
     }
-
 
     $contratacion = $catSelectC->selectByAllCatalogo($contratacionM->Contratacionlist());
     if (!empty($entity['id_cat_tipo_contratacion'])) {

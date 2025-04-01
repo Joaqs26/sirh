@@ -260,7 +260,7 @@ function detallesPlazaModal(id_tbl_control_plazas_hraes) {
     $.post("../../../../App/Controllers/Central/PlazasC/DetallesEntityC.php", {
         id_tbl_control_plazas_hraes: id_tbl_control_plazas_hraes,
     },
-        function (data) {
+        function (data) {   
             console.log(data);
             let jsonData = JSON.parse(data);//se obtiene el json
             let entity = jsonData.entity;

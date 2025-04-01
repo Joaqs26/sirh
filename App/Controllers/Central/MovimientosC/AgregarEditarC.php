@@ -13,8 +13,6 @@ $modelEmpleadosHraes = new modelEmpleadosHraes();
 $modelPlazasHraes = new modelPlazasHraes();
 $modelMovimientosM = new ModelMovimientosM();
 
-
-
 // Variables recibidas desde el formulario
 $nombreTabla = 'central.tbl_plazas_empleados_hraes';
 $movimientoBaja = $_POST['movimientoBaja'] ?? null;
@@ -79,7 +77,7 @@ $datos = [
 
 // ✅ Solo agregar `id_cat_tipo_trabajador` si el movimiento es ALTA
 if ($movimiento_general == $movimientoAlta) {
-    $datos['id_cat_tipo_trabajador'] = $id_cat_tipo_trabajador;
+    $datos['id_cat_caracter_nombramiento'] = $id_cat_tipo_trabajador;
 }
 
 // Guardar en la bitácora

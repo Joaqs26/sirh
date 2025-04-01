@@ -1,4 +1,4 @@
-|<q></q><?php
+<?php
 include '../../../../../conexion.php';
 include '../../../../Model/Central/RetardoM/RetardoM.php';
 

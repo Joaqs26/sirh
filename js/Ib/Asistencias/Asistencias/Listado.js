@@ -227,10 +227,47 @@ $(document).ready(function () {
     });
 });
 
+
+
 function truncatetable() {
-    if (confirm("¿Estás seguro de que deseas truncar la tabla? Esta acción no se puede deshacer.")) {
+    if (confirm("¿Estás seguro de que deseas eliminar los datos de Asistencias, Retardos y Faltas? Esta acción no se puede deshacer.")) {
         $.ajax({
             url: "../../../../App/Controllers/Central/AsistenciaC/truncate.php",
+            type: "POST",
+            data: {},
+            success: function (response) {
+                try {
+                    let result = JSON.parse(response);
+                    alert(result.message);
+                } catch (error) {
+                    alert("Error en la respuesta del servidor.");
+                }
+            },
+            error: function () {
+                alert("Error en la petición al servidor.");
+            }
+        });
+    }
+}
+
+
+
+
+function y(input) {
+    input.value = input.value.replace(/[^\d]/g, '');
+}
+
+$(document).ready(function () {
+    console(data);
+    $("#truncatetablefr").click(function () {
+        truncatetablefr();
+    });
+}); 
+
+function truncatetablefr() {
+    if (confirm("¿Estás seguro de que deseas eliminar los datos de Retardos y Faltas? Esta acción no se puede deshacer.")) {
+        $.ajax({
+            url: "../../../../App/Controllers/Central/AsistenciaC/truncatefr.php",
             type: "POST",
             data: {},
             success: function (response) {

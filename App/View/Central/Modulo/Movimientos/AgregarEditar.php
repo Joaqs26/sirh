@@ -71,9 +71,9 @@
                             <div class="line"></div>
                         </div>
                         <div id="campo_tipo_trabajador" style="display: none;">
-                        <label for="id_cat_tipo_trabajador" class="form-label input-text-form">Tipo de trabajador</label>
+                        <label for="id_cat_caracter_nombramiento" class="form-label input-text-form">Caracter de Nombramiento</label>
                         <label class="text-required">*</label>
-                        <select class="form-control div-spacing custom-select" id="id_cat_tipo_trabajador" required></select>
+                        <select class="form-control div-spacing custom-select" id="id_cat_caracter_nombramiento" required></select>
                     </div>
 
                    </div>

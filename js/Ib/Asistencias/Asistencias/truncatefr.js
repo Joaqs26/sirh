@@ -1,16 +1,16 @@
 $(document).ready(function () {
     console.log("Script truncate.js cargado correctamente");
 
-    $("#truncatetable").click(function () {
-        truncatetable();
+    $("#truncatetablefr").click(function () {
+        truncatetablefr();
     });
 });
 
 // Función para truncar la tabla
-function truncatetable() {
-    if (confirm("¿Estás seguro de que deseas eliminar los datos de Asistencias, Retardos y Faltas?")) {
+function truncatetablefr() {
+    if (confirm("¿Estás seguro de que deseas eliminar los datos de Retardos y Faltas?")) {
         $.ajax({
-            url: "../../../../App/Controllers/Central/AsistenciaC/truncate.php",
+            url: "../../../../App/Controllers/Central/AsistenciaC/truncatefr.php",
             type: "POST",
             success: function (response) {
                 console.log("✅ Respuesta del servidor:", response);

@@ -70,6 +70,17 @@ function mostrarModalConfigAsistencia(){
     $("#is_modal_config_asistencia").modal("show");
 }
 
+function mostrarContenido(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.style.display = 'block';
+    } else {
+        console.warn(`❗ El elemento con id "${id}" no existe en el DOM`);
+    }
+}
+
+
+
 function ocultarModalConfigAsistencia(){
     $("#is_modal_config_asistencia").modal("hide");
 }
@@ -90,6 +101,8 @@ function agregarActualizarAsistencia(){
         id_ctrl_asistencia_info: $("#id_ctrl_asistencia_info").val(),
         fecha_inicio: $("#fecha_inicio_ss").val(),
         fecha_fin: $("#fecha_fin_ss").val(),
+       id_cat_asistencia_config: $("#id_cat_asistencia_config").val(), 
+
     },
         function (data) {
             if (data){

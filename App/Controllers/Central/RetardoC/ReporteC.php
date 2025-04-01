@@ -19,24 +19,29 @@ if (!$connectionDBsPro) {
 
 // Query directamente en el archivo para asegurar ejecución
 $query = "SELECT
-            CONCAT(UPPER(tbl_empleados_hraes.nombre), ' ',
-                   UPPER(tbl_empleados_hraes.primer_apellido), ' ',
-                   UPPER(tbl_empleados_hraes.segundo_apellido)) AS nombre_completo,
-            UPPER(tbl_empleados_hraes.rfc) AS rfc,
-            TO_CHAR(ctrl_retardo.fecha, 'DD-MM-YYYY') AS fecha,
-            TO_CHAR(ctrl_retardo.hora, 'HH24:MI') AS hora,
-            UPPER(ctrl_retardo.observaciones) AS observaciones,
-            UPPER(cat_retardo_tipo.descripcion) AS tipo_descripcion,
-            UPPER(cat_retardo_estatus.descripcion) AS estatus_descripcion,
-            ctrl_retardo.id_user AS id_user
-        FROM central.ctrl_retardo
-        INNER JOIN central.cat_retardo_tipo
-            ON ctrl_retardo.id_cat_retardo_tipo = cat_retardo_tipo.id_cat_retardo_tipo
-        INNER JOIN central.cat_retardo_estatus
-            ON ctrl_retardo.id_cat_retardo_estatus = cat_retardo_estatus.id_cat_retardo_estatus
-        INNER JOIN central.tbl_empleados_hraes
-            ON ctrl_retardo.id_tbl_empleados_hraes = tbl_empleados_hraes.id_tbl_empleados_hraes
-        ORDER BY ctrl_retardo.fecha DESC;";
+    CONCAT(UPPER(tbl_empleados_hraes.nombre), ' ',
+           UPPER(tbl_empleados_hraes.primer_apellido), ' ',
+           UPPER(tbl_empleados_hraes.segundo_apellido)) AS nombre_completo,
+    UPPER(tbl_empleados_hraes.rfc) AS rfc,
+    TO_CHAR(ctrl_retardo.fecha, 'DD-MM-YYYY') AS fecha,
+    TO_CHAR(ctrl_retardo.hora, 'HH24:MI') AS hora,
+    UPPER(ctrl_retardo.observaciones) AS observaciones,
+    UPPER(cat_retardo_tipo.descripcion) AS tipo_descripcion,
+    UPPER(cat_retardo_estatus.descripcion) AS estatus_descripcion,
+    ctrl_retardo.id_user AS id_user
+FROM central.ctrl_retardo
+INNER JOIN central.cat_retardo_tipo
+    ON ctrl_retardo.id_cat_retardo_tipo = cat_retardo_tipo.id_cat_retardo_tipo
+INNER JOIN central.cat_retardo_estatus
+    ON ctrl_retardo.id_cat_retardo_estatus = cat_retardo_estatus.id_cat_retardo_estatus
+INNER JOIN central.tbl_empleados_hraes
+    ON ctrl_retardo.id_tbl_empleados_hraes = tbl_empleados_hraes.id_tbl_empleados_hraes
+INNER JOIN central.ctrl_asistencia_info cai
+    ON tbl_empleados_hraes.id_tbl_empleados_hraes = cai.id_tbl_empleados_hraes
+--WHERE cai.id_cat_asistencia_ubicacion = 1
+  --AND cai.id_cat_asistencia_estatus = 1
+  --ND cai.id_cat_asistencia_config = 1
+ORDER BY ctrl_retardo.fecha DESC;";
 
 // Ejecutar el query directamente
 $result = pg_query($connectionDBsPro, $query);

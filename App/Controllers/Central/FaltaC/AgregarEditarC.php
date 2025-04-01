@@ -12,7 +12,6 @@ $datos = [
     'fecha_desde' => $_POST['fecha_desde'],
     'fecha_hasta' => $_POST['fecha_hasta'],
     'fecha_registro' => $_POST['fecha_registro'],
-    'codigo_certificacion' => $_POST['codigo_certificacion'],
     'id_tbl_empleados_hraes' => $_POST['id_tbl_empleados_hraes'],
     'observaciones' => $_POST['observaciones'],
     'es_por_retardo' => $_POST['es_por_retardo'],
@@ -54,4 +53,3 @@ if ($_POST['id_object'] != null) { //Modificar
         echo 'add';
     }
 }
-

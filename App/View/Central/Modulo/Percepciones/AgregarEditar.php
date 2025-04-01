@@ -28,7 +28,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <label for="campo" class="form-label input-text-form text-input-rem">Seleccione
-                                        una concepto</label>
+                                        un concepto</label>
                                     <label class="text-required">*</label>
                                 </div>
                             </div>
@@ -46,7 +46,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <label for="campo" class="form-label input-text-form text-input-rem">Seleccione
-                                        una valor</label>
+                                        un valor</label>
                                     <label class="text-required">*</label>
                                 </div>
                             </div>

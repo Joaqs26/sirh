@@ -27,6 +27,7 @@ $datos = [
     'id_cat_unidad' => $_POST['id_cat_unidad'],
     'id_cat_coordinacion' => $_POST['id_cat_coordinacion'],
     'id_cat_tipo_programa' => $_POST['id_cat_tipo_programa'],
+    'id_cat_tipo_trabajador'=> $_POST['id_cat_tipo_trabajador'],
     'fecha_inicio' => $_POST['fecha_inicio'],
     'fecha_fin' => $_POST['fecha_fin'],
     'id_user' => $_SESSION['id_user'],

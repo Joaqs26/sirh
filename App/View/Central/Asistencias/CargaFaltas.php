@@ -39,7 +39,7 @@
                                 4. En la columna TIPO FALTA/RETARDO*, el tipo de incidencia; para ello,
                                 escribe <strong>ENTRADA</strong>. Si quieres justificar por entrada, escribe
                                 <strong>SALIDA</strong>. Si se quiere justificar por salida<br>
-                                5. Las fechas deben ingresarse en el formato <strong>(YYYY/MM/DD).</strong><br>
+                                5. Las fechas deben ingresarse en el formato <strong>(YYYY-MM-DD).</strong><br>
                                 6. Los campos marcados con <strong>*</strong> son obligatorios; es crucial <strong>no
                                     eliminar los encabezados.</strong><br>
                                 7. Al finalizar, se generará un archivo con los registros que se hayan ingresado

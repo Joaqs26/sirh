@@ -2,7 +2,7 @@ function validarFalta_() {
     let fecha_desde_ = document.getElementById('fecha_desde_').value;
     let fecha_hasta_ = document.getElementById('fecha_hasta_').value;
     let fecha_registro_ = document.getElementById('fecha_registro_').value;
-    let codigo_certificacion_ = document.getElementById('codigo_certificacion_').value;
+    let codigo_certificacion_ = document.getElementById('codigo_certificacion_') ? document.getElementById('codigo_certificacion_').value : null;
     let id_cat_retardo_tipo_ = document.getElementById('id_cat_retardo_tipo_').value;
     let id_cat_retardo_estatus_ = document.getElementById('id_cat_retardo_estatus_').value;
     let fecha_ = document.getElementById('fecha_').value;
@@ -10,7 +10,6 @@ function validarFalta_() {
     let cantidad_ = document.getElementById('cantidad_').value;
     let observaciones_ = document.getElementById('observaciones_').value;
     const checkbox = document.getElementById("es_por_retardo");
-
 
     if (checkbox.checked) { //select
         if (validarData(id_cat_retardo_tipo_, 'Tipo de falta') &&
@@ -29,7 +28,7 @@ function validarFalta_() {
         if (validarData(fecha_desde_, 'Fecha desde') &&
             validarData(fecha_hasta_, 'Fecha hasta') &&
             validarData(fecha_registro_, 'Fecha de registro') &&
-            validarData(codigo_certificacion_, 'Código certificación') &&
+            validarData(codigo_certificacion_, 'Código certificación', true) && // Allow null
             validarData(observaciones_, 'Observaciones')
         ) {
             guardarFalta(false);
@@ -37,6 +36,16 @@ function validarFalta_() {
     }
 }
 
+function validarData(value, fieldName, allowNull = false) {
+    if (allowNull && value === null) {
+        return true;
+    }
+    if (value === null || value === '') {
+        notyf.error(`${fieldName} es requerido`);
+        return false;
+    }
+    return true;
+}
 
 
 document.addEventListener("DOMContentLoaded", function () {

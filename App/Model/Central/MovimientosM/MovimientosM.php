@@ -20,7 +20,7 @@ class ModelMovimientosM
                                 ON central.tbl_plazas_empleados_hraes.id_tbl_control_plazas_hraes =
                                     central.tbl_control_plazas_hraes.id_tbl_control_plazas_hraes
                                 WHERE central.tbl_plazas_empleados_hraes.id_tbl_empleados_hraes = $idEmpleado
-                                ORDER BY tbl_plazas_empleados_hraes.id_tbl_plazas_empleados_hraes DESC
+                                 ORDER BY tbl_plazas_empleados_hraes.fecha_movimiento DESC
                             LIMIT 3 OFFSET $paginator;");
 
         return $listado;
@@ -56,29 +56,31 @@ class ModelMovimientosM
                                     LIKE '%$busqueda%' OR
                                     tbl_control_plazas_hraes.num_plaza LIKE '%$busqueda%'
                             )
-                            ORDER BY tbl_plazas_empleados_hraes.id_tbl_plazas_empleados_hraes DESC
-                            LIMIT 3 OFFSET $paginator;");
+                            ORDER BY tbl_plazas_empleados_hraes.fecha_movimiento DESC
+                            LIMIT 10 OFFSET $paginator;");
         return $listado;
     }
     
 
 
 
-    public function listarByEdit($idMovimiento)
-    {
+   public function listarByEdit($idMovimiento)
+{
         $listado = pg_query("SELECT 
-    pe.*, 
-    tt.descripcion 
-FROM 
-    central.tbl_plazas_empleados_hraes pe
-LEFT JOIN 
-    central.cat_tipo_trabajador tt 
-ON 
-    pe.id_cat_tipo_trabajador = tt.id_cat_tipo_trabajador
-WHERE 
-    pe.id_tbl_plazas_empleados_hraes = $idMovimiento;");
-        return $listado;
-    }
+            pe.*, 
+            tt.descripcion 
+        FROM 
+            central.tbl_plazas_empleados_hraes pe
+        LEFT JOIN 
+            central.cat_tipo_trabajador tt 
+        ON 
+            pe.id_cat_caracter_nombramiento = tt.id_cat_tipo_trabajador
+        WHERE 
+        pe.id_tbl_plazas_empleados_hraes = $idMovimiento;");
+    
+    return $listado;
+}
+
 
     public function listarByNull()
     {

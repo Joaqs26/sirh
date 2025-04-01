@@ -2,6 +2,7 @@
 
 class modelEmpleadosHraes
 {
+    
     public function validarCurp($value, $id_object)
     {
         $result = "";
@@ -39,80 +40,70 @@ class modelEmpleadosHraes
     }
 
     public function listarByAll($paginador)
-    {
-        $query = "SELECT 
-    e.id_tbl_empleados_hraes,
-    e.rfc,
-    e.curp,
-    e.nombre,
-    e.primer_apellido,
-    e.segundo_apellido,
-    COALESCE(m.codigo::text, '-') AS codigo_mov,
-COALESCE(m.nombre_movimiento, '-') AS nombre_movimiento,
-COALESCE(ct.clave_centro_trabajo, '-') AS clave_centro_trabajo,
-COALESCE(ct.nombre, '-') AS nombre_centro,
-COALESCE(ce.entidad, '-') AS entidad,
-COALESCE(cc.clabe, '-') AS clabe,
+{
+    $query = "SELECT 
+        e.id_tbl_empleados_hraes,
+        e.rfc,
+        e.curp,
+        e.nombre,
+        e.primer_apellido,
+        e.segundo_apellido,
+        COALESCE(m.codigo::text, '-') AS codigo_mov,
+        COALESCE(m.nombre_movimiento, '-') AS nombre_movimiento,
+        COALESCE(ct.clave_centro_trabajo, '-') AS clave_centro_trabajo,
+        COALESCE(ct.nombre, '-') AS nombre_centro,
+        COALESCE(ce.entidad, '-') AS entidad,
+        COALESCE(cc.clabe, '-') AS clabe,
+        e.num_empleado,
+        pe.fecha_movimiento,
+        CASE 
+            WHEN m.id_tipo_movimiento = 3 THEN '-'
+            ELSE COALESCE(cp.num_plaza, '-')
+        END AS num_plaza,
+        CASE 
+            WHEN m.id_tipo_movimiento = 3 THEN '-'
+            ELSE COALESCE(ce.entidad, '-')
+        END AS zona_pagadora
+    FROM central.tbl_empleados_hraes e
+    LEFT JOIN LATERAL (
+        SELECT *
+        FROM central.tbl_plazas_empleados_hraes pe2
+        WHERE pe2.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
+        ORDER BY pe2.fecha_movimiento DESC
+        LIMIT 1
+    ) pe ON true
+    LEFT JOIN central.tbl_control_plazas_hraes cp 
+        ON pe.id_tbl_control_plazas_hraes = cp.id_tbl_control_plazas_hraes
+    LEFT JOIN central.tbl_centro_trabajo_hraes ct 
+        ON cp.id_tbl_centro_trabajo_hraes = ct.id_tbl_centro_trabajo_hraes
+    LEFT JOIN public.cat_entidad ce 
+        ON ct.id_cat_entidad = ce.id_cat_entidad
+    LEFT JOIN public.tbl_movimientos m 
+        ON pe.id_tbl_movimientos = m.id_tbl_movimientos
+    LEFT JOIN central.ctrl_cuenta_clabe_hraes cc 
+        ON e.id_tbl_empleados_hraes = cc.id_tbl_empleados_hraes
+        AND (cc.id_cat_estatus = 1 OR cc.id_cat_estatus IS NULL)
+    ORDER BY e.id_tbl_empleados_hraes ASC
+    LIMIT 10 OFFSET $paginador"; 
 
-    e.num_empleado,
-    pe.fecha_movimiento,
-       CASE 
-        WHEN m.id_tipo_movimiento = 3 THEN '-'
-        ELSE COALESCE(cp.num_plaza, '-')
-    END AS num_plaza,
-
-    -- Mostrar zona pagadora igual a entidad, con validación de movimiento
-    CASE 
-        WHEN m.id_tipo_movimiento = 3 THEN '-'
-        ELSE COALESCE(ce.entidad, '-')
-    END AS zona_pagadora
-
-FROM central.tbl_empleados_hraes e
-
-LEFT JOIN LATERAL (
-    SELECT *
-    FROM central.tbl_plazas_empleados_hraes pe2
-    WHERE pe2.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
-    ORDER BY pe2.fecha_movimiento DESC
-    LIMIT 1
-) pe ON true
-
-LEFT JOIN central.tbl_control_plazas_hraes cp 
-    ON pe.id_tbl_control_plazas_hraes = cp.id_tbl_control_plazas_hraes
-
-LEFT JOIN central.tbl_centro_trabajo_hraes ct 
-    ON cp.id_tbl_centro_trabajo_hraes = ct.id_tbl_centro_trabajo_hraes
-
-LEFT JOIN public.cat_entidad ce 
-    ON ct.id_cat_entidad = ce.id_cat_entidad
-
-LEFT JOIN public.tbl_movimientos m 
-    ON pe.id_tbl_movimientos = m.id_tbl_movimientos
-
-LEFT JOIN central.ctrl_cuenta_clabe_hraes cc 
-    ON e.id_tbl_empleados_hraes = cc.id_tbl_empleados_hraes
-    AND (cc.id_cat_estatus = 1 OR cc.id_cat_estatus IS NULL)
-
-ORDER BY e.id_tbl_empleados_hraes ASC
-LIMIT 10";
-
-        return $query;
-    }
+    return $query;
+}
 
     public function listarByLike($busqueda, $paginador)
 {
     // Filtro dinámico con búsqueda
-    $result = "(TRIM(UPPER(UNACCENT(cp.num_plaza))) LIKE '%$busqueda%' 
-            OR TRIM(UPPER(UNACCENT(ce.entidad))) LIKE '%$busqueda%' 
-            OR TRIM(UPPER(UNACCENT(e.rfc))) LIKE '%$busqueda%' 
-            OR TRIM(UPPER(UNACCENT(e.curp))) LIKE '%$busqueda%' 
-            OR TRIM(UPPER(UNACCENT(e.nombre))) LIKE '%$busqueda%' 
-            OR TRIM(UPPER(UNACCENT(e.primer_apellido))) LIKE '%$busqueda%' 
-            OR TRIM(UPPER(UNACCENT(e.segundo_apellido))) LIKE '%$busqueda%' 
-            OR TRIM(UPPER(UNACCENT(CONCAT(m.codigo, ' - ', m.nombre_movimiento)))) LIKE '%$busqueda%' 
-            OR TRIM(UPPER(UNACCENT(CONCAT(ct.clave_centro_trabajo, ' - ', ct.nombre)))) LIKE '%$busqueda%' 
-            OR TRIM(UPPER(UNACCENT(cc.clabe))) LIKE '%$busqueda%' 
-            OR TRIM(UPPER(UNACCENT(e.num_empleado))) LIKE '%$busqueda%')";
+    $result = "(TRIM(UPPER(UNACCENT(cp.num_plaza::text))) LIKE '%$busqueda%' 
+        OR TRIM(UPPER(UNACCENT(ce.entidad))) LIKE '%$busqueda%' 
+        OR TRIM(UPPER(UNACCENT(e.rfc))) LIKE '%$busqueda%' 
+        OR TRIM(UPPER(UNACCENT(e.curp))) LIKE '%$busqueda%' 
+        OR TRIM(UPPER(UNACCENT(e.nombre))) LIKE '%$busqueda%' 
+        OR TRIM(UPPER(UNACCENT(e.primer_apellido))) LIKE '%$busqueda%' 
+        OR TRIM(UPPER(UNACCENT(e.segundo_apellido))) LIKE '%$busqueda%' 
+        OR TRIM(UPPER(UNACCENT(CONCAT(m.codigo, ' - ', m.nombre_movimiento)))) LIKE '%$busqueda%' 
+        OR TRIM(UPPER(UNACCENT(CONCAT(ct.clave_centro_trabajo, ' - ', ct.nombre)))) LIKE '%$busqueda%' 
+        OR TRIM(UPPER(UNACCENT(cc.clabe))) LIKE '%$busqueda%' 
+        OR TRIM(UPPER(UNACCENT(e.num_empleado::text))) LIKE '%$busqueda%')";
+
 
     // Consulta principal
     $listado = "SELECT 
@@ -154,7 +145,8 @@ LIMIT 10";
         SELECT *
         FROM central.tbl_plazas_empleados_hraes
         WHERE id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
-        ORDER BY fecha_movimiento DESC
+        ORDER BY fecha_movimiento desc, fecha_inicio desc
+
         LIMIT 1
     ) pe ON true
 
@@ -180,7 +172,7 @@ LIMIT 10";
     ) cc ON true
 
     WHERE $result
-    ORDER BY e.id_tbl_empleados_hraes ASC
+        ORDER BY num_plaza asc
     LIMIT 6 OFFSET $paginador;";
 
     return $listado;

@@ -11,9 +11,8 @@ if (!$connectionDBsPro) {
 $query = "
     TRUNCATE TABLE 
         central.ctrl_faltas, 
-        central.ctrl_retardo, 
-        central.ctrl_asistencia 
-    RESTART IDENTITY CASCADE;
+        central.ctrl_retardo
+     RESTART IDENTITY CASCADE;
 ";
 
 $result = pg_query($connectionDBsPro, $query);

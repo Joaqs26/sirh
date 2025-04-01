@@ -67,15 +67,6 @@
                                     placeholder="Nombre" maxlength="20">
                                 <div class="line"></div>
                             </div>
-
-                            <div class="col-6">
-                                <label for="campo" class="form-label input-text-form text-input-rem">C&oacutedigo
-                                    certificaci&oacuten</label><label class="text-required">*</label>
-                                <input onkeyup="convertirAMayusculas(event,'codigo_certificacion_')" type="text"
-                                    class="form-control custom-input" id="codigo_certificacion_"
-                                    placeholder="Código certificación" maxlength="20">
-                                <div class="line"></div>
-                            </div>
                         </div>
                     </div>
 

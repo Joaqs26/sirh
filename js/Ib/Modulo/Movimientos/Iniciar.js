@@ -27,90 +27,62 @@ function iniciarTabla_mv(busqueda, paginador, id_tbl_empleados_hraes) {
 function agregarEditarMovimiento(id_object) {
     $("#id_object").val(id_object);
     let titulo = document.getElementById("tituloMovimiento");
-    titulo.textContent = id_object == null ? 'Agregar' : 'Modificar';
+    titulo.textContent = 'Modificar';
 
     if (id_object == null) {
-
+        titulo.textContent = 'Agregar';
         $("#agregar_editar_movimiento").find("input,textarea,select").val("");
     }
 
     $.post("../../../../App/Controllers/Central/MovimientosC/DetallesC.php", {
         id_object: id_object
     }, function (data) {
-        console.log("📥 Datos recibidos del backend:", data); // Inspect the response here
+        console.log(data);
+        let jsonData = JSON.parse(data);
+        let entity = jsonData.response;
+        let caracter = jsonData.caracter;
+        let general = jsonData.general;
+        let especifico = jsonData.especifico;
+        let plaza = jsonData.plaza;
+        let contratacion = jsonData.contratacion;
+        let centroTrabajo = jsonData.centroTrabajo;
+        let tipoTrabajador = jsonData.tipo_trabajador; // ✅ Se agrega tipo de trabajador
 
-        try {
-            let jsonData = JSON.parse(data);
-            let entity = jsonData.response;
-            let caracter = jsonData.caracter;
-            let general = jsonData.general;
-            let especifico = jsonData.especifico;
-            let plaza = jsonData.plaza;
-            let contratacion = jsonData.contratacion;
-            let centroTrabajo = jsonData.centroTrabajo;
-            let tipoTrabajador = jsonData.tipo_trabajador;
-            let descripcionTipoTrabajador = jsonData.descripcion_tipo_trabajador;
+        $('#movimiento_general').empty();
+        $('#movimiento_general').html(general);
 
-            console.log("🧾 Movimiento recibido (ID):", entity.id_tbl_movimientos);
+        $('#id_cat_caracter_nombramiento').empty();
+        $('#id_cat_caracter_nombramiento').html(caracter);
 
-            // Cargar combos
-            $('#movimiento_general').empty().html(general);
-            $('#id_cat_caracter_nombramiento').empty().html(caracter);
-            $('#id_tbl_control_plazas_hraes').empty().html(plaza).selectpicker('refresh');
-            $('#id_tbl_movimientos').empty().html(especifico);
-            $('.selectpicker').selectpicker();
+        $('#id_tbl_control_plazas_hraes').empty();
+        $('#id_tbl_control_plazas_hraes').html(plaza);
+        $('#id_tbl_control_plazas_hraes').selectpicker('refresh');
+        $('.selectpicker').selectpicker();
 
-            // Cargar campos
-            $('#fecha_movimiento').val(entity.fecha_movimiento);
-            $('#fecha_inicio').val(entity.fecha_inicio);
-            $('#fecha_termino').val(entity.fecha_termino);
-            $('#id_plaza').val(entity.id_tbl_control_plazas_hraes);
-            $('#motivo_estatus').val(entity.motivo_estatus);
-            $('#observaciones').val(entity.observaciones);
-            $('#tipo_contratacion_mx').val(contratacion);
-            $('#centro_trabajo_mx').val(centroTrabajo);
-            $('#situacionPlaza').val(null);
+        $('#id_tbl_movimientos').empty();
+        $('#id_tbl_movimientos').html(especifico);
 
-            // Validar si el movimiento específico corresponde a Alta (ej. 2 o 4)
-            let movimientoEspecificoID = parseInt(entity.id_tbl_movimientos);
+        $('#fecha_movimiento').val(entity.fecha_movimiento);
+        $('#fecha_inicio').val(entity.fecha_inicio);
+        $('#fecha_termino').val(entity.fecha_termino);
+        $('#id_plaza').val(entity.id_tbl_control_plazas_hraes);
+        $('#motivo_estatus').val(entity.motivo_estatus);
+        $('#observaciones').val(entity.observaciones);
 
-            if (movimientoEspecificoID === 2 || movimientoEspecificoID === 4) {
-                console.log("✅ Movimiento de tipo ALTA, mostrando campo de tipo de trabajador");
-                $('#campo_tipo_trabajador').show();
-                $('#id_cat_tipo_trabajador').empty().html(descripcionTipoTrabajador).selectpicker('refresh');
-                $('.selectpicker').selectpicker();
-     /*
-                $('#id_cat_tipo_trabajador').empty().append(`<option value="${tipoTrabajador}">${descripcionTipoTrabajador}</option>`).val(tipoTrabajador).trigger("change");
-                $('.selectpicker').selectpicker();
-             
-                /*   
-                if (tipoTrabajador !== 1 && tipoTrabajador !== "1") {
-                    $('#id_cat_tipo_trabajador').empty().append(`<option value="${tipoTrabajador}">${descripcionTipoTrabajador}</option>`).val(tipoTrabajador).trigger("change");
-                } else {
-                    console.warn("⚠️ No se recibió tipo_trabajador desde el backend.");
-                    $('#id_cat_tipo_trabajador').empty().append('<option value="">Seleccione</option>').trigger("change");
-                }
-*/
+        $('#tipo_contratacion_mx').val(contratacion);
+        $('#centro_trabajo_mx').val(centroTrabajo);
+        $('#id_cat_tipo_trabajador').val(tipoTrabajador); // ✅ Se agrega el valor en el select
 
-            } else {
-                console.log("ℹ️ Movimiento no es ALTA, ocultando campo de tipo de trabajador");
-                $('#campo_tipo_trabajador').hide();
-                $('#id_cat_tipo_trabajador').empty().append('<option value="">Seleccione</option>').trigger("change");
-            }
-        } catch (error) {
-            console.error("JSON parsing error:", error);
-            console.log("🔍 Response content:", data); // Log the response content
-        }
+        $('#situacionPlaza').val(null);
     });
 
     $("#agregar_editar_movimiento").modal("show");
 }
 
+
 function salirAgregarEditarMovimiento() {
     $("#agregar_editar_movimiento").modal("hide");
 }
-
-
 
 
 function guardarMovimiento() {
@@ -127,15 +99,15 @@ function guardarMovimiento() {
         id_tbl_control_plazas_hraes: $("#id_tbl_control_plazas_hraes").val(),
         fecha_inicio: $("#fecha_inicio").val(),
         fecha_termino: $("#fecha_termino").val(),
-        id_cat_caracter_nombramiento: $("#id_cat_caracter_nombramiento").val(),
+        id_cat_caracter_nombramiento: $("#id_cat_tipo_trabajador").val(), // ✅ corregido aquí
         motivo_estatus: $("#motivo_estatus").val(),
         observaciones: $("#observaciones").val(),
-        id_tbl_empleados_hraes: id_tbl_empleados_hraes, // ✅ Validación para que no sea vacío
+        id_tbl_empleados_hraes: id_tbl_empleados_hraes,
         id_object: $("#id_object").val(),
         movimiento_general: $("#movimiento_general").val(),
         num_plaza: $("#num_plaza_new").val(),
         id_cat_situacion_plaza_hraes: $("#situacionPlaza").val(),
-        id_cat_tipo_trabajador: $("#id_cat_tipo_trabajador").val(), // ✅ Se agrega el tipo de trabajador
+        // id_cat_tipo_trabajador: eliminado
         movimientoBaja: movimientoBaja,
         movimientoAlta: movimientoAlta,
         movimientoMov: movimientoMov,
