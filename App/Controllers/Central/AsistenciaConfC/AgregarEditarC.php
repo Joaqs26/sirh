@@ -16,8 +16,8 @@ if ($idExludio == $_POST['id_cat_asistencia_ubicacion']) {
 
 }
 
-$fecha_fin = $_POST['fecha_fin'];
-$fecha_inicio = $_POST['fecha_inicio'];
+$fecha_fin = $_POST['fecha_fin'] ?? null;
+$fecha_inicio = $_POST['fecha_inicio']?? null;
 
 $condicion = [
     'id_tbl_empleados_hraes' => $_POST['id_tbl_empleados_hraes']
