@@ -181,7 +181,7 @@ class AsistenciaM
                                   TRIM(UPPER(UNACCENT(ca.estado))) LIKE '%$busqueda%' OR
                                   TRIM(UPPER(UNACCENT(ca.evento))) LIKE '%$busqueda%'
                               )
-                            ORDER BY ca.fecha DESC, ca.hora
+                            ORDER BY ca.fecha DESC, ca.hora 
                             LIMIT 3 OFFSET $paginator;");
         return $query;
     }
@@ -403,7 +403,7 @@ ORDER BY id_tbl_empleados_hraes, fecha, hora;");
                 INNER JOIN central.ctrl_asistencia 
                     ON central.ctrl_asistencia.id_tbl_empleados_hraes =
                         central.tbl_empleados_hraes.id_tbl_empleados_hraes
-                ORDER BY central.ctrl_asistencia.fecha ASC, central.ctrl_asistencia.hora ASC
+                ORDER BY central.ctrl_asistencia.fecha ASC, central.ctrl_asistencia.hora desc
                 LIMIT 5 OFFSET $paginator;");
         return $query;
     }
@@ -432,7 +432,7 @@ ORDER BY id_tbl_empleados_hraes, fecha, hora;");
                         OR TO_CHAR(central.ctrl_asistencia.hora, 'HH24:MI') LIKE '%$busqueda%' 
                         OR UPPER(central.ctrl_asistencia.dispositivo) LIKE '%$busqueda%'
                     )
-                    ORDER BY central.ctrl_asistencia.fecha DESC
+                     ORDER BY central.ctrl_asistencia.fecha ASC, central.ctrl_asistencia.hora desc
                     LIMIT 5 OFFSET $paginator;");
         return $query;
     }
