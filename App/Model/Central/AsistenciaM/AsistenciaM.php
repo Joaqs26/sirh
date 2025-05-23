@@ -76,13 +76,14 @@ class AsistenciaM
 
     function addAsistenciaInfoDB($conexion, $datos)
     {
-        $pg_add = pg_insert($conexion, 'central.ctrl_asistencia_info', $datos);
+        $pg_add = pg_insert($conexion, 'central.ctrl_jornada', $datos);
         return $pg_add;
     }
 
+
     function editJornadaInfoDB($conexion, $datos, $condicion)
     {
-        $pg_update = pg_update($conexion, 'central.ctrl_asistencia_info', $datos, $condicion);
+        $pg_update = pg_update($conexion, 'central.ctrl_jornada', $datos, $condicion);
         return $pg_update;
     }
 
@@ -469,39 +470,40 @@ ORDER BY id_tbl_empleados_hraes, fecha, hora;");
     {
         $query = pg_query("INSERT INTO central.reporte_faltas
                             SELECT 
-    e.rfc,
-    u.nombre AS unidad,
-    c.nombre AS coordinacion,
-    p.nombre_posicion,
-    (e.nombre || ' ' || e.primer_apellido || ' ' || e.segundo_apellido) AS nombre_completo,
-    t.movil,
-    ai.no_dispositivo,
-    f.fecha,
-    COALESCE(f.hora, '00:00:00') AS hora,
-    f.cantidad,
-    re.descripcion AS estatus
-FROM central.ctrl_faltas f
-INNER JOIN central.tbl_empleados_hraes e
-    ON e.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
-LEFT JOIN central.ctrl_asistencia_info ai
-    ON e.id_tbl_empleados_hraes = ai.id_tbl_empleados_hraes
-LEFT JOIN central.ctrl_telefono_hraes t
-    ON e.id_tbl_empleados_hraes = t.id_tbl_empleados_hraes AND t.id_cat_estatus = 1
-LEFT JOIN (
-    SELECT DISTINCT ON (pe.id_tbl_empleados_hraes) *
-    FROM central.tbl_plazas_empleados_hraes pe
-    ORDER BY pe.id_tbl_empleados_hraes, pe.fecha_movimiento DESC
-) pe ON e.id_tbl_empleados_hraes = pe.id_tbl_empleados_hraes
-LEFT JOIN central.tbl_control_plazas_hraes cp
-    ON pe.id_tbl_control_plazas_hraes = cp.id_tbl_control_plazas_hraes
-LEFT JOIN public.cat_unidad u
-    ON cp.id_cat_unidad = u.id_cat_unidad
-LEFT JOIN public.cat_coordinacion c
-    ON cp.id_cat_coordinacion = c.id_cat_coordinacion
-LEFT JOIN central.cat_puesto_hraes p
-    ON cp.id_cat_puesto_hraes = p.id_cat_puesto_hraes
-LEFT JOIN central.cat_retardo_estatus re
-    ON f.id_cat_retardo_estatus = re.id_cat_retardo_estatus;");
+            e.rfc,
+            u.nombre AS unidad,
+            c.nombre AS coordinacion,
+            p.nombre_posicion,
+            (e.nombre || ' ' || e.primer_apellido || ' ' || e.segundo_apellido) AS nombre_completo,
+            t.movil,
+            ai.no_dispositivo,
+            f.fecha,
+            f.hora,
+            f.cantidad,
+            re.descripcion AS estatus
+        FROM central.tbl_empleados_hraes e
+        INNER JOIN central.ctrl_asistencia_info ai
+            ON e.id_tbl_empleados_hraes = ai.id_tbl_empleados_hraes
+        INNER JOIN central.ctrl_telefono_hraes t
+            ON e.id_tbl_empleados_hraes = t.id_tbl_empleados_hraes 
+            AND t.id_cat_estatus = 1
+        INNER JOIN (
+            SELECT DISTINCT ON (pe.id_tbl_empleados_hraes) *
+            FROM central.tbl_plazas_empleados_hraes pe
+            ORDER BY pe.id_tbl_empleados_hraes, pe.fecha_movimiento DESC
+        ) pe ON e.id_tbl_empleados_hraes = pe.id_tbl_empleados_hraes
+        INNER JOIN central.tbl_control_plazas_hraes cp
+            ON pe.id_tbl_control_plazas_hraes = cp.id_tbl_control_plazas_hraes
+        INNER JOIN public.cat_unidad u
+            ON cp.id_cat_unidad = u.id_cat_unidad
+        INNER JOIN public.cat_coordinacion c
+            ON cp.id_cat_coordinacion = c.id_cat_coordinacion
+        INNER JOIN central.cat_puesto_hraes p
+            ON cp.id_cat_puesto_hraes = p.id_cat_puesto_hraes
+        INNER JOIN central.ctrl_faltas f
+            ON e.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+        INNER JOIN central.cat_retardo_estatus re
+            ON f.id_cat_retardo_estatus = re.id_cat_retardo_estatus;");
                 return $query;
     }
 

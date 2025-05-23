@@ -5,19 +5,8 @@ $bitacoraM = new BitacoraM();
 $asistenciaM = new AsistenciaM();
 
 $idExludio = 4; //Id excluido de catalago de estatus
-$fecha_fin = null;
-$fecha_inicio = null;
 $boolAss = false;
 $boolJor = false;
-
-if ($idExludio == $_POST['id_cat_asistencia_ubicacion']) {
-    $fecha_inicio = $_POST['fecha_inicio'] ?? null;
-    $fecha_fin = $_POST['fecha_fin'] ?? null;
-
-}
-
-$fecha_fin = $_POST['fecha_fin'] ?? null;
-$fecha_inicio = $_POST['fecha_inicio']?? null;
 
 $condicion = [
     'id_tbl_empleados_hraes' => $_POST['id_tbl_empleados_hraes']
@@ -28,9 +17,7 @@ $datos = [
     'no_dispositivo' => $_POST['no_dispositivo'],
     'id_cat_asistencia_ubicacion' => $_POST['id_cat_asistencia_ubicacion'],
     'id_cat_asistencia_estatus' => $_POST['id_cat_asistencia_estatus'],
-    'id_tbl_empleados_hraes' => $_POST['id_tbl_empleados_hraes'],
-    'fecha_inicio' => $fecha_inicio,
-    'fecha_fin' => $fecha_fin
+    'id_tbl_empleados_hraes' => $_POST['id_tbl_empleados_hraes']
 ];
 
 $datos_jornada = [

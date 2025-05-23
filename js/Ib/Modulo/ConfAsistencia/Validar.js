@@ -1,5 +1,4 @@
-
-var idExcluido = 4; ///catalogo de estatus excluido
+var idExcluido = 4; /// catálogo de estatus excluido
 
 function validadConfAsistencia() {
     let no_dispositivo_ass = document.getElementById('no_dispositivo_ass').value;
@@ -10,10 +9,6 @@ function validadConfAsistencia() {
     let id_cat_asistencia_ubicacion = document.getElementById('id_cat_asistencia_ubicacion').value;
     let observaciones_ass = document.getElementById('observaciones_ass').value;
 
-    // Si los campos de fecha existen en el DOM, los obtenemos
-    let fecha_inicio_ss = document.getElementById('fecha_inicio_ss')?.value || null;
-    let fecha_fin_ss = document.getElementById('fecha_fin_ss')?.value || null;
-
     if (
         validarData(no_dispositivo_ass, 'No biométrico') &&
         validarData(id_cat_asistencia_estatus, 'Estatus') &&
@@ -23,58 +18,30 @@ function validadConfAsistencia() {
         validarData(id_cat_asistencia_ubicacion, 'Ubicación') &&
         validarData(observaciones_ass, 'Observaciones')
     ) {
-        if (id_cat_asistencia_estatus == idExcluido) {
-            // Solo valida fechas si ambas existen y tienen valor
-            if (fecha_inicio_ss && fecha_fin_ss) {
-                if (validarFecha(fecha_inicio_ss, fecha_fin_ss)) {
-                    uniqueNoBiometrico();
-                }
-            } else {
-                // Si no hay fechas, permite continuar
-                uniqueNoBiometrico();
-            }
-        } else {
-            uniqueNoBiometrico();
-        }
+        uniqueNoBiometrico();
     }
 }
 
-
-function validarFecha(fechaInicio, fechaFin){
-    let bool = true;
-
-    if(fechaInicio >= fechaFin){
-        bool = false;
-        notyf.error('La fecha de inicio no puede ser posterior a la fecha de fin.');
-    }
-    return bool;
-}
-
-
-function uniqueNoBiometrico(){
+function uniqueNoBiometrico() {
     let no_dispositivo_ass = document.getElementById('no_dispositivo_ass').value;
     $.post("../../../../App/Controllers/Central/AsistenciaConfC/ValidarNoC.php", {
         id_tbl_empleados_hraes: id_tbl_empleados_hraes,
         no_dispositivo_ass: no_dispositivo_ass
-    },
-        function (data) {
-            if (data){
-                notyf.error('El No biométrico* ya se encuentra asociado a un empleado'); 
-            } else {
-                agregarActualizarAsistencia();
-            }
-            }
-    );
+    }, function (data) {
+        if (data) {
+            notyf.error('El No biométrico* ya se encuentra asociado a un empleado');
+        } else {
+            agregarActualizarAsistencia();
+        }
+    });
 }
 
-
-document.getElementById("id_cat_asistencia_estatus").addEventListener("change", function() {
+document.getElementById("id_cat_asistencia_estatus").addEventListener("change", function () {
     let id_cat_asistencia_estatus = this.value;
-    
-    if ( id_cat_asistencia_estatus == idExcluido){
+
+    if (id_cat_asistencia_estatus == idExcluido) {
         mostrarContenido('id_estatus_is_div');
     } else {
         ocultarContenido('id_estatus_is_div');
     }
-  });
-
+});
