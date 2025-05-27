@@ -21,7 +21,7 @@ class ModelMovimientosM
                                     central.tbl_control_plazas_hraes.id_tbl_control_plazas_hraes
                                 WHERE central.tbl_plazas_empleados_hraes.id_tbl_empleados_hraes = $idEmpleado
                                  ORDER BY tbl_plazas_empleados_hraes.fecha_movimiento DESC
-                            LIMIT 3 OFFSET $paginator;");
+                            LIMIT 5 OFFSET $paginator;");
 
         return $listado;
     }
@@ -57,7 +57,7 @@ class ModelMovimientosM
                                     tbl_control_plazas_hraes.num_plaza LIKE '%$busqueda%'
                             )
                             ORDER BY tbl_plazas_empleados_hraes.fecha_movimiento DESC
-                            LIMIT 3 OFFSET $paginator;");
+                            LIMIT 5 OFFSET $paginator;");
         return $listado;
     }
     

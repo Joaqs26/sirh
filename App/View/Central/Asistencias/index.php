@@ -29,10 +29,10 @@
                             title="Mis estadísticas" onclick="window.location.href='porwebi.php';">
                             <i class="fa fa-line-chart"></i>
                         </button>
-                        <button class="btn btn-light btn-circle" type="button" onclick="getReporteAsistencia()"
-                            data-toggle="tooltip" title="Generar reporte">
-                            <i class="fa fa-download"></i>
-                        </button>
+                            <button class="btn btn-light btn-circle" type="button" onclick="getReporteAsistencia()"
+                                data-toggle="tooltip" title="Generar reporte">
+                                <i class="fa fa-download"></i>
+                            </button>
                     </div>
                 </div>
             </div>

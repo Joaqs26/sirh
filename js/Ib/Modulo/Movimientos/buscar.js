@@ -20,6 +20,6 @@ function anteriorValor_mv(){
 function iniciarBusqueda_mv(){
     let valorInicialAux = valorInicial_mv;
     valorInicialAux --;
-    let valoroff = valorInicialAux * 3;
+    let valoroff = valorInicialAux * 5;
     return valoroff;
 }
