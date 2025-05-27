@@ -57,7 +57,7 @@ class ModelMovimientosM
                                     tbl_control_plazas_hraes.num_plaza LIKE '%$busqueda%'
                             )
                             ORDER BY tbl_plazas_empleados_hraes.fecha_movimiento DESC
-                            LIMIT 10 OFFSET $paginator;");
+                            LIMIT 3 OFFSET $paginator;");
         return $listado;
     }
     
