@@ -1,71 +1,97 @@
 function getReporteAsistencia() {
     Swal.fire({
-        title: "Generador de reportes",
-        text: "Seleccione el reporte que desea descargar",
-        icon: "question",
-        width: '600px', // Ajusta el ancho del cuadro de diálogo
-        showCancelButton: true,
-        confirmButtonColor: "#235B4E",
-        cancelButtonColor: "#235B4E",
-        confirmButtonText: "Reporte de Faltas",
-        cancelButtonText: "Cancelar",
-        showDenyButton: true,
-        denyButtonColor: "#235B4E",
-        denyButtonText: "Reporte de Alertas",
+        title: "Selecciona el rango de fechas",
         html: `
-            <button id="btnRetardos" class="swal2-confirm swal2-styled" 
-                style="background-color: #235B4E; margin-top: 10px;">
-                Reporte de Retardos
-            </button>
-        `, // Botón adicional para "Reporte de Retardos"
-        customClass: {
-            popup: 'popup-reporte-asistencia', // Clase personalizada
-        },
-    }).then((result) => {
-        if (result.isConfirmed) {
-            descargarReporte("../../../../App/Controllers/Central/AsistenciaC/ReporteC.php", "REPORTE_FALTAS.xlsx");
-        } else if (result.isDenied) {
-            descargarReporte("../../../../App/Controllers/Central/AlertaC/ReporteC.php", "REPORTE_ALERTAS.xlsx");
-        }
-    });
+            <div style="text-align:left;">
+                <label><b>Fecha inicio:</b></label>
+                <input type="date" id="fecha_inicio" class="swal2-input">
+                <label><b>Fecha fin:</b></label>
+                <input type="date" id="fecha_fin" class="swal2-input">
+            </div>
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: "Continuar",
+        cancelButtonText: "Cancelar",
+        preConfirm: () => {
+            const fecha_inicio = document.getElementById('fecha_inicio').value;
+            const fecha_fin = document.getElementById('fecha_fin').value;
 
-    // Agregar evento click al botón personalizado
-    document.getElementById('btnRetardos').addEventListener('click', function () {
-        descargarReporte("../../../../App/Controllers/Central/RetardoC/ReporteC.php", "OTRO_REPORTE.xlsx");
-        Swal.close(); // Cierra el cuadro de diálogo después de ejecutar la acción
+            if (!fecha_inicio || !fecha_fin) {
+                Swal.showValidationMessage("Debes ingresar ambas fechas");
+                return false;
+            }
+            return { fecha_inicio, fecha_fin };
+        }
+    }).then((result) => {
+        if (!result.isConfirmed) return;
+
+        const { fecha_inicio, fecha_fin } = result.value;
+
+        Swal.fire({
+            title: "¿Qué reporte deseas descargar?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#235B4E",
+            cancelButtonColor: "#235B4E",
+            confirmButtonText: "Reporte de Faltas",
+            cancelButtonText: "Cancelar",
+            showDenyButton: true,
+            denyButtonColor: "#235B4E",
+            denyButtonText: "Reporte de Alertas",
+            html: `
+                <button id="btnRetardos" class="swal2-confirm swal2-styled" 
+                    style="background-color: #235B4E; margin-top: 10px;">
+                    Reporte de Retardos
+                </button>
+            `
+        }).then((res) => {
+            if (res.isConfirmed) {
+                descargarReporteConFechas("../../../../App/Controllers/Central/AsistenciaC/ReporteC.php", "REPORTE_FALTAS.xlsx", fecha_inicio, fecha_fin);
+            } else if (res.isDenied) {
+                descargarReporteConFechas("../../../../App/Controllers/Central/AlertaC/ReporteC.php", "REPORTE_ALERTAS.xlsx", fecha_inicio, fecha_fin);
+            }
+        });
+
+        // Activar el botón personalizado después del render
+        Swal.getPopup().querySelector('#btnRetardos').addEventListener('click', function () {
+            descargarReporteConFechas("../../../../App/Controllers/Central/RetardoC/ReporteC.php", "REPORTE_RETARDOS.xlsx", fecha_inicio, fecha_fin);
+            Swal.close();
+        });
     });
 }
 
-function descargarReporte(url, nombreArchivo) {
+function descargarReporteConFechas(url, nombreArchivo, fechaInicio, fechaFin) {
     fadeIn();
     $.ajax({
         url: url,
         type: 'POST',
+        data: {
+            fecha_inicio: fechaInicio,
+            fecha_fin: fechaFin
+        },
         xhrFields: {
-            responseType: 'blob' // Configura la respuesta esperada como un blob (archivo binario)
+            responseType: 'blob'
         },
         success: function (data) {
-            console.log(data)
             if (data.size > 0) {
-                var blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                var link = document.createElement('a');
+                const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                const link = document.createElement('a');
                 link.href = window.URL.createObjectURL(blob);
                 link.download = nombreArchivo;
                 document.body.appendChild(link);
                 link.click();
                 window.URL.revokeObjectURL(link.href);
                 document.body.removeChild(link);
-                notyf.success('El proceso se llevó a cabo con éxito');
+                notyf.success('El reporte se generó exitosamente');
             } else {
-                notyf.error('Error al ejecutar la acción');
+                notyf.error('Error: el archivo está vacío');
             }
             fadeOut();
         },
-        error: function (xhr, status, error) {
-            notyf.error('Error al ejecutar la acción');
+        error: function () {
+            notyf.error('Error al generar el reporte');
             fadeOut();
         }
     });
 }
-
-

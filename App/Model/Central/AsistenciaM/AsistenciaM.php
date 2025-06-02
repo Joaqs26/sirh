@@ -507,12 +507,19 @@ ORDER BY id_tbl_empleados_hraes, fecha, hora;");
                 return $query;
     }
 
-    public function selectFaltas()
-    {
-        $query = pg_query("SELECT rfc, unidad, coordinacion, puesto, nombre, movil, no_dispositivo, fecha, hora, cantidad,estatus
-                            FROM central.reporte_faltas;");
-        return $query;
-    }
+ public function selectFaltas($fecha_inicio, $fecha_fin)
+{
+    // Escapar correctamente las variables para evitar inyección SQL
+    $fecha_inicio = pg_escape_string($fecha_inicio);
+    $fecha_fin = pg_escape_string($fecha_fin);
+
+    $query = pg_query("SELECT rfc, unidad, coordinacion, puesto, nombre, movil, no_dispositivo, fecha, hora, cantidad, estatus
+                       FROM central.reporte_faltas
+                       WHERE fecha BETWEEN '$fecha_inicio' AND '$fecha_fin';");
+
+    return $query;
+}
+
 
 }
 

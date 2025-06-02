@@ -35,7 +35,7 @@
         // formulario nuevo (sin datos previos)
         $response = [
             'es_por_retardo' => '',
-            'fecha' => '',
+            'fecha' => '',                          
             'hora' => '',
             'cantidad' => '',
             'fecha_desde' => '',

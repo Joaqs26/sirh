@@ -17,8 +17,19 @@ if (!$connectionDBsPro) {
     die("Error: No se pudo establecer conexión con la base de datos.");
 }
 
+// Capturar las fechas enviadas por POST
+$fechaInicio = isset($_POST['fecha_inicio']) ? $_POST['fecha_inicio'] : null;
+$fechaFin = isset($_POST['fecha_fin']) ? $_POST['fecha_fin'] : null;
+
+// Construir el WHERE dinámicamente si hay rango de fechas
+$whereFechas = '';
+if ($fechaInicio && $fechaFin) {
+   $whereFechas = "WHERE ctrl_retardo.fecha::DATE BETWEEN '$fechaInicio'::DATE AND '$fechaFin'::DATE";
+}
+
 // Query directamente en el archivo para asegurar ejecución
-$query = "SELECT
+$query = "
+SELECT
     CONCAT(UPPER(tbl_empleados_hraes.nombre), ' ',
            UPPER(tbl_empleados_hraes.primer_apellido), ' ',
            UPPER(tbl_empleados_hraes.segundo_apellido)) AS nombre_completo,
@@ -38,9 +49,7 @@ INNER JOIN central.tbl_empleados_hraes
     ON ctrl_retardo.id_tbl_empleados_hraes = tbl_empleados_hraes.id_tbl_empleados_hraes
 INNER JOIN central.ctrl_asistencia_info cai
     ON tbl_empleados_hraes.id_tbl_empleados_hraes = cai.id_tbl_empleados_hraes
---WHERE cai.id_cat_asistencia_ubicacion = 1
-  --AND cai.id_cat_asistencia_estatus = 1
-  --ND cai.id_cat_asistencia_config = 1
+$whereFechas
 ORDER BY ctrl_retardo.fecha DESC;";
 
 // Ejecutar el query directamente

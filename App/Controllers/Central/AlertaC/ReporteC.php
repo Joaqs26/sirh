@@ -15,8 +15,12 @@ ob_start();
 // Crear instancia de la clase `AlertasM` con la conexión
 $alertasM = new AlertasM($connectionDBsPro); // Asegúrate de que `$connectionDBsPro` esté definido en `conexion.php`
 
-// Obtener los datos necesarios
-$result = $alertasM->listarById('', 0); // Ajusta los parámetros si es necesario
+// Recibir fechas desde el POST
+$fechaInicio = isset($_POST['fecha_inicio']) ? $_POST['fecha_inicio'] : null;
+$fechaFin = isset($_POST['fecha_fin']) ? $_POST['fecha_fin'] : null;
+
+// Obtener los datos necesarios, ahora con fechas
+$result = $alertasM->listarById('', 0, $fechaInicio, $fechaFin); // Le pasamos las fechas
 if (!$result) {
     die("Error en la consulta: " . pg_last_error($connectionDBsPro));
 }
