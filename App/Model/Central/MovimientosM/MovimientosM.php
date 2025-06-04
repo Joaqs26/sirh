@@ -200,7 +200,7 @@ class ModelMovimientosM
         $listado = pg_query("SELECT id_tbl_control_plazas_hraes
                                  FROM central.tbl_plazas_empleados_hraes
                                  WHERE id_tbl_empleados_hraes = $idEmpleado
-                                 ORDER BY id_tbl_plazas_empleados_hraes DESC
+                                 ORDER BY fecha_movimiento DESC
                                  LIMIT 1;");
         return $listado;
     }

@@ -145,9 +145,7 @@ function modificarPlaza($connectionDBsPro, $movimientoBaja, $movimientoAlta, $mo
     actualizarPlaza($connectionDBsPro, $idMovimientoVal, $idPlaza, $num_plaza, $id_cat_situacion_plaza_hraes);
 }
 
-/**
- * Función para actualizar la plaza
- */
+
 function actualizarPlaza($connectionDBsPro, $id_cat_plazas, $id_tbl_control_plazas_hraes, $num_plaza, $id_cat_situacion_plaza_hraes) {
     $model = new modelPlazasHraes();
 
