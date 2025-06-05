@@ -115,6 +115,7 @@ function guardarIncidencia() {
         id_object: $("#id_object").val(),   
     },
         function (data) {
+            console.log('respuesta:', data); 
             if (data == 'edit'){
                 notyf.success('Incidencia modificada con éxito');
             } else if (data == 'add') {
@@ -144,7 +145,9 @@ function eliminarIncidecia(id_object) {//ELIMINAR USUARIO
                 id_object: id_object
             },
             function (data) {
+                console.log('respuesta:', data); 
                 if (data == 'delete'){
+                     console.log('respuesta:', data); 
                     notyf.success('Incidencia eliminada con éxito')
                 } else {
                     notyf.error(mensajeSalida);

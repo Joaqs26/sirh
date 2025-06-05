@@ -311,7 +311,10 @@ class FaltaModelM
                                     )
                                     AND mj.fecha IS NOT NULL
                                     AND mj.fecha <> ''
-                                    AND mj.fecha::date = Entradas.fecha::date);");
+                                    AND mj.fecha::date = Entradas.fecha::date)
+                                    
+                                    
+                                    ");
                                     return $query;
     }
 
@@ -385,7 +388,13 @@ FROM (
             AND mj.fecha IS NOT NULL
             AND mj.fecha <> ''
             AND mj.fecha::date = Entradas.fecha::date
-        );
+        )
+        AND NOT EXISTS (
+    SELECT 1
+    FROM central.cat_dias_extraor ce
+    WHERE ce.fecha = Entradas.fecha
+      AND ce.tipo = 'RETARDO MAYOR'
+);  
     ");
     return $query;
 }

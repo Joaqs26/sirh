@@ -29,38 +29,30 @@ if (pg_num_rows($listado) > 0) {
     while ($row = pg_fetch_row($listado)) {
         $data .=
             '<tbody class="text-center">
-                        <tr>
-                        <td>
+                <tr>
+                    <td>
                         <div class="btn-group">
-                                <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-edit icono-pequeno-tabla"></i></button>
+                            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-edit icono-pequeno-tabla"></i></button>
                             <div class="dropdown-menu">
                                 <button onclick="obtenerUsuario(' . $row[6] . ')" class="dropdown-item btn btn-light"><i class="fa fa-user icon-edit-table"></i> Usuario</button>
                                 <button onclick="agregarEditarIncidencia(' . $row[0] . ')" class="dropdown-item btn btn-light"><i class="fas fa-edit icon-edit-table"></i> Modificar</button>
                                 <button onclick="eliminarIncidecia(' . $row[0] . ')" class="dropdown-item btn btn-light"><i class="far fa-trash-alt icon-delete-table"></i> Eliminar</button>  
                             </div>
-                          </div>
-                                </td>
-                            <td>
-                                ' . $row[1] . '
-                            </td>
-                            <td>
-                                ' . $row[2] . '
-                            </td>
-                            <td>
-                                ' . $row[3] . '
-                            </td>
-                            <td>
-                                ' . $row[5] . '
-                            </td>
-                            <td>
-                                ' . $row[4] . '
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>';
+                        </div>
+                    </td>
+                    <td>' . $row[1] . '</td>
+                    <td>' . $row[2] . '</td>
+                    <td>' . $row[3] . '</td>
+                    <td>' . $row[5] . '</td>
+                    <td>' . $row[4] . '</td>
+                </tr>
+            </tbody>';
     }
+    // 🚨 Aquí cierras la tabla una sola vez al final
+    $data .= '</table>';
 } else {
     $data .= '<h6>Sin resultados</h6>';
 }
 
 echo $data;
+

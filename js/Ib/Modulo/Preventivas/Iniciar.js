@@ -87,7 +87,7 @@ function guardarPreventiva() {
     );
 }
 
-function eliminarIncidecia(id_object) {//ELIMINAR USUARIO
+function eliminarPreventiva(id_object) {//ELIMINAR USUARIO
     Swal.fire({
         title: "¿Está seguro?",
         text: "¡No podrás revertir esto!",
@@ -103,6 +103,7 @@ function eliminarIncidecia(id_object) {//ELIMINAR USUARIO
                 id_object: id_object
             },
                 function (data) {
+                    console.log('respuesta:', data); 
                     if (data == 'delete') {
                         notyf.success('Preventiva eliminada con éxito')
                     } else {

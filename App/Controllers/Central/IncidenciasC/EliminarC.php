@@ -1,15 +1,15 @@
 <?php
 include '../librerias.php';
 
-$incidenciasM = new IncidenciasM();
+$preventivasM = new IncidenciasM();
 $bitacoraM = new BitacoraM();
 
 $condicion = [
     'id_ctrl_incidencias' => $_POST['id_object']
 ];
 
-if (isset($_POST['id_object'])){
-    if ($incidenciasM-> eliminarByArray($connectionDBsPro, $condicion)){
+if (isset($_POST['id_object'])) {
+    if ($preventivasM->eliminarByArray($connectionDBsPro, $condicion)) {
         $dataBitacora = [
             'nombre_tabla' => 'central.ctrl_incidencias',
             'accion' => 'ELIMINAR',
@@ -17,7 +17,7 @@ if (isset($_POST['id_object'])){
             'fecha' => $timestamp,
             'id_users' => $_SESSION['id_user']
         ];
-        $bitacoraM->agregarByArray($connectionDBsPro,$dataBitacora,'central.bitacora_hraes');
+        $bitacoraM->agregarByArray($connectionDBsPro, $dataBitacora, 'central.bitacora_hraes');
         echo 'delete';
     }
-} 
+}
