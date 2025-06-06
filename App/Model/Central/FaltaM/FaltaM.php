@@ -246,7 +246,7 @@ class FaltaModelM
 
 
     ///SCRIP PARA CALCULO DE FLATAS DE FORMA MASIVApublic function process_1()
-    public function process_1()
+  public function process_1()
     {
         $query = pg_query("INSERT INTO central.ctrl_retardo (
                 fecha, 
@@ -316,7 +316,7 @@ class FaltaModelM
                 SELECT 1
                 FROM central.ctrl_incidencias ci
                 WHERE ci.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
-                AND ci.id_cat_incidencias IN (13, 14, 15) -- ✅ Excluir varios tipos
+                AND ci.id_cat_incidencias IN (13, 14, 15)
                 AND ci.fecha_inicio::date = Entradas.fecha::date
             );
         ");
@@ -377,7 +377,7 @@ class FaltaModelM
                 SELECT 1
                 FROM central.ctrl_faltas f
                 WHERE f.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
-                  AND f.fecha = Entradas.fecha
+                AND f.fecha = Entradas.fecha
             )
             AND NOT EXISTS (
                 SELECT 1
@@ -450,6 +450,12 @@ class FaltaModelM
                     FROM central.ctrl_asistencia_info AI
                     WHERE AI.id_tbl_empleados_hraes = Salidas.id_tbl_empleados_hraes
                 )
+            )
+            AND NOT EXISTS (
+                SELECT 1
+                FROM central.cat_dias_extraor ce
+                WHERE ce.fecha = Salidas.fecha
+                AND ce.tipo = 'SALIDA ANTICIPADA'
             )
             AND NOT EXISTS (
                 SELECT 1
@@ -582,6 +588,11 @@ class FaltaModelM
                     OR (ci.fecha_fin IS NOT NULL AND f.fecha::text BETWEEN ci.fecha_inicio::text AND ci.fecha_fin::text)
                 )
             )
+            AND NOT EXISTS (
+                SELECT 1
+                FROM central.cat_dias_extraor ce
+                WHERE ce.fecha = Entradas.fecha
+                AND ce.tipo = 'SALIDA ANTICIPADA'
             AND NOT EXISTS (
                 SELECT 1
                 FROM central.ctrl_incidencias ci2
