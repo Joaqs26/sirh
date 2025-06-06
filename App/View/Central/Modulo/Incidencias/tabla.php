@@ -48,7 +48,7 @@ if (pg_num_rows($listado) > 0) {
                 </tr>
             </tbody>';
     }
-    // 🚨 Aquí cierras la tabla una sola vez al final
+  
     $data .= '</table>';
 } else {
     $data .= '<h6>Sin resultados</h6>';

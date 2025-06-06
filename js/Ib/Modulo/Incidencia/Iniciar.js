@@ -12,7 +12,18 @@ id_cat_incidencias      valor
 var dias_cuenta_vacaciones = 7;
 var vacaciones_extraordinarias = 14;
 var vacaciones_ordinarias = 15;
+const selectIncidencia = document.getElementById('id_cat_incidencias_ins');
+const campoNumOficio = document.getElementById('campo_num_oficio');
 
+// Mostrar u ocultar campo "No. de Oficio" según la selección
+selectIncidencia.addEventListener('change', function() {
+    const selectedText = selectIncidencia.options[selectIncidencia.selectedIndex].text.trim().toUpperCase();
+    if (selectedText === 'VACACIONES EXTRAORDINARIAS') {
+        campoNumOficio.style.display = 'block'; // Mostrar el campo
+    } else {
+        campoNumOficio.style.display = 'none';  // Ocultar el campo
+    }
+});
 
 function buscarIncidencia(){ //BUSQUEDA
     let buscarNew = clearElement(buscar_ins);
@@ -37,61 +48,73 @@ function iniciarTabla_ins(busqueda, paginador, id_tbl_empleados_hraes) {
     );
 }
 
-function agregarEditarIncidencia(id_object){
+function agregarEditarIncidencia(id_object) {
     $("#id_object").val(id_object);
     let titulo = document.getElementById("titulo_asistencia");
-    titulo.textContent = 'Modificar';
-    $("#id_object").val(id_object);
-    if (id_object == null){
-        titulo.textContent = 'Agregar';
+
+    titulo.textContent = id_object == null ? 'Agregar' : 'Modificar';
+
+    if (id_object == null) {
         $("#agregar_editar_incidencia").find("input,textarea,select").val("");
         $("#agregar_editar_incidencia").find("input[type=checkbox], input[type=radio]").prop("checked", false);
+        $("#campo_num_oficio").hide(); // 🚩 Ocultar el campo por defecto
+        $("#num_oficio_ins").val('');  // Limpia el valor
     }
 
     $.post("../../../../App/Controllers/Central/IncidenciasC/DetallesC.php", {
         id_object: id_object
     },
-        function (data) {
-            console.log(data);
+    function (data) {
+        console.log(data);
 
-            let jsonData = JSON.parse(data);
-            let response = jsonData.response; 
+        let jsonData = JSON.parse(data);
+        let response = jsonData.response;
 
-            //proceso de mostrar u ocultar contenido de calendarios para el periodo de vacaciones
-            checkbox_disabled.disabled  = false;
-            ocultarContenido('ocultar_contenido_vacaciones');
-           if(response.id_cat_incidencias == dias_cuenta_vacaciones || 
-              response.id_cat_incidencias == vacaciones_extraordinarias || 
-              response.id_cat_incidencias == vacaciones_ordinarias){
-                if(response.es_mas_de_un_dia !== 't'){
-                    checkbox_disabled.disabled = true;
-                    es_mas_de_un_dia.checked = false;
-                } else {
-                    es_mas_de_un_dia.checked = true;
-                }
-               // es_mas_de_un_dia.checked = true;
-                mostrarContenido('ocultar_contenido_vacaciones');
-           }
+        // 🔥 Mostrar u ocultar sección de vacaciones
+        checkbox_disabled.disabled = false;
+        ocultarContenido('ocultar_contenido_vacaciones');
 
-           $("#fecha_inicio_ins").val(response.fecha_inicio);
-           $("#fecha_fin_ins").val(response.fecha_fin);
-           $("#observaciones_ins").val(response.observaciones);
-           $("#fecha_captura_ins").val(response.fecha_captura);
-           $("#hora_ins").val(response.hora);
-
-           $("#is_peridodo_ins").val(jsonData.periodo);
-           $("#is_dias_seleccionados").val(jsonData.diasSeleccionados);
-           $("#is_dias_restantes").val(jsonData.diasRestantes);
-
-            $("#id_cat_incidencias_ins").html(jsonData.catIncidencias);
-
-            $('#id_cat_incidencias_ins').selectpicker('refresh');
-            $('.selectpicker').selectpicker();
-
+        if (
+            response.id_cat_incidencias == dias_cuenta_vacaciones || 
+            response.id_cat_incidencias == vacaciones_extraordinarias || 
+            response.id_cat_incidencias == vacaciones_ordinarias
+        ) {
+            if (response.es_mas_de_un_dia !== 't') {
+                checkbox_disabled.disabled = true;
+                es_mas_de_un_dia.checked = false;
+            } else {
+                es_mas_de_un_dia.checked = true;
+            }
+            mostrarContenido('ocultar_contenido_vacaciones');
         }
-    );
+
+        $("#fecha_inicio_ins").val(response.fecha_inicio);
+        $("#fecha_fin_ins").val(response.fecha_fin);
+        $("#observaciones_ins").val(response.observaciones);
+        $("#fecha_captura_ins").val(response.fecha_captura);
+        $("#hora_ins").val(response.hora);
+
+        
+        if (response.num_oficio && response.num_oficio.trim() !== '') {
+            $("#campo_num_oficio").show();
+            $("#num_oficio_ins").val(response.num_oficio);
+        } else {
+            $("#campo_num_oficio").hide();
+            $("#num_oficio_ins").val(''); // Limpiar el campo si no hay valor
+        }
+
+        $("#is_peridodo_ins").val(jsonData.periodo);
+        $("#is_dias_seleccionados").val(jsonData.diasSeleccionados);
+        $("#is_dias_restantes").val(jsonData.diasRestantes);
+
+        $("#id_cat_incidencias_ins").html(jsonData.catIncidencias);
+        $('#id_cat_incidencias_ins').selectpicker('refresh');
+        $('.selectpicker').selectpicker();
+    });
+
     $("#agregar_editar_incidencia").modal("show");
 }
+
 
 function salirAgregarEditarIncidencia(){
     $("#agregar_editar_incidencia").modal("hide");
@@ -113,6 +136,8 @@ function guardarIncidencia() {
         observaciones: $("#observaciones_ins").val(),
         id_cat_incidencias: $("#id_cat_incidencias_ins").val(),
         id_object: $("#id_object").val(),   
+        num_oficio: $("#num_oficio_ins").val()
+
     },
         function (data) {
             console.log('respuesta:', data); 

@@ -18,6 +18,8 @@ $datos = [
     'id_tbl_empleados_hraes' => $_POST['id_tbl_empleados_hraes'],
     'id_user' => $_SESSION['id_user'],
     'es_mas_de_un_dia' => $_POST['es_mas_de_un_dia'],
+    'num_oficio' => isset($_POST['num_oficio']) ? $_POST['num_oficio'] : null,
+
 ];
 
 $var = [
