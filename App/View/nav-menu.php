@@ -112,7 +112,9 @@ $id_rol = $_SESSION['id_rol'];
                                 <li><a class="dropdown-item" href="../../Central/CentroTrabajo/index.php">Centro de trabajo</a></li>
                                 <li><a class="dropdown-item" href="../../Central/Empleados/index.php">Empleados</a></li>
                                 <li><a class="dropdown-item" href="../../Central/Plazas/index.php">Plazas</a></li>
-                                 <li><a class="dropdown-item" href="../../Central/Asistencias/index.php">Formato Nómina</a></li>
+                                 <li><a class="dropdown-item" href="../../Central/Asistencias/Asistencias/nomina.php">Formato Nómina</a></li>
+                             
+
                             </ul>
                         </li>
                     <?php } ?>
@@ -135,7 +137,7 @@ $id_rol = $_SESSION['id_rol'];
                                 <li><a class="dropdown-item" href="../../Hraes/Plazas/index.php">Plazas</a></li>
                             </ul>
                         </li>
-                    <?php } ?>
+                    <?php } ?>  
                     <!-- HRAES -->
 
                     <!-- FEDERALIZADA -->
