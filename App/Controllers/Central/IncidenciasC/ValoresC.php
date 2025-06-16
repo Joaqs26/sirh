@@ -26,13 +26,13 @@ if ($fechaInicio != '') {
 
         if ($fechaInicio != '' && $fechaFin == '') {//funion de un solo dia
             $diasSeleccionados = '1 Día'; //uno perteneciendo a solo un dia que se selecciono
-            $diasRestantes = ($allDays - 1) . ' de 15 días';
+            $diasRestantes = ($allDays - 1) . ' de 10 días';
         } else if ($fechaInicio != '' && $fechaFin != '') { //funcion donde se selecciona un rango de fechas
             if ($fechaInicio < $fechaFin) { // validacion que las fechas esten correctas, la de inicio ser menor que la  fecha fin
                 $intervalo = $fechaInicio_date->diff($fechaFin_date); //obtener el intervalo para dias
                 $diasSeleccionados = $intervalo->days + 1 . ' Días'; // obtener el total de dias
-                $diasRestantes = ($allDays - ($intervalo->days + 1)) . ' de 15 días';
-                if (($allDays - ($intervalo->days + 1)) < 0 || ($allDays - ($intervalo->days + 1)) > 15) {
+                $diasRestantes = ($allDays - ($intervalo->days + 1)) . ' de 10 días';
+                if (($allDays - ($intervalo->days + 1)) < 0 || ($allDays - ($intervalo->days + 1)) > 10) {
                     $diasRestantes = 'SIN DÍAS LIBRES';
                 }
             }

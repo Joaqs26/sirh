@@ -589,10 +589,12 @@ class FaltaModelM
                 )
             )
             AND NOT EXISTS (
-                SELECT 1
-                FROM central.cat_dias_extraor ce
-                WHERE ce.fecha = Entradas.fecha
-                AND ce.tipo = 'SALIDA ANTICIPADA'
+    SELECT 1
+    FROM central.cat_dias_extraor ce
+    WHERE ce.fecha = f.fecha
+    AND ce.tipo = 'SALIDA ANTICIPADA'
+)
+
             AND NOT EXISTS (
                 SELECT 1
                 FROM central.ctrl_incidencias ci2
