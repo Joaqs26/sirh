@@ -515,94 +515,88 @@ class FaltaModelM
     public function process_5()
     {
         $query = pg_query("INSERT INTO central.ctrl_faltas (
-                id_tbl_empleados_hraes,
-                observaciones,
-                es_por_retardo,
-                id_cat_retardo_tipo,
-                id_cat_retardo_estatus,
-                id_user,
-                fecha,
-                hora,
-                cantidad
-            )
-            SELECT 
-                f.id_tbl_empleados_hraes,
-                'FALTA POR OMISIÓN' AS observaciones,
-                FALSE AS es_por_retardo,
-                3 AS id_cat_retardo_tipo,
-                8 AS id_cat_retardo_estatus,
-                NULL AS id_user,
-                f.fecha,
-                '00:00:00' AS hora,
-                1 AS cantidad
-            FROM (
-                SELECT 
-                    e.id_tbl_empleados_hraes,
-                    a.fecha 
-                FROM central.tbl_empleados_hraes e
-                CROSS JOIN (
-                    SELECT DISTINCT fecha
-                    FROM central.ctrl_asistencia
-                ) a
-                INNER JOIN central.ctrl_asistencia_info ai
-                    ON e.id_tbl_empleados_hraes = ai.id_tbl_empleados_hraes
-                WHERE 
-                    ai.id_cat_asistencia_ubicacion = 1
-                    AND ai.id_cat_asistencia_estatus = 1
-                    AND ai.id_cat_asistencia_config = 1
-                    AND ai.no_dispositivo IS NOT NULL
-            ) f
-            LEFT JOIN central.ctrl_asistencia a
-                ON f.id_tbl_empleados_hraes = a.id_tbl_empleados_hraes
-                AND f.fecha = a.fecha
-            WHERE a.fecha IS NULL
-            AND f.fecha::date NOT IN (
-                SELECT fecha::date
-                FROM central.cat_dias_festivos
-                WHERE fecha IS NOT NULL
-            )
-            AND NOT EXISTS (
-                SELECT 1
-                FROM central.ctrl_faltas cf
-                WHERE cf.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
-                AND cf.fecha = f.fecha
-                AND cf.id_cat_retardo_tipo = 3
-            )
-            AND NOT EXISTS (
-                SELECT 1
-                FROM central.masivo_ctrl_temp_faltas_just
-                WHERE rfc = (
-                    SELECT rfc 
-                    FROM central.tbl_empleados_hraes 
-                    WHERE id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
-                )
-                AND fecha::text = f.fecha::text
-            )
-            AND NOT EXISTS (
-                SELECT 1
-                FROM central.ctrl_incidencias ci
-                WHERE ci.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
-                AND ci.fecha_inicio IS NOT NULL
-                AND (
-                    (ci.fecha_fin IS NULL AND f.fecha::text = ci.fecha_inicio::text)
-                    OR (ci.fecha_fin IS NOT NULL AND f.fecha::text BETWEEN ci.fecha_inicio::text AND ci.fecha_fin::text)
-                )
-            )
-            AND NOT EXISTS (
-    SELECT 1
-    FROM central.cat_dias_extraor ce
-    WHERE ce.fecha = f.fecha
-    AND ce.tipo = 'SALIDA ANTICIPADA'
+    id_tbl_empleados_hraes,
+    observaciones,
+    es_por_retardo,
+    id_cat_retardo_tipo,
+    id_cat_retardo_estatus,
+    id_user,
+    fecha,
+    hora,
+    cantidad
 )
-
-            AND NOT EXISTS (
-                SELECT 1
-                FROM central.ctrl_incidencias ci2
-                WHERE ci2.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
-                AND ci2.id_cat_incidencias IN (3, 5, 6, 7, 8, 11)
-                AND ci2.fecha_inicio::date = f.fecha::date
-            );
-        ");
+SELECT 
+    e.id_tbl_empleados_hraes,
+    'FALTA POR OMISIÓN' AS observaciones,
+    FALSE AS es_por_retardo,
+    3 AS id_cat_retardo_tipo,
+    8 AS id_cat_retardo_estatus,
+    NULL AS id_user,
+    gs.fecha,
+    '00:00:00' AS hora,
+    1 AS cantidad
+FROM (
+    SELECT generate_series(
+        (SELECT MIN(fecha) FROM central.ctrl_asistencia),
+        (SELECT MAX(fecha) FROM central.ctrl_asistencia),
+        interval '1 day'
+    )::date AS fecha
+) gs
+CROSS JOIN central.tbl_empleados_hraes e
+INNER JOIN central.ctrl_asistencia_info ai 
+    ON e.id_tbl_empleados_hraes = ai.id_tbl_empleados_hraes
+WHERE 
+    ai.id_cat_asistencia_ubicacion = 1
+    AND ai.id_cat_asistencia_estatus = 1
+    AND ai.id_cat_asistencia_config = 1
+    AND ai.no_dispositivo IS NOT NULL
+    AND NOT EXISTS (
+        SELECT 1
+        FROM central.ctrl_asistencia a
+        WHERE a.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
+          AND a.fecha = gs.fecha
+    )
+    AND gs.fecha NOT IN (
+        SELECT fecha FROM central.cat_dias_festivos
+    )
+    AND NOT EXISTS (
+        SELECT 1
+        FROM central.ctrl_faltas cf
+        WHERE cf.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
+          AND cf.fecha = gs.fecha
+          AND cf.id_cat_retardo_tipo = 3
+    )
+    AND NOT EXISTS (
+        SELECT 1
+        FROM central.masivo_ctrl_temp_faltas_just mj
+        WHERE mj.rfc = (
+            SELECT rfc FROM central.tbl_empleados_hraes WHERE id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
+        )
+        AND mj.fecha = gs.fecha::text
+    )
+    AND NOT EXISTS (
+        SELECT 1
+        FROM central.ctrl_incidencias ci
+        WHERE ci.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
+          AND ci.fecha_inicio IS NOT NULL
+          AND (
+              (ci.fecha_fin IS NULL AND gs.fecha = ci.fecha_inicio)
+              OR (ci.fecha_fin IS NOT NULL AND gs.fecha BETWEEN ci.fecha_inicio AND ci.fecha_fin)
+          )
+    )
+    AND NOT EXISTS (
+        SELECT 1
+        FROM central.cat_dias_extraor ce
+        WHERE ce.fecha = gs.fecha
+          AND ce.tipo = 'SALIDA ANTICIPADA'
+    )
+    AND NOT EXISTS (
+        SELECT 1
+        FROM central.ctrl_incidencias ci2
+        WHERE ci2.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
+          AND ci2.id_cat_incidencias IN (3, 5, 6, 7, 8, 11)
+          AND ci2.fecha_inicio::date = gs.fecha
+    );");
         return $query;
     }
 

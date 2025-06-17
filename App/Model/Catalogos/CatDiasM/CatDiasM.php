@@ -24,11 +24,11 @@ class CatDiasM
 
     ///GET PERIODO 
     public function getPeriodo($date){
-        $query = pg_query ("SELECT 
-                                (central.cat_periodo.descripcion),
-                                fecha_inicio,
-                                fecha_fin
-                            FROM central.cat_periodo
+                $query = pg_query ("SELECT 
+                                        (central.cat_periodo.descripcion),
+                                        fecha_inicio,
+                                        fecha_fin
+                                    FROM central.cat_periodo
                             WHERE '$date' BETWEEN fecha_inicio AND fecha_fin;");
         return $query;
     }
