@@ -17,6 +17,11 @@
                             title="Eliminar Registros de Asistencia"  onclick="truncatetable();">
                             <i class="fas fa-trash-alt"></i>
                         </button>
+                       <!-- Botón para eliminar registros de asistencia por fecha -->
+<button id="truncatetableday" class="btn btn-light btn-circle" type="button" title="Eliminar registros por fecha">
+    <i class="fas fa-calendar-times"></i>
+</button>
+
                         <button class="btn btn-light btn-circle" type="button" data-toggle="tooltip"
                             title="Eliminar Registros de Asistencia"  onclick="truncatetablefr();">
                             <i class="fas fa-times-circle"></i>
@@ -121,3 +126,12 @@
 <script src="../../../../js/Ib/Asistencias/Carga.js"></script>
 <script src="../../../../js/Ib/Asistencias/Asistencias/truncate.js"></script>
 
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Tu archivo personalizado -->
+<script src="../../../js/Ib/Asistencias/Asistencias/truncateday.js"></script>
