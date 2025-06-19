@@ -133,5 +133,5 @@
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- Tu archivo personalizado -->
-<script src="../../../js/Ib/Asistencias/Asistencias/truncateday.js"></script>
+<script src="/joaquinfin/sirh/js/Ib/Asistencias/Asistencias/truncateday.js"></script>
+
