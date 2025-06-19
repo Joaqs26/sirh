@@ -25,6 +25,8 @@
                         <button class="btn btn-light btn-circle" type="button" data-toggle="tooltip"
                             title="Eliminar Registros de Asistencia"  onclick="truncatetablefr();">
                             <i class="fas fa-times-circle"></i>
+                         <button id="truncatetableday" class="btn btn-light btn-circle" type="button" title="Eliminar registros por fecha">
+                            <i class="fas fa-calendar-times"></i>
                         </button>
                         <button class="btn btn-light btn-circle" type="button" data-toggle="tooltip"
                             title="Justificar faltas" onclick="mostrarModalFaltas();">
