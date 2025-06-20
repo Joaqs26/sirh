@@ -13,6 +13,10 @@ function getReporteAsistencia() {
         showCancelButton: true,
         confirmButtonText: "Continuar",
         cancelButtonText: "Cancelar",
+        customClass: {
+            confirmButton: 'swal2-confirm-color',
+            cancelButton: 'swal2-cancel-color'
+        },
         preConfirm: () => {
             const fecha_inicio = document.getElementById('fecha_inicio').value;
             const fecha_fin = document.getElementById('fecha_fin').value;
@@ -44,6 +48,10 @@ function getReporteAsistencia() {
                     style="background-color: #235B4E; margin-top: 10px;">
                     Reporte de Retardos
                 </button>
+                <button id="btnKardex" class="swal2-confirm swal2-styled" 
+                    style="background-color: #235B4E; margin-top: 10px;">
+                    Reporte Kardex
+                </button>
             `
         }).then((res) => {
             if (res.isConfirmed) {
@@ -53,9 +61,15 @@ function getReporteAsistencia() {
             }
         });
 
-        // Activar el botón personalizado después del render
+        // Botón para Reporte de Retardos
         Swal.getPopup().querySelector('#btnRetardos').addEventListener('click', function () {
             descargarReporteConFechas("../../../../App/Controllers/Central/RetardoC/ReporteC.php", "REPORTE_RETARDOS.xlsx", fecha_inicio, fecha_fin);
+            Swal.close();
+        });
+
+        // Botón para Reporte Kardex
+        Swal.getPopup().querySelector('#btnKardex').addEventListener('click', function () {
+            descargarReporteConFechas("../../../../App/Controllers/Central/RetardoC/Reportekardex.php", "REPORTE_KARDEX.xlsx", fecha_inicio, fecha_fin);
             Swal.close();
         });
     });

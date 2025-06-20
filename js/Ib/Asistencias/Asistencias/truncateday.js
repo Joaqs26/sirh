@@ -33,7 +33,7 @@ function truncatetableday() {
             showCancelButton: true,
             confirmButtonText: "Sí, eliminar",
             cancelButtonText: "Cancelar",
-            confirmButtonColor: "#d33"
+            confirmButtonColor: "#235B4E"
         }).then((confirmacion) => {
             if (!confirmacion.isConfirmed) return;
             $.ajax({
