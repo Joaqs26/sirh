@@ -14,28 +14,23 @@
                     </div>
                     <div class="col-auto">
                         <button class="btn btn-light btn-circle" type="button" data-toggle="tooltip"
-                            title="Eliminar Registros de Asistencia"  onclick="truncatetable();">
+                            title="Eliminar Registros de Asistencia" onclick="truncatetable();">
                             <i class="fas fa-trash-alt"></i>
                         </button>
-                       <!-- Botón para eliminar registros de asistencia por fecha -->
-<button id="truncatetableday" class="btn btn-light btn-circle" type="button" title="Eliminar registros por fecha">
-    <i class="fas fa-calendar-times"></i>
-</button>
-
-                        <button class="btn btn-light btn-circle" type="button" data-toggle="tooltip"
-                            title="Eliminar Registros de Asistencia"  onclick="truncatetablefr();">
-                            <i class="fas fa-times-circle"></i>
-                         <button id="truncatetableday" class="btn btn-light btn-circle" type="button" title="Eliminar registros por fecha">
+                        <button id="truncatetableday" class="btn btn-light btn-circle" type="button" title="Eliminar registros por fecha">
                             <i class="fas fa-calendar-times"></i>
                         </button>
                         <button class="btn btn-light btn-circle" type="button" data-toggle="tooltip"
-                            title="Justificar faltas" onclick="mostrarModalFaltas();">
-                            <i class="fa fa-upload"></i>
-                        </button>
-                        <button class="btn btn-light btn-circle" type="button" data-toggle="tooltip"
-                            title="Mis estadísticas" onclick="window.location.href='porwebi.php';">
-                            <i class="fa fa-line-chart"></i>
-                        </button>
+                            title="Eliminar Registros de Asistencia" onclick="truncatetablefr();">
+                            <i class="fas fa-times-circle"></i>
+                            <button class="btn btn-light btn-circle" type="button" data-toggle="tooltip"
+                                title="Justificar faltas" onclick="mostrarModalFaltas();">
+                                <i class="fa fa-upload"></i>
+                            </button>
+                            <button class="btn btn-light btn-circle" type="button" data-toggle="tooltip"
+                                title="Mis estadísticas" onclick="window.location.href='porwebi.php';">
+                                <i class="fa fa-line-chart"></i>
+                            </button>
                             <button class="btn btn-light btn-circle" type="button" onclick="getReporteAsistencia()"
                                 data-toggle="tooltip" title="Generar reporte">
                                 <i class="fa fa-download"></i>
@@ -71,7 +66,7 @@
                                     Retardos</a>
                             </div>
                         </nav>
-                    
+
                         <div class="tab-content" id="nav-tabContent">
                             <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
                                 aria-labelledby="nav-home-tab">
@@ -90,7 +85,7 @@
                                 <?php include 'Retardos/index.php' ?>
                             </div>
                         </div>
-                   
+
 
                     </div>
                 </div>
@@ -129,11 +124,10 @@
 <script src="../../../../js/Ib/Asistencias/Asistencias/truncate.js"></script>
 
 
-<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- SweetAlert2 -->
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- Tu archivo personalizado -->
+
 <script src="../../../../js/Ib/Asistencias/Asistencias/truncateday.js"></script>
