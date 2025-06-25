@@ -245,10 +245,8 @@ class FaltaModelM
     }
 
 
-    ///SCRIP PARA CALCULO DE FLATAS DE FORMA MASIVApublic function process_1()
- // SCRIPT PARA CÁLCULO DE FALTAS DE FORMA MASIVA
+    // SCRIPT PARA CÁLCULO DE FALTAS DE FORMA MASIVA
 public function process_1()
-
     {
         $query = pg_query("INSERT INTO central.ctrl_retardo (
                 fecha, 
