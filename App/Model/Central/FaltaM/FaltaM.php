@@ -206,7 +206,6 @@ class FaltaModelM
                     TO_CHAR(f.hora, 'HH24:MI') AS hora,
                     f.cantidad,
                     UPPER(rt.descripcion) AS tipo,
-                    UPPER(re.descripcion) AS estatus,
                     f.id_user,
                     f.id_ctrl_faltas
                 FROM central.ctrl_faltas f
@@ -674,10 +673,11 @@ WHERE
         return $query;
     }
 
-    public function truncateTableTmpFaltas()
-    {
-        $query = pg_query("TRUNCATE TABLE central.masivo_ctrl_temp_faltas_just RESTART IDENTITY;");
-    }
+  public function truncateTableTmpFaltas()
+{
+    return pg_query("TRUNCATE TABLE central.masivo_ctrl_temp_faltas_just RESTART IDENTITY;");
+}
+
 
     public function addInfoFaltaTemp(
         $rfc,
