@@ -323,7 +323,7 @@ class FaltaModelM
         return $query;
     }
 
-       public function process_2()
+    public function process_2()
     {
         $query = pg_query("INSERT INTO central.ctrl_faltas (
     id_tbl_empleados_hraes,
@@ -378,7 +378,8 @@ FROM (
                     SELECT AI.id_cat_asistencia_config
                     FROM central.ctrl_asistencia_info AI
                     WHERE AI.id_tbl_empleados_hraes = Minimo.id_tbl_empleados_hraes
-          )  )
+                )
+            )
         )
 ) AS Entradas
 WHERE NOT EXISTS (
@@ -412,7 +413,6 @@ AND NOT EXISTS (
     AND ci.id_cat_incidencias IN (12, 3, 4, 9, 1)
     AND ci.fecha_inicio::date = Entradas.fecha::date
 ); ");
-
         return $query;
     }
 
