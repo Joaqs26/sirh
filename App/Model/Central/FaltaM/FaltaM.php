@@ -688,7 +688,7 @@ WHERE
     ) {
         $query = pg_query("INSERT INTO central.masivo_ctrl_temp_faltas_just(
                             rfc, fecha, observaciones, tipo, tipo_falta)
-                            VALUES ('$rfc', '$fecha', '$observaciones', '$tipo', '$tipo_falta ');");
+                            VALUES ('$rfc', '$fecha', '$observaciones', '$tipo', '$tipo_falta');");
         return $query;
     }
 
