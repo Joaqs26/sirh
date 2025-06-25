@@ -94,27 +94,6 @@ function getInfoFaltas() {
         cancelButtonColor: '#6c757d',
     })
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function agregarEditarDetalles(id_object) { //SE OBTIENEN INFO DE ID SELECCIONADO
     $("#id_object").val(id_object);
     let titulo = document.getElementById("titulo_centro_trabajo");
