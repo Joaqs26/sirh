@@ -7,52 +7,59 @@ $paginador = $_POST['paginador'];
 
 $incidenciasM = new IncidenciasM();
 
-$listado = $incidenciasM -> listadoByAll($id_tbl_empleados_hraes,$paginador);
+// Verifica si hay búsqueda
+if (isset($_POST['busqueda']) && trim($_POST['busqueda']) !== '') {
+    $listado = $incidenciasM->listadoBybusqueda($id_tbl_empleados_hraes, $_POST['busqueda'], $paginador);
+} else {
+    $listado = $incidenciasM->listadoByAll($id_tbl_empleados_hraes, $paginador);
+}
 
-if(isset($_POST['busqueda'])){
-    $listado = $incidenciasM ->listadoBybusqueda($id_tbl_empleados_hraes,$_POST['busqueda'],$paginador);
-} 
-$data =
-    '<table class="table table-bordered table-fixed" id="tabla_incidencia">
+// Cabecera de la tabla
+$data = '
+<table class="table table-bordered table-fixed" id="tabla_incidencia">
     <thead class="text-center">
         <tr>
-            <th class="col-wide-action">Acciones</th>
-            <th class="col-wide-x-300">Tipo incidencia</th>
-            <th class="col-wide">Fecha inicio</th>
-            <th class="col-wide">Fecha fin</th>
-            <th class="col-wide">Periodo</th>
-            <th class="col-wide">Observaciones</th>
+            <th>Acciones</th>
+            <th>Tipo incidencia</th>
+            <th>Fecha inicio</th>
+            <th>Fecha fin</th>
+            <th>Observaciones</th>
         </tr>
     </thead>';
 
+// Contenido de la tabla
 if (pg_num_rows($listado) > 0) {
     while ($row = pg_fetch_row($listado)) {
-        $data .=
-            '<tbody class="text-center">
-                <tr>
-                    <td>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-edit icono-pequeno-tabla"></i></button>
-                            <div class="dropdown-menu">
-                                <button onclick="obtenerUsuario(' . $row[6] . ')" class="dropdown-item btn btn-light"><i class="fa fa-user icon-edit-table"></i> Usuario</button>
-                                <button onclick="agregarEditarIncidencia(' . $row[0] . ')" class="dropdown-item btn btn-light"><i class="fas fa-edit icon-edit-table"></i> Modificar</button>
-                                <button onclick="eliminarIncidecia(' . $row[0] . ')" class="dropdown-item btn btn-light"><i class="far fa-trash-alt icon-delete-table"></i> Eliminar</button>  
-                            </div>
+        $data .= '
+        <tbody class="text-center">
+            <tr>
+                <td>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-edit icono-pequeno-tabla"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <button onclick="agregarEditarIncidencia(' . $row[0] . ')" class="dropdown-item btn btn-light">
+                                <i class="fas fa-edit icon-edit-table"></i> Modificar
+                            </button>
+                            <button onclick="eliminarIncidecia(' . $row[0] . ')" class="dropdown-item btn btn-light">
+                                <i class="far fa-trash-alt icon-delete-table"></i> Eliminar
+                            </button>  
                         </div>
-                    </td>
-                    <td>' . $row[1] . '</td>
-                    <td>' . $row[2] . '</td>
-                    <td>' . $row[3] . '</td>
-                    <td>' . $row[5] . '</td>
-                    <td>' . $row[4] . '</td>
-                </tr>
-            </tbody>';
+                    </div>
+                </td>
+                <td>' . htmlspecialchars($row[1]) . '</td>
+                <td>' . htmlspecialchars($row[2]) . '</td>
+                <td>' . htmlspecialchars($row[3]) . '</td>
+                <td>' . htmlspecialchars($row[4]) . '</td>
+            </tr>
+        </tbody>';
     }
-  
+
     $data .= '</table>';
 } else {
-    $data .= '<h6>Sin resultados</h6>';
+    $data .= '<h6 class="text-center">Sin resultados</h6>';
 }
 
+// Imprime la tabla final
 echo $data;
-
