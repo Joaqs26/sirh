@@ -2,28 +2,49 @@ var id_tbl_empleados_hraes = document.getElementById('id_tbl_empleados_hraes').v
 var checkbox_disabled = document.getElementById("checkbox_disabled");
 var es_mas_de_un_dia = document.getElementById('es_mas_de_un_dia');
 
-//Id de cat incidencias asociadas al periodo de vacaciones 
-/* ESTOS VALORES MOSTRARAN LOS VALORES LOS CALENDARIOS
-id_cat_incidencias      valor
-    7                   DÍAS A CUENTA DE VACACIONES
-    14                  VACACIONES EXTRAORDINARIAS
-    15                  VACACIONES ORDINARIAS
-*/
 var dias_cuenta_vacaciones = 7;
 var vacaciones_extraordinarias = 14;
 var vacaciones_ordinarias = 15;
+
 const selectIncidencia = document.getElementById('id_cat_incidencias_ins');
 const campoNumOficio = document.getElementById('campo_num_oficio');
 
-// Mostrar u ocultar campo "No. de Oficio" según la selección
-selectIncidencia.addEventListener('change', function() {
+
+selectIncidencia.addEventListener('change', function () {
     const selectedText = selectIncidencia.options[selectIncidencia.selectedIndex].text.trim().toUpperCase();
+
+    
+    const fechaInicio = $("#fecha_inicio_ins").val();
+    const fechaFin = $("#fecha_fin_ins").val();
+
+    
     if (selectedText === 'VACACIONES EXTRAORDINARIAS') {
-        campoNumOficio.style.display = 'block'; // Mostrar el campo
+        campoNumOficio.style.display = 'block';
     } else {
-        campoNumOficio.style.display = 'none';  // Ocultar el campo
+        campoNumOficio.style.display = 'none';
     }
+
+    
+    const idSeleccionado = parseInt($("#id_cat_incidencias_ins").val());
+
+    if (
+        idSeleccionado === dias_cuenta_vacaciones ||
+        idSeleccionado === vacaciones_extraordinarias ||
+        idSeleccionado === vacaciones_ordinarias
+    ) {
+        mostrarContenido('ocultar_contenido_vacaciones');
+    } else {
+        ocultarContenido('ocultar_contenido_vacaciones');
+    }
+
+    
+    setTimeout(() => {
+        $("#fecha_inicio_ins").val(fechaInicio);
+        $("#fecha_fin_ins").val(fechaFin);
+        console.log("✔️ Fechas restauradas después del cambio de incidencia");
+    }, 50);
 });
+
 
 function buscarIncidencia(){ //BUSQUEDA
     let buscarNew = clearElement(buscar_ins);
@@ -51,32 +72,29 @@ function iniciarTabla_ins(busqueda, paginador, id_tbl_empleados_hraes) {
 function agregarEditarIncidencia(id_object) {
     $("#id_object").val(id_object);
     let titulo = document.getElementById("titulo_asistencia");
-
     titulo.textContent = id_object == null ? 'Agregar' : 'Modificar';
 
     if (id_object == null) {
         $("#agregar_editar_incidencia").find("input,textarea,select").val("");
         $("#agregar_editar_incidencia").find("input[type=checkbox], input[type=radio]").prop("checked", false);
-        $("#campo_num_oficio").hide(); // 🚩 Ocultar el campo por defecto
-        $("#num_oficio_ins").val('');  // Limpia el valor
+        $("#campo_num_oficio").hide();
+        $("#num_oficio_ins").val('');
     }
 
     $.post("../../../../App/Controllers/Central/IncidenciasC/DetallesC.php", {
         id_object: id_object
-    },
-    function (data) {
-        console.log(data);
+    }, function (data) {
+       
 
         let jsonData = JSON.parse(data);
         let response = jsonData.response;
 
-        // 🔥 Mostrar u ocultar sección de vacaciones
         checkbox_disabled.disabled = false;
         ocultarContenido('ocultar_contenido_vacaciones');
 
         if (
-            response.id_cat_incidencias == dias_cuenta_vacaciones || 
-            response.id_cat_incidencias == vacaciones_extraordinarias || 
+            response.id_cat_incidencias == dias_cuenta_vacaciones ||
+            response.id_cat_incidencias == vacaciones_extraordinarias ||
             response.id_cat_incidencias == vacaciones_ordinarias
         ) {
             if (response.es_mas_de_un_dia !== 't') {
@@ -88,32 +106,49 @@ function agregarEditarIncidencia(id_object) {
             mostrarContenido('ocultar_contenido_vacaciones');
         }
 
-        $("#fecha_inicio_ins").val(response.fecha_inicio);
-        $("#fecha_fin_ins").val(response.fecha_fin);
-        $("#observaciones_ins").val(response.observaciones);
-        $("#fecha_captura_ins").val(response.fecha_captura);
-        $("#hora_ins").val(response.hora);
+        
+        const fechaInicio = response.fecha_inicio;
+        const fechaFin = response.fecha_fin;
 
         
+        $("#fecha_inicio_ins").val(fechaInicio);
+        $("#fecha_fin_ins").val(fechaFin);
+        $("#fecha_captura_ins").val(response.fecha_captura);
+        $("#hora_ins").val(response.hora);
+        $("#observaciones_ins").val(response.observaciones);
+
+       
         if (response.num_oficio && response.num_oficio.trim() !== '') {
             $("#campo_num_oficio").show();
             $("#num_oficio_ins").val(response.num_oficio);
         } else {
             $("#campo_num_oficio").hide();
-            $("#num_oficio_ins").val(''); // Limpiar el campo si no hay valor
+            $("#num_oficio_ins").val('');
         }
 
+        
         $("#is_peridodo_ins").val(jsonData.periodo);
         $("#is_dias_seleccionados").val(jsonData.diasSeleccionados);
         $("#is_dias_restantes").val(jsonData.diasRestantes);
 
+        
         $("#id_cat_incidencias_ins").html(jsonData.catIncidencias);
-        $('#id_cat_incidencias_ins').selectpicker('refresh');
+        $("#id_cat_incidencias_ins").val(response.id_cat_incidencias);
+        $("#id_cat_incidencias_ins").selectpicker('refresh');
+
+        // ⏪ Restaurar fechas después del refresh
+        setTimeout(() => {
+            $("#fecha_inicio_ins").val(fechaInicio);
+            $("#fecha_fin_ins").val(fechaFin);
+           
+        }, 50);
+
         $('.selectpicker').selectpicker();
     });
 
     $("#agregar_editar_incidencia").modal("show");
 }
+
 
 
 function salirAgregarEditarIncidencia(){
