@@ -606,7 +606,7 @@ WHERE
         SELECT 1
         FROM central.ctrl_incidencias ci2
         WHERE ci2.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
-          AND ci2.id_cat_incidencias IN (3, 5, 6, 7, 8, 11)
+          AND ci2.id_cat_incidencias IN (3, 5, 6, 7, 8, 11, 18  )
           AND ci2.fecha_inicio::date = gs.fecha
     );");
         return $query;

@@ -35,20 +35,24 @@ class CatDiasM
 
     public function getAllDays($fechaInicio, $fechaFin, $idEmployee){
         $query = pg_query ("SELECT
-                                SUM(
-                                    CASE
-                                        WHEN fecha_fin IS NOT NULL THEN
-                                            (fecha_fin - fecha_inicio)::int + 1 -- ES EL DIA DE AGREGAR UNO
-                                        ELSE
-                                            1
-                                    END
-                                ) AS total_dias
-                            FROM
-                                central.ctrl_incidencias
-                            WHERE 
-                                id_tbl_empleados_hraes = $idEmployee
-                            AND id_cat_incidencias IN (7,14,15) -- REPRESENTA QUE SOLO CUENTE LOS DIAS DE VACACIONES
-                            AND fecha_inicio BETWEEN '$fechaInicio' AND '$fechaFin';");
+    SUM(
+        CASE
+            WHEN ci.fecha_fin IS NOT NULL THEN
+                (ci.fecha_fin - ci.fecha_inicio)::int + 1
+            ELSE
+                1
+        END
+    ) AS total_dias
+FROM
+    central.ctrl_incidencias ci
+INNER JOIN
+    central.cat_periodo p
+    ON ci.fecha_inicio BETWEEN p.fecha_inicio AND p.fecha_fin
+WHERE
+    p.id_cat_periodo = $idPeriodo
+    AND ci.id_tbl_empleados_hraes = $idEmployee
+    AND ci.id_cat_incidencias IN (7,14,15);
+");
         return $query;
     }
 
@@ -61,3 +65,4 @@ class CatDiasM
         return $query;
     }
 }
+    
