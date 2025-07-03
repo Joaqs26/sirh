@@ -75,23 +75,24 @@ function agregarEditarIncidencia(id_object) {
     titulo.textContent = id_object == null ? 'Agregar' : 'Modificar';
 
     if (id_object == null) {
+        // Limpiar campos
         $("#agregar_editar_incidencia").find("input,textarea,select").val("");
         $("#agregar_editar_incidencia").find("input[type=checkbox], input[type=radio]").prop("checked", false);
         $("#campo_num_oficio").hide();
         $("#num_oficio_ins").val('');
+        $("#periodo_oficial_ins").val('').trigger('change');
     }
 
     $.post("../../../../App/Controllers/Central/IncidenciasC/DetallesC.php", {
         id_object: id_object
     }, function (data) {
-       
-
         let jsonData = JSON.parse(data);
         let response = jsonData.response;
 
         checkbox_disabled.disabled = false;
         ocultarContenido('ocultar_contenido_vacaciones');
 
+        // Validar si es vacaciones
         if (
             response.id_cat_incidencias == dias_cuenta_vacaciones ||
             response.id_cat_incidencias == vacaciones_extraordinarias ||
@@ -106,18 +107,17 @@ function agregarEditarIncidencia(id_object) {
             mostrarContenido('ocultar_contenido_vacaciones');
         }
 
-        
+        // Fechas
         const fechaInicio = response.fecha_inicio;
         const fechaFin = response.fecha_fin;
 
-        
         $("#fecha_inicio_ins").val(fechaInicio);
         $("#fecha_fin_ins").val(fechaFin);
         $("#fecha_captura_ins").val(response.fecha_captura);
         $("#hora_ins").val(response.hora);
         $("#observaciones_ins").val(response.observaciones);
 
-       
+        // Num. Oficio
         if (response.num_oficio && response.num_oficio.trim() !== '') {
             $("#campo_num_oficio").show();
             $("#num_oficio_ins").val(response.num_oficio);
@@ -126,21 +126,35 @@ function agregarEditarIncidencia(id_object) {
             $("#num_oficio_ins").val('');
         }
 
-        
+        // Días y periodo
         $("#is_peridodo_ins").val(jsonData.periodo);
         $("#is_dias_seleccionados").val(jsonData.diasSeleccionados);
         $("#is_dias_restantes").val(jsonData.diasRestantes);
 
-        
+        // Tipo incidencia
         $("#id_cat_incidencias_ins").html(jsonData.catIncidencias);
         $("#id_cat_incidencias_ins").val(response.id_cat_incidencias);
         $("#id_cat_incidencias_ins").selectpicker('refresh');
 
-        // ⏪ Restaurar fechas después del refresh
+        // Rellenar select Periodo Oficial
+        let selectPeriodos = $("#periodo_oficial_ins");
+        selectPeriodos.empty();
+        selectPeriodos.append('<option value="">Selecciona un periodo</option>');
+
+        if (jsonData.periodos && Array.isArray(jsonData.periodos)) {
+            jsonData.periodos.forEach(function(periodo) {
+                let selected = "";
+                if (response.id_cat_periodo && response.id_cat_periodo == periodo.id_cat_periodo) {
+                    selected = "selected";
+                }
+                selectPeriodos.append(`<option value="${periodo.id_cat_periodo}" ${selected}>${periodo.descripcion}</option>`);
+            });
+        }
+
+        // Restaurar fechas después del refresh
         setTimeout(() => {
             $("#fecha_inicio_ins").val(fechaInicio);
             $("#fecha_fin_ins").val(fechaFin);
-           
         }, 50);
 
         $('.selectpicker').selectpicker();
@@ -148,6 +162,7 @@ function agregarEditarIncidencia(id_object) {
 
     $("#agregar_editar_incidencia").modal("show");
 }
+
 
 
 
@@ -162,31 +177,31 @@ function guardarIncidencia() {
     checkbox_value = checkbox_value.checked ? true : false;
 
     $.post("../../../../App/Controllers/Central/IncidenciasC/AgregarEditarC.php", {
-        id_tbl_empleados_hraes:id_tbl_empleados_hraes,
-        es_mas_de_un_dia:checkbox_value,
-        fecha_inicio: $("#fecha_inicio_ins").val(),
-        fecha_fin: $("#fecha_fin_ins").val(),
-        fecha_captura: $("#fecha_captura_ins").val(),
-        hora: $("#hora_ins").val(),
-        observaciones: $("#observaciones_ins").val(),
-        id_cat_incidencias: $("#id_cat_incidencias_ins").val(),
-        id_object: $("#id_object").val(),   
-        num_oficio: $("#num_oficio_ins").val()
+    id_tbl_empleados_hraes: id_tbl_empleados_hraes,
+    es_mas_de_un_dia: checkbox_value,
+    fecha_inicio: $("#fecha_inicio_ins").val(),
+    fecha_fin: $("#fecha_fin_ins").val(),
+    fecha_captura: $("#fecha_captura_ins").val(),
+    hora: $("#hora_ins").val(),
+    observaciones: $("#observaciones_ins").val(),
+    id_cat_incidencias: $("#id_cat_incidencias_ins").val(),
+    id_object: $("#id_object").val(),
+    num_oficio: $("#num_oficio_ins").val(),
+    id_cat_periodo: $("#periodo_oficial_ins").val() // <- NUEVO: Enviar el periodo oficial
+},
+function (data) {
+    console.log('respuesta:', data); 
+    if (data == 'edit'){
+        notyf.success('Incidencia modificada con éxito');
+    } else if (data == 'add') {
+        notyf.success('Incidencia agregada con éxito');  
+    } else {
+        notyf.error(mensajeSalida);
+    }
+    $("#agregar_editar_incidencia").modal("hide");
+    buscarIncidencia();
+});
 
-    },
-        function (data) {
-            console.log('respuesta:', data); 
-            if (data == 'edit'){
-                notyf.success('Incidencia modificada con éxito');
-            } else if (data == 'add') {
-                notyf.success('Incidencia agregada con éxito');  
-            } else {
-                notyf.error(mensajeSalida);
-            }
-            $("#agregar_editar_incidencia").modal("hide");
-            buscarIncidencia();
-        }
-    );
 }
 
 function eliminarIncidecia(id_object) {//ELIMINAR USUARIO
@@ -243,3 +258,4 @@ function mostrarModalUsuario(){
 function ocultarModalUsuario(){
     $("#mostrar_usuario").modal("hide");
 }
+

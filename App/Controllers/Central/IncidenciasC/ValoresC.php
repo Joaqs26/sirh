@@ -1,66 +1,55 @@
 <?php
-
 include '../librerias.php';
 
 $catDiasM = new CatDiasM();
 $row = new row();
 
-$fechaInicio = $_POST['fecha_inicio_ins'];
-$fechaFin = $_POST['fecha_fin_ins'];
+$idPeriodo = $_POST['id_periodo'];
 $idEmpleado = $_POST['id_tbl_empleados_hraes'];
-
-$fechaInicio_date = new DateTime($fechaInicio);
-$fechaFin_date = new DateTime($fechaFin);
 
 $periodo = 'SIN RESULTADO';
 $diasSeleccionados = 'SIN RESULTADO';
 $diasRestantes = 'SIN RESULTADO';
 
-//Se obtiene el periodo
-if ($fechaInicio != '') {
-    if (pg_num_rows($catDiasM->getPeriodo($fechaInicio)) > 0) {
-        $periodoResult = $row->returnArrayById($catDiasM->getPeriodo($fechaInicio));
-        $periodo = $periodoResult[0];
-        // calculo de dias seleccionados
-        $allDays = getAllDays($periodoResult[1], $periodoResult[2], $idEmpleado);
-
-        if ($fechaInicio != '' && $fechaFin == '') {//funion de un solo dia
-            $diasSeleccionados = '1 Día'; //uno perteneciendo a solo un dia que se selecciono
-            $diasRestantes = ($allDays - 1) . ' de 10 días';
-        } else if ($fechaInicio != '' && $fechaFin != '') { //funcion donde se selecciona un rango de fechas
-            if ($fechaInicio < $fechaFin) { // validacion que las fechas esten correctas, la de inicio ser menor que la  fecha fin
-                $intervalo = $fechaInicio_date->diff($fechaFin_date); //obtener el intervalo para dias
-                $diasSeleccionados = $intervalo->days + 1 . ' Días'; // obtener el total de dias
-                $diasRestantes = ($allDays - ($intervalo->days + 1)) . ' de 10 días';
-                if (($allDays - ($intervalo->days + 1)) < 0 || ($allDays - ($intervalo->days + 1)) > 10) {
-                    $diasRestantes = 'SIN DÍAS LIBRES';
-                }
-            }
-        }
+if ($idPeriodo != '') {
+    // 1) Consultar la descripción del periodo
+    $queryPeriodo = pg_query("SELECT descripcion FROM central.cat_periodo WHERE id_cat_periodo = $idPeriodo");
+    if ($resPeriodo = pg_fetch_assoc($queryPeriodo)) {
+        $periodo = $resPeriodo['descripcion'];
     }
+
+    // 2) Sumar todos los días del empleado que correspondan a este periodo (sin filtrar por fechas)
+    $queryDias = pg_query("SELECT
+            SUM(
+                CASE
+                    WHEN ci.fecha_fin IS NOT NULL THEN
+                        (ci.fecha_fin - ci.fecha_inicio)::int + 1
+                    ELSE
+                        1
+                END
+            ) AS total_dias
+        FROM
+            central.ctrl_incidencias ci
+        WHERE
+            ci.id_tbl_empleados_hraes = $idEmpleado
+            AND ci.id_cat_incidencias IN (7,14,15)
+            AND ci.id_cat_periodo = $idPeriodo
+    ");
+
+    $diasTomados = 0;
+    if ($resDias = pg_fetch_assoc($queryDias)) {
+        $diasTomados = intval($resDias['total_dias']);
+    }
+
+    $diasSeleccionados = "$diasTomados Días";
+    $diasRestantes = (10 - $diasTomados) . " de 10 días";
 }
-
-
 
 $var = [
     'periodo' => $periodo,
     'diasSeleccionados' => $diasSeleccionados,
     'diasRestantes' => $diasRestantes,
 ];
+
 echo json_encode($var);
-
-
-function getAllDays($fechaInio, $fechaFin, $idEmployee) // la funcion obtiene el total de vacaciones de empleados
-{
-    $catDiasM = new CatDiasM();
-    $row = new row();
-
-    $result_ = $row->returnArrayById($catDiasM->getMoreDaysForP());
-    $days = $result_[0];
-    if (pg_num_rows($catDiasM->getAllDays($fechaInio, $fechaFin, $idEmployee)) > 0) {
-        $result = $row->returnArrayById($catDiasM->getAllDays($fechaInio, $fechaFin, $idEmployee));
-        $days = $result_[0] - $result[0];
-    }
-
-    return $days;
-}
+?>

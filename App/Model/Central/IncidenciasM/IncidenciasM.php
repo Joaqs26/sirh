@@ -77,11 +77,11 @@ class IncidenciasM
 
     //catalago de incidencias
     public function listarCatIncidencias(){
-        $query = pg_query ("SELECT 
-                                central.cat_incidencias.id_cat_incidencias,
-                                UPPER(central.cat_incidencias.descripcion)
-                            FROM central.cat_incidencias
-                            ORDER BY central.cat_incidencias.id_cat_incidencias ASC;");
+            $query = pg_query ("SELECT 
+                                    central.cat_incidencias.id_cat_incidencias,
+                                    UPPER(central.cat_incidencias.descripcion)
+                                FROM central.cat_incidencias
+                                ORDER BY central.cat_incidencias.id_cat_incidencias ASC;");
         return $query;
     }
 

@@ -22,37 +22,35 @@ class CatDiasM
     }
 
 
-    ///GET PERIODO 
-    public function getPeriodo($date){
-                $query = pg_query ("SELECT 
-                                        (central.cat_periodo.descripcion),
-                                        fecha_inicio,
-                                        fecha_fin
+    public function getPeriodos(){
+                $query = pg_query("SELECT 
+                                        id_cat_periodo, 
+                                        descripcion
                                     FROM central.cat_periodo
-                            WHERE '$date' BETWEEN fecha_inicio AND fecha_fin;");
-        return $query;
-    }
+                                    ORDER BY id_cat_periodo;");
+         return $query;
+}
+
 
     public function getAllDays($fechaInicio, $fechaFin, $idEmployee){
         $query = pg_query ("SELECT
-    SUM(
-        CASE
-            WHEN ci.fecha_fin IS NOT NULL THEN
-                (ci.fecha_fin - ci.fecha_inicio)::int + 1
-            ELSE
-                1
-        END
-    ) AS total_dias
-FROM
-    central.ctrl_incidencias ci
-INNER JOIN
-    central.cat_periodo p
-    ON ci.fecha_inicio BETWEEN p.fecha_inicio AND p.fecha_fin
-WHERE
-    p.id_cat_periodo = $idPeriodo
-    AND ci.id_tbl_empleados_hraes = $idEmployee
-    AND ci.id_cat_incidencias IN (7,14,15);
-");
+                            SUM(
+                            CASE
+                             WHEN ci.fecha_fin IS NOT NULL THEN
+                                    (ci.fecha_fin - ci.fecha_inicio)::int + 1
+                            ELSE
+                                         1
+                             END
+                                    ) AS total_dias
+                            FROM
+                                    central.ctrl_incidencias ci
+                            INNER JOIN
+                                    central.cat_periodo p
+                            ON ci.fecha_inicio BETWEEN p.fecha_inicio AND p.fecha_fin
+                            WHERE
+                                p.id_cat_periodo = $idPeriodo
+                            AND ci.id_tbl_empleados_hraes = $idEmployee
+                            AND ci.id_cat_incidencias IN (7,14,15);");
         return $query;
     }
 
