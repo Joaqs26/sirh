@@ -345,7 +345,7 @@ SELECT
     NULL AS observaciones,
     TRUE AS es_por_retardo,
     1 AS id_cat_retardo_tipo,
-    7 AS id_cat_retardo_estatus,
+    4 AS id_cat_retardo_estatus,
     NULL AS id_user,
     Entradas.fecha,
     Entradas.hora,
@@ -437,7 +437,7 @@ AND NOT EXISTS (
                 NULL AS observaciones,
                 TRUE AS es_por_retardo,
                 2 AS id_cat_retardo_tipo,
-                4 AS id_cat_retardo_estatus,
+                7 AS id_cat_retardo_estatus,
                 NULL AS id_user,
                 Salidas.fecha,
                 Salidas.hora,
@@ -539,7 +539,7 @@ WHERE NOT EXISTS (
 )
 SELECT 
     e.id_tbl_empleados_hraes,
-    'FALTA POR OMISIÓN' AS observaciones,
+    'INASISTENCIA' AS observaciones,
     FALSE AS es_por_retardo,
     3 AS id_cat_retardo_tipo,
     8 AS id_cat_retardo_estatus,

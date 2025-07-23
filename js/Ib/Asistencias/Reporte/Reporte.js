@@ -44,9 +44,9 @@ function getReporteAsistencia() {
             denyButtonColor: "#235B4E",
             denyButtonText: "Reporte de Alertas",
             html: `
-                <button id="btnRetardos" class="swal2-confirm swal2-styled" 
+                    <button id="btnMadrugada" class="swal2-confirm swal2-styled" 
                     style="background-color: #235B4E; margin-top: 10px;">
-                    Reporte de Retardos
+                    Registros Madrugada
                 </button>
                 <button id="btnKardex" class="swal2-confirm swal2-styled" 
                     style="background-color: #235B4E; margin-top: 10px;">
@@ -60,10 +60,9 @@ function getReporteAsistencia() {
                 descargarReporteConFechas("../../../../App/Controllers/Central/AlertaC/ReporteC.php", "REPORTE_ALERTAS.xlsx", fecha_inicio, fecha_fin);
             }
         });
-
         // Botón para Reporte de Retardos
-        Swal.getPopup().querySelector('#btnRetardos').addEventListener('click', function () {
-            descargarReporteConFechas("../../../../App/Controllers/Central/RetardoC/ReporteC.php", "REPORTE_RETARDOS.xlsx", fecha_inicio, fecha_fin);
+        Swal.getPopup().querySelector('#btnMadrugada').addEventListener('click', function () {
+            descargarReporteConFechas("../../../../App/Controllers/Central/RetardoC/ReporteC.php", "REPORTE_MADRUGADA.xlsx", fecha_inicio, fecha_fin);
             Swal.close();
         });
 
@@ -74,6 +73,7 @@ function getReporteAsistencia() {
         });
     });
 }
+
 
 function descargarReporteConFechas(url, nombreArchivo, fechaInicio, fechaFin) {
     fadeIn();
