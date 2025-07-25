@@ -631,7 +631,7 @@ WHERE
                 'FALTA POR OMISIÓN DE SALIDA' AS observaciones,
                 FALSE AS es_por_retardo,
                 3 AS id_cat_retardo_tipo,
-                8 AS id_cat_retardo_estatus,
+                7 AS id_cat_retardo_estatus,
                 NULL AS id_user,
                 Entradas.fecha,
                 Entradas.hora,
