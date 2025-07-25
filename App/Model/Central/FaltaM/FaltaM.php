@@ -324,7 +324,7 @@ AND NOT EXISTS (
     WHERE ci.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
     AND ci.id_cat_incidencias IN (13, 14, 15)
     AND ci.fecha_inicio::date = Entradas.fecha::date
-    AND Entradas.fecha::date <> '2025-07-14';
+    AND Entradas.fecha::date <> '2025-07-14'
 );");
         return $query;
     }   
