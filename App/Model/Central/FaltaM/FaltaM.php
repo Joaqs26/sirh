@@ -420,65 +420,68 @@ AND NOT EXISTS (
         return $query;
     }
 
-    public function process_3()
-    {
-        $query = pg_query("INSERT INTO central.ctrl_faltas (
-                id_tbl_empleados_hraes,
-                observaciones,
-                es_por_retardo,
-                id_cat_retardo_tipo,
-                id_cat_retardo_estatus,
-                id_user,
-                fecha,
-                hora,
-                cantidad
-            )
+ public function process_3()
+{
+    $query = pg_query("INSERT INTO central.ctrl_faltas (
+            id_tbl_empleados_hraes,
+            observaciones,
+            es_por_retardo,
+            id_cat_retardo_tipo,
+            id_cat_retardo_estatus,
+            id_user,
+            fecha,
+            hora,
+            cantidad
+        )
+        SELECT  
+            Salidas.id_tbl_empleados_hraes,
+            NULL AS observaciones,
+            TRUE AS es_por_retardo,
+            2 AS id_cat_retardo_tipo,
+            7 AS id_cat_retardo_estatus,
+            NULL AS id_user,
+            Salidas.fecha,
+            Salidas.hora,
+            1 AS cantidad
+        FROM (
             SELECT  
-                Salidas.id_tbl_empleados_hraes,
-                NULL AS observaciones,
-                TRUE AS es_por_retardo,
-                2 AS id_cat_retardo_tipo,
-                7 AS id_cat_retardo_estatus,
-                NULL AS id_user,
-                Salidas.fecha,
-                Salidas.hora,
-                1 AS cantidad
-            FROM (
-                SELECT  
-                    MAX(A.hora) AS hora, 
-                    A.fecha,
-                    A.id_tbl_empleados_hraes
-                FROM central.ctrl_asistencia A
-                WHERE A.fecha NOT IN (
-                    SELECT fecha FROM central.cat_dias_festivos
-                )
-                GROUP BY A.fecha, A.id_tbl_empleados_hraes
-            ) AS Salidas
-            WHERE Salidas.hora <= (
-                SELECT C.hora_min_salida
-                FROM central.cat_asistencia_config C
-                WHERE C.id_cat_asistencia_config = (
-                    SELECT AI.id_cat_asistencia_config
-                    FROM central.ctrl_asistencia_info AI
-                    WHERE AI.id_tbl_empleados_hraes = Salidas.id_tbl_empleados_hraes
-                )
+                MAX(A.hora) AS hora, 
+                A.fecha,
+                A.id_tbl_empleados_hraes
+            FROM central.ctrl_asistencia A
+            WHERE A.fecha NOT IN (
+                SELECT fecha FROM central.cat_dias_festivos
+                UNION
+                SELECT DATE '2025-07-25'
             )
-            AND NOT EXISTS (
-                SELECT 1
-                FROM central.cat_dias_extraor ce
-                WHERE ce.fecha = Salidas.fecha
-                AND ce.tipo = 'SALIDA ANTICIPADA'
+            GROUP BY A.fecha, A.id_tbl_empleados_hraes
+        ) AS Salidas
+        WHERE Salidas.hora <= (
+            SELECT C.hora_min_salida
+            FROM central.cat_asistencia_config C
+            WHERE C.id_cat_asistencia_config = (
+                SELECT AI.id_cat_asistencia_config
+                FROM central.ctrl_asistencia_info AI
+                WHERE AI.id_tbl_empleados_hraes = Salidas.id_tbl_empleados_hraes
             )
-            AND NOT EXISTS (
-                SELECT 1
-                FROM central.ctrl_incidencias ci
-                WHERE ci.id_tbl_empleados_hraes = Salidas.id_tbl_empleados_hraes
-                AND ci.id_cat_incidencias IN (2, 4, 10)
-                AND ci.fecha_inicio::date = Salidas.fecha::date
-            );
-        ");
-        return $query;
-    }
+        )
+        AND NOT EXISTS (
+            SELECT 1
+            FROM central.cat_dias_extraor ce
+            WHERE ce.fecha = Salidas.fecha
+            AND ce.tipo = 'SALIDA ANTICIPADA'
+        )
+        AND NOT EXISTS (
+            SELECT 1
+            FROM central.ctrl_incidencias ci
+            WHERE ci.id_tbl_empleados_hraes = Salidas.id_tbl_empleados_hraes
+            AND ci.id_cat_incidencias IN (2, 4, 10)
+            AND ci.fecha_inicio::date = Salidas.fecha::date
+        );
+    ");
+    return $query;
+}
+
 
     public function process_4()
     {
