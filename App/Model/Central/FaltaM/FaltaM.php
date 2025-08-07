@@ -322,7 +322,7 @@ AND NOT EXISTS (
     SELECT 1
     FROM central.ctrl_incidencias ci
     WHERE ci.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
-    AND ci.id_cat_incidencias IN (13, 14, 15)
+    AND ci.id_cat_incidencias IN (3, 4, 5, 9, 13)
     AND ci.fecha_inicio::date = Entradas.fecha::date
     AND Entradas.fecha::date <> '2025-07-14'
 );");
@@ -414,7 +414,7 @@ AND NOT EXISTS (
     SELECT 1
     FROM central.ctrl_incidencias ci
     WHERE ci.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
-    AND ci.id_cat_incidencias IN (12, 3, 4, 9, 1)
+    AND ci.id_cat_incidencias IN (3, 4, 9, 1, 12)
     AND ci.fecha_inicio::date = Entradas.fecha::date
 ); ");
         return $query;
@@ -475,7 +475,7 @@ AND NOT EXISTS (
             SELECT 1
             FROM central.ctrl_incidencias ci
             WHERE ci.id_tbl_empleados_hraes = Salidas.id_tbl_empleados_hraes
-            AND ci.id_cat_incidencias IN (2, 4, 10)
+            AND ci.id_cat_incidencias IN (2, 4, 10, 16, 15, 14)
             AND ci.fecha_inicio::date = Salidas.fecha::date
         );
     ");
@@ -604,86 +604,102 @@ WHERE
         SELECT 1
         FROM central.cat_dias_extraor ce
         WHERE ce.fecha = gs.fecha
-          AND ce.tipo = 'SALIDA ANTICIPADA'
+          AND ce.tipo = 'OMISION'
     )
     AND NOT EXISTS (
         SELECT 1
         FROM central.ctrl_incidencias ci2
         WHERE ci2.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
-          AND ci2.id_cat_incidencias IN (3, 5, 6, 7, 8, 11, 18  )
+          AND ci2.id_cat_incidencias IN (3, 5, 6, 7, 8, 14, 15, 16, 11, 17, 18)
           AND ci2.fecha_inicio::date = gs.fecha
     );");
         return $query;
     }
 
-    public function process_6()
-    {
-        $query = pg_query("INSERT INTO central.ctrl_faltas (
-                id_tbl_empleados_hraes,
-                observaciones,
-                es_por_retardo,
-                id_cat_retardo_tipo,
-                id_cat_retardo_estatus,
-                id_user,
-                fecha,
-                hora,
-                cantidad
-            )
+public function process_6()
+{
+    $query = pg_query("INSERT INTO central.ctrl_faltas (
+            id_tbl_empleados_hraes,
+            observaciones,
+            es_por_retardo,
+            id_cat_retardo_tipo,
+            id_cat_retardo_estatus,
+            id_user,
+            fecha,
+            hora,
+            cantidad
+        )
+        SELECT 
+            Entradas.id_tbl_empleados_hraes,
+            'FALTA POR OMISIÓN DE SALIDA' AS observaciones,
+            FALSE AS es_por_retardo,
+            3 AS id_cat_retardo_tipo,
+            7 AS id_cat_retardo_estatus,
+            NULL AS id_user,
+            Entradas.fecha,
+            Entradas.hora,
+            1 AS cantidad
+        FROM (
             SELECT 
-                Entradas.id_tbl_empleados_hraes,
-                'FALTA POR OMISIÓN DE SALIDA' AS observaciones,
-                FALSE AS es_por_retardo,
-                3 AS id_cat_retardo_tipo,
-                7 AS id_cat_retardo_estatus,
-                NULL AS id_user,
-                Entradas.fecha,
-                Entradas.hora,
-                1 AS cantidad
-            FROM (
-                SELECT 
-                    ca.fecha,
-                    MIN(ca.hora) AS hora,
-                    ca.id_tbl_empleados_hraes,
-                    COUNT(ca.hora) AS registros
-                FROM central.ctrl_asistencia ca
-                INNER JOIN central.ctrl_asistencia_info ai
-                    ON ca.id_tbl_empleados_hraes = ai.id_tbl_empleados_hraes
-                WHERE ca.fecha NOT IN (
-                        SELECT fecha FROM central.cat_dias_festivos
-                    )
-                AND ai.id_cat_asistencia_ubicacion = 1
-                AND ai.id_cat_asistencia_estatus = 1   
-                AND ai.id_cat_asistencia_config = 1
-                AND ai.no_dispositivo IS NOT NULL
-                GROUP BY ca.fecha, ca.id_tbl_empleados_hraes
-            ) AS Entradas
-            WHERE Entradas.registros = 1
-            AND Entradas.fecha NOT IN ('2024-12-24', '2024-12-31', '2024-01-10','2025-05-30')
-            AND NOT EXISTS (
-                SELECT 1
-                FROM central.ctrl_faltas cf
-                WHERE cf.fecha = Entradas.fecha
-                AND cf.hora = Entradas.hora
-                AND cf.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
-            )
-            AND NOT EXISTS (
-                SELECT 1
-                FROM central.masivo_ctrl_temp_faltas_just mctf
-                WHERE mctf.rfc = (
-                    SELECT rfc 
-                    FROM central.tbl_empleados_hraes 
-                    WHERE id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
+                ca.fecha,
+                MIN(ca.hora) AS hora,
+                ca.id_tbl_empleados_hraes,
+                COUNT(ca.hora) AS registros
+            FROM central.ctrl_asistencia ca
+            INNER JOIN central.ctrl_asistencia_info ai
+                ON ca.id_tbl_empleados_hraes = ai.id_tbl_empleados_hraes
+            WHERE ca.fecha NOT IN (
+                    SELECT fecha FROM central.cat_dias_festivos
                 )
-                AND mctf.fecha::text = Entradas.fecha::text
-            );
-        ");
-        return $query;
-    }
+            AND ai.id_cat_asistencia_ubicacion = 1
+            AND ai.id_cat_asistencia_estatus = 1   
+            AND ai.id_cat_asistencia_config = 1
+            AND ai.no_dispositivo IS NOT NULL
+            GROUP BY ca.fecha, ca.id_tbl_empleados_hraes
+        ) AS Entradas
+        WHERE Entradas.registros = 1
+        AND Entradas.fecha NOT IN (
+            '2024-12-24', '2024-12-31', '2024-01-10', '2025-05-30'
+        )
+        AND NOT EXISTS (
+            SELECT 1
+            FROM central.ctrl_faltas cf
+            WHERE cf.fecha = Entradas.fecha
+              AND cf.hora = Entradas.hora
+              AND cf.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
+        )
+        AND NOT EXISTS (
+            SELECT 1
+            FROM central.masivo_ctrl_temp_faltas_just mctf
+            WHERE mctf.rfc = (
+                SELECT rfc 
+                FROM central.tbl_empleados_hraes 
+                WHERE id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
+            )
+            AND mctf.fecha::text = Entradas.fecha::text
+        )            
+        AND NOT EXISTS (
+            SELECT 1
+            FROM central.ctrl_incidencias ci2
+            WHERE ci2.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
+              AND ci2.id_cat_incidencias IN (2, 10, 3, 4, 5, 6, 16, 11, 17)           
+              AND ci2.fecha_inicio::date = Entradas.fecha::date
+        )
+        AND NOT EXISTS (
+            SELECT 1
+            FROM central.cat_dias_extraor ce
+            WHERE ce.fecha = Entradas.fecha
+              AND ce.tipo = 'OMISION DE SALIDA'
+        );
+    ");
+    
+    return $query;
+}
+
 
     public function process_7()
     {
-        $query = pg_query("
-            UPDATE central.cat_asistencia_config
+        $query = pg_query("UPDATE central.cat_asistencia_config
             SET fecha_ult_proceso = CURRENT_DATE
             WHERE id_cat_asistencia_config = 1;
         ");
