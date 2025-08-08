@@ -569,19 +569,37 @@ ORDER BY e.rfc, a.fecha;
 ");
 }
 
- public function selectFaltas($fecha_inicio, $fecha_fin)
+public function selectFaltas($fecha_inicio, $fecha_fin)
 {
-    // Escapar correctamente las variables para evitar inyección SQL
+    // Escapar correctamente las variables
     $fecha_inicio = pg_escape_string($fecha_inicio);
     $fecha_fin = pg_escape_string($fecha_fin);
 
-    $query = pg_query("SELECT rfc, unidad, coordinacion, puesto, nombre, movil, no_dispositivo, fecha, hora, cantidad, estatus
-                       FROM central.reporte_faltas
-                       WHERE fecha BETWEEN '$fecha_inicio' AND '$fecha_fin';");
+    $query = pg_query("
+        WITH retardos_validos AS (
+            SELECT *
+            FROM central.reporte_faltas
+            WHERE estatus = 'RETARDO'
+              AND fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'
+        ),
+        rfc_con_3_retardos AS (
+            SELECT rfc
+            FROM retardos_validos
+            GROUP BY rfc
+            HAVING COUNT(*) >= 3
+        )
+        SELECT *
+        FROM central.reporte_faltas rf
+        WHERE fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'
+          AND (
+              estatus != 'RETARDO'
+              OR rfc IN (SELECT rfc FROM rfc_con_3_retardos)
+          )
+        ORDER BY rfc, fecha;
+    ");
 
     return $query;
 }
-
 
 }
 

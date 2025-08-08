@@ -323,104 +323,130 @@ AND NOT EXISTS (
     FROM central.ctrl_incidencias ci
     WHERE ci.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
     AND ci.id_cat_incidencias IN (3, 4, 5, 9, 13)
-    AND ci.fecha_inicio::date = Entradas.fecha::date
-    AND Entradas.fecha::date <> '2025-07-14'
+    AND ci.fecha_inicio IS NOT NULL
+            AND ci.fecha_fin IS NOT NULL
+            AND Entradas.fecha BETWEEN ci.fecha_inicio AND ci.fecha_fin
 );");
         return $query;
     }   
 
     //RETARDO MAYOR/OMISION DE ENTRADA
-      public function process_2()
-    {
-        $query = pg_query("INSERT INTO central.ctrl_faltas (
-    id_tbl_empleados_hraes,
-    observaciones,
-    es_por_retardo,
-    id_cat_retardo_tipo,
-    id_cat_retardo_estatus,
-    id_user,
-    fecha,
-    hora,
-    cantidad
-)
-SELECT  
-    Entradas.id_tbl_empleados_hraes,
-    NULL AS observaciones,
-    TRUE AS es_por_retardo,
-    1 AS id_cat_retardo_tipo,
-    4 AS id_cat_retardo_estatus,
-    NULL AS id_user,
-    Entradas.fecha,
-    Entradas.hora,
-    1 AS cantidad
-FROM (
-    SELECT     
-        Minimo.hora, 
-        Minimo.fecha, 
-        Minimo.id_tbl_empleados_hraes
-    FROM (
+public function process_2()
+{
+    $query = pg_query("INSERT INTO central.ctrl_faltas (
+            id_tbl_empleados_hraes,
+            observaciones,
+            es_por_retardo,
+            id_cat_retardo_tipo,
+            id_cat_retardo_estatus,
+            id_user,
+            fecha,
+            hora,
+            cantidad
+        )
         SELECT  
-            A.fecha, 
-            MIN(A.hora) AS hora,
-            A.id_tbl_empleados_hraes
-        FROM central.ctrl_asistencia A
-        WHERE A.fecha NOT IN (
-            SELECT fecha FROM central.cat_dias_festivos
+            Entradas.id_tbl_empleados_hraes,
+            NULL AS observaciones,
+            TRUE AS es_por_retardo,
+            1 AS id_cat_retardo_tipo,
+            4 AS id_cat_retardo_estatus,
+            NULL AS id_user,
+            Entradas.fecha,
+            Entradas.hora,
+            1 AS cantidad
+        FROM (
+            SELECT     
+                Minimo.hora, 
+                Minimo.fecha, 
+                Minimo.id_tbl_empleados_hraes
+            FROM (
+                SELECT  
+                    A.fecha, 
+                    MIN(A.hora) AS hora,
+                    A.id_tbl_empleados_hraes
+                FROM central.ctrl_asistencia A
+                WHERE A.fecha NOT IN (
+                    SELECT fecha FROM central.cat_dias_festivos
+                )
+                AND A.fecha::date NOT IN ('2025-05-14')
+                GROUP BY A.fecha, A.id_tbl_empleados_hraes
+            ) AS Minimo
+            WHERE 
+                (
+                    Minimo.fecha = '2025-06-02' AND Minimo.hora > '10:00:59'
+                )
+                OR
+                (
+                    Minimo.fecha <> '2025-06-02' AND Minimo.hora > (
+                        SELECT C.hora_max_retardo
+                        FROM central.cat_asistencia_config C
+                        WHERE C.id_cat_asistencia_config = (
+                            SELECT AI.id_cat_asistencia_config
+                            FROM central.ctrl_asistencia_info AI
+                            WHERE AI.id_tbl_empleados_hraes = Minimo.id_tbl_empleados_hraes
+                        )
+                    )
+                )
+        ) AS Entradas
+
+        -- Validación de que no se haya registrado ya como falta
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM central.ctrl_faltas f
+            WHERE f.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
+            AND f.fecha = Entradas.fecha
         )
-        AND A.fecha::date NOT IN ('2025-05-14')
-        GROUP BY A.fecha, A.id_tbl_empleados_hraes
-    ) AS Minimo
-    WHERE 
-        (
-            -- Condición especial para el 2 de junio
-            Minimo.fecha = '2025-06-02' AND Minimo.hora > '10:00:59'
+
+        -- Justificación exacta por fecha
+        AND NOT EXISTS (
+            SELECT 1
+            FROM central.masivo_ctrl_temp_faltas_just mj
+            WHERE mj.rfc = (
+                SELECT e.rfc 
+                FROM central.tbl_empleados_hraes e
+                WHERE e.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
+            )
+            AND mj.fecha IS NOT NULL
+            AND mj.fecha <> ''
+            AND mj.fecha::date = Entradas.fecha::date
         )
-        OR
-        (
-            -- Resto de fechas usa la hora estándar de configuración
-            Minimo.fecha <> '2025-06-02' AND Minimo.hora > (
-                SELECT C.hora_max_retardo
-                FROM central.cat_asistencia_config C
-                WHERE C.id_cat_asistencia_config = (
-                    SELECT AI.id_cat_asistencia_config
-                    FROM central.ctrl_asistencia_info AI
-                    WHERE AI.id_tbl_empleados_hraes = Minimo.id_tbl_empleados_hraes
-          )  )
+
+        -- Justificación por rango de fechas
+        AND NOT EXISTS (
+            SELECT 1
+            FROM central.masivo_ctrl_temp_faltas_just mj
+            WHERE mj.rfc = (
+                SELECT e.rfc 
+                FROM central.tbl_empleados_hraes e
+                WHERE e.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
+            )
+            
         )
-) AS Entradas
-WHERE NOT EXISTS (
-    SELECT 1
-    FROM central.ctrl_faltas f
-    WHERE f.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
-    AND f.fecha = Entradas.fecha
-)
-AND NOT EXISTS (
-    SELECT 1
-    FROM central.masivo_ctrl_temp_faltas_just mj
-    WHERE mj.rfc = (
-        SELECT e.rfc 
-        FROM central.tbl_empleados_hraes e
-        WHERE e.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
-    )
-    AND mj.fecha IS NOT NULL
-    AND mj.fecha <> ''
-    AND mj.fecha::date = Entradas.fecha::date
-)
-AND NOT EXISTS (
-    SELECT 1
-    FROM central.cat_dias_extraor ce
-    WHERE ce.fecha = Entradas.fecha
-    AND ce.tipo = 'RETARDO MAYOR'
-)
-AND NOT EXISTS (
-    SELECT 1
-    FROM central.ctrl_incidencias ci
-    WHERE ci.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
-    AND ci.id_cat_incidencias IN (3, 4, 9, 1, 12)
-    AND ci.fecha_inicio::date = Entradas.fecha::date
-); ");
-        return $query;
-    }
+
+        -- Día extra autorizado (ej. evento especial)
+        AND NOT EXISTS (
+            SELECT 1
+            FROM central.cat_dias_extraor ce
+            WHERE ce.fecha = Entradas.fecha
+            AND ce.tipo = 'RETARDO MAYOR'
+        )
+
+        -- Justificación por incidencias (licencia, vacaciones, etc)
+        AND NOT EXISTS (
+            SELECT 1
+            FROM central.ctrl_incidencias ci
+            WHERE ci.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
+            AND ci.id_cat_incidencias IN (1, 3, 4, 9, 12)
+            AND ci.fecha_inicio IS NOT NULL
+            AND ci.fecha_fin IS NOT NULL
+            AND Entradas.fecha BETWEEN ci.fecha_inicio AND ci.fecha_fin
+        )
+    ");
+
+    return $query;
+}
+
+
 //OMISIÓN DE SALIDA
  public function process_3()
 {
@@ -435,100 +461,107 @@ AND NOT EXISTS (
             hora,
             cantidad
         )
-        SELECT  
-            Salidas.id_tbl_empleados_hraes,
-            NULL AS observaciones,
-            TRUE AS es_por_retardo,
-            2 AS id_cat_retardo_tipo,
-            7 AS id_cat_retardo_estatus,
-            NULL AS id_user,
-            Salidas.fecha,
-            Salidas.hora,
-            1 AS cantidad
-        FROM (
-            SELECT  
-                MAX(A.hora) AS hora, 
-                A.fecha,
-                A.id_tbl_empleados_hraes
-            FROM central.ctrl_asistencia A
-            WHERE A.fecha NOT IN (
-                SELECT fecha FROM central.cat_dias_festivos
-                UNION
-                SELECT DATE '2025-07-25'
-            )
-            GROUP BY A.fecha, A.id_tbl_empleados_hraes
-        ) AS Salidas
-        WHERE Salidas.hora <= (
-            SELECT C.hora_min_salida
-            FROM central.cat_asistencia_config C
-            WHERE C.id_cat_asistencia_config = (
-                SELECT AI.id_cat_asistencia_config
-                FROM central.ctrl_asistencia_info AI
-                WHERE AI.id_tbl_empleados_hraes = Salidas.id_tbl_empleados_hraes
-            )
-        )
-        AND NOT EXISTS (
-            SELECT 1
-            FROM central.cat_dias_extraor ce
-            WHERE ce.fecha = Salidas.fecha
-            AND ce.tipo = 'SALIDA ANTICIPADA'
-        )
-        AND NOT EXISTS (
-            SELECT 1
-            FROM central.ctrl_incidencias ci
-            WHERE ci.id_tbl_empleados_hraes = Salidas.id_tbl_empleados_hraes
-            AND ci.id_cat_incidencias IN (2, 4, 10, 16, 15, 14)
-            AND ci.fecha_inicio::date = Salidas.fecha::date
-        );
+       SELECT  
+    Salidas.id_tbl_empleados_hraes,
+    NULL AS observaciones,
+    TRUE AS es_por_retardo,
+    2 AS id_cat_retardo_tipo,
+    7 AS id_cat_retardo_estatus,
+    NULL AS id_user,
+    Salidas.fecha,
+    Salidas.hora,
+    1 AS cantidad
+FROM (
+    SELECT  
+        MAX(A.hora) AS hora, 
+        A.fecha,
+        A.id_tbl_empleados_hraes
+    FROM central.ctrl_asistencia A
+    WHERE A.fecha NOT IN (
+        SELECT fecha FROM central.cat_dias_festivos
+        UNION
+        SELECT DATE '2025-07-25'
+    )
+    GROUP BY A.fecha, A.id_tbl_empleados_hraes
+) AS Salidas
+WHERE Salidas.hora <= (
+    SELECT C.hora_min_salida
+    FROM central.cat_asistencia_config C
+    WHERE C.id_cat_asistencia_config = (
+        SELECT AI.id_cat_asistencia_config
+        FROM central.ctrl_asistencia_info AI
+        WHERE AI.id_tbl_empleados_hraes = Salidas.id_tbl_empleados_hraes
+    )
+)
+AND NOT EXISTS (
+    SELECT 1
+    FROM central.cat_dias_extraor ce
+    WHERE ce.fecha = Salidas.fecha
+    AND ce.tipo = 'SALIDA ANTICIPADA'
+)
+AND NOT EXISTS (
+    SELECT 1
+    FROM central.ctrl_incidencias ci
+    WHERE ci.id_tbl_empleados_hraes = Salidas.id_tbl_empleados_hraes
+    AND ci.id_cat_incidencias IN (2, 4, 10, 16, 15, 14)
+    AND ci.fecha_inicio IS NOT NULL
+    AND ci.fecha_fin IS NOT NULL
+    AND Salidas.fecha BETWEEN ci.fecha_inicio AND ci.fecha_fin
+);
+
     ");
     return $query;
 }
 
 //RETARDOS MENORES
-    public function process_4()
-    {
-        $query = pg_query("INSERT INTO central.ctrl_faltas (
-                cantidad,
-                id_tbl_empleados_hraes,
-                es_por_retardo,
-                id_cat_retardo_tipo,
-                id_cat_retardo_estatus,
-                fecha
-            )
-            SELECT 
-    CASE 
-        WHEN (NoRet >= 3 AND NoRet < 6) THEN 1
-        WHEN (NoRet >= 6 AND NoRet < 9) THEN 2
-        WHEN (NoRet >= 9 AND NoRet < 12) THEN 3
-        WHEN (NoRet >= 12) THEN 4
-    END AS cantidad,
-    id_tbl_empleados_hraes,
-    TRUE AS es_por_retardo,
-    3 AS id_cat_retardo_tipo, 
-    6 AS id_cat_retardo_estatus,
-    ultima_fecha AS fecha
-FROM (
-    SELECT 
+public function process_4()
+{
+    $query = pg_query("INSERT INTO central.ctrl_faltas (
+        cantidad,
         id_tbl_empleados_hraes,
-        COUNT(*) AS NoRet,
-        MAX(fecha) AS ultima_fecha
-    FROM central.ctrl_retardo
-    GROUP BY id_tbl_empleados_hraes
-    HAVING COUNT(*) >= 3
-) AS Retardos
-WHERE NOT EXISTS (
-    SELECT 1
-    FROM central.masivo_ctrl_temp_faltas_just
-    WHERE rfc = (
-        SELECT rfc 
-        FROM central.tbl_empleados_hraes 
-        WHERE id_tbl_empleados_hraes = Retardos.id_tbl_empleados_hraes
+        es_por_retardo,
+        id_cat_retardo_tipo,
+        id_cat_retardo_estatus,
+        fecha
     )
-    AND tipo_falta = 'FALTA'
-);
-        ");
-        return $query;
-    }
+    SELECT 
+        CASE 
+            WHEN COUNT(*) >= 3 AND COUNT(*) < 6 THEN 1
+            WHEN COUNT(*) >= 6 AND COUNT(*) < 9 THEN 2
+            WHEN COUNT(*) >= 9 AND COUNT(*) < 12 THEN 3
+            WHEN COUNT(*) >= 12 THEN 4
+        END AS cantidad,
+        r.id_tbl_empleados_hraes,
+        TRUE AS es_por_retardo,
+        3 AS id_cat_retardo_tipo,
+        6 AS id_cat_retardo_estatus,
+        MAX(r.fecha) AS fecha
+    FROM central.ctrl_retardo r
+    INNER JOIN central.tbl_empleados_hraes e 
+        ON e.id_tbl_empleados_hraes = r.id_tbl_empleados_hraes
+    WHERE r.fecha BETWEEN '2025-07-01' AND '2025-07-15'
+    AND NOT EXISTS (
+        SELECT 1
+        FROM central.ctrl_incidencias ci
+        WHERE ci.id_tbl_empleados_hraes = r.id_tbl_empleados_hraes
+          AND ci.id_cat_incidencias IN (3, 4, 5, 9, 13)
+          AND ci.fecha_inicio IS NOT NULL
+          AND ci.fecha_fin IS NOT NULL
+          AND r.fecha BETWEEN ci.fecha_inicio AND ci.fecha_fin
+    )
+    AND NOT EXISTS (
+        SELECT 1
+        FROM central.cat_dias_extraor ce
+        WHERE ce.fecha = r.fecha
+          AND ce.tipo = 'RETARDO MAYOR'
+    )
+    GROUP BY r.id_tbl_empleados_hraes
+    HAVING COUNT(*) >= 3
+    ");
+
+    return $query;
+}
+
 //INASISTENCIAS
     public function process_5()
     {
@@ -609,12 +642,14 @@ WHERE
           AND ce.tipo = 'OMISION'
     )
     AND NOT EXISTS (
-        SELECT 1
-        FROM central.ctrl_incidencias ci2
-        WHERE ci2.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
-          AND ci2.id_cat_incidencias IN (3, 5, 6, 7, 8, 14, 15, 16, 11, 17, 18)
-          AND ci2.fecha_inicio::date = gs.fecha
-    );");
+    SELECT 1
+    FROM central.ctrl_incidencias ci2
+    WHERE ci2.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
+      AND ci2.id_cat_incidencias IN (3, 5, 6, 7, 8, 14, 15, 16, 11, 17, 18)
+      AND ci2.fecha_inicio IS NOT NULL
+      AND ci2.fecha_fin IS NOT NULL
+      AND gs.fecha BETWEEN ci2.fecha_inicio AND ci2.fecha_fin
+);");
         return $query;
     }
 
@@ -679,13 +714,15 @@ AND NOT EXISTS (
         WHERE id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
     )
     AND mctf.fecha::text = e.fecha::text
-)            
+)
 AND NOT EXISTS (
     SELECT 1
     FROM central.ctrl_incidencias ci2
     WHERE ci2.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
-      AND ci2.id_cat_incidencias IN (2, 10, 3, 4, 5, 6, 16, 11, 17)           
-      AND ci2.fecha_inicio::date = e.fecha::date
+      AND ci2.id_cat_incidencias IN (2, 10, 3, 4, 5, 6, 16, 11, 17)
+      AND ci2.fecha_inicio IS NOT NULL
+      AND ci2.fecha_fin IS NOT NULL
+      AND e.fecha BETWEEN ci2.fecha_inicio AND ci2.fecha_fin
 )
 AND NOT EXISTS (
     SELECT 1
@@ -696,7 +733,7 @@ AND NOT EXISTS (
 AND e.id_tbl_empleados_hraes IN (
     SELECT id_tbl_empleados_hraes
     FROM (
-        SELECT id_tbl_empleados_hraes, COUNT(*) AS total
+        SELECT filtro.id_tbl_empleados_hraes, COUNT(*) AS total
         FROM (
             SELECT ca.fecha, ca.id_tbl_empleados_hraes
             FROM central.ctrl_asistencia ca
@@ -711,12 +748,10 @@ AND e.id_tbl_empleados_hraes IN (
             AND ai.no_dispositivo IS NOT NULL
             GROUP BY ca.fecha, ca.id_tbl_empleados_hraes
             HAVING COUNT(ca.hora) = 1
-        ) AS sub
-        GROUP BY id_tbl_empleados_hraes
-        HAVING COUNT(*) >= 3
-    ) AS filtro
+        ) AS filtro
+        GROUP BY filtro.id_tbl_empleados_hraes
+    ) AS resumen
 );
-
     ");
     
     return $query;
