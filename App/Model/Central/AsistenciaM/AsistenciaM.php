@@ -505,58 +505,47 @@ public function insertFalta()
         );
     ");
 
-    // 2. Insertar acumulación de retardos como faltas (3 o más)
-   // 3. Insertar faltas por RETARDO MAYOR (cuando la fecha esté marcada en cat_dias_extraor)
 pg_query("INSERT INTO central.reporte_faltas (rfc, nombre, movil, no_dispositivo, fecha, hora, cantidad, estatus)
+    WITH cand AS (
+      SELECT a.id_tbl_empleados_hraes, a.fecha::date AS fecha, MIN(a.hora) AS hora
+      FROM central.ctrl_asistencia a
+      JOIN central.cat_dias_extraor ce
+        ON ce.fecha::date = a.fecha::date
+       AND TRIM(UPPER(ce.tipo)) = 'RETARDO MAYOR'
+      GROUP BY a.id_tbl_empleados_hraes, a.fecha::date
+    )
     SELECT
-        e.rfc,
-        (e.nombre || ' ' || e.primer_apellido || ' ' || e.segundo_apellido) AS nombre_completo,
-        t.movil,
-        ai.no_dispositivo,
-        x.fecha,
-        x.hora,
-        1 AS cantidad,
-        'RETARDO MAYOR' AS estatus
-    FROM (
-        -- Tomamos una sola marca por día/empleado (la primera del día)
-        SELECT a.id_tbl_empleados_hraes,
-               a.fecha::date AS fecha,
-               MIN(a.hora) AS hora
-        FROM central.ctrl_asistencia a
-        WHERE EXISTS (
-            SELECT 1
-            FROM central.cat_dias_extraor ce
-            WHERE ce.fecha = a.fecha::date
-              AND ce.tipo = 'RETARDO MAYOR'
-        )
-        GROUP BY a.id_tbl_empleados_hraes, a.fecha::date
-    ) x
-    JOIN central.tbl_empleados_hraes e
-      ON e.id_tbl_empleados_hraes = x.id_tbl_empleados_hraes
-    JOIN central.ctrl_asistencia_info ai
-      ON ai.id_tbl_empleados_hraes = x.id_tbl_empleados_hraes
-    JOIN central.ctrl_telefono_hraes t
-      ON t.id_tbl_empleados_hraes = x.id_tbl_empleados_hraes
+      e.rfc,
+      (e.nombre || ' ' || e.primer_apellido || ' ' || e.segundo_apellido) AS nombre_completo,
+      t.movil,
+      ai.no_dispositivo,
+      c.fecha,
+      c.hora,
+      1 AS cantidad,
+      'RETARDO MAYOR' AS estatus
+    FROM cand c
+    JOIN central.tbl_empleados_hraes e ON e.id_tbl_empleados_hraes = c.id_tbl_empleados_hraes
+    JOIN central.ctrl_asistencia_info ai ON ai.id_tbl_empleados_hraes = c.id_tbl_empleados_hraes
+    LEFT JOIN central.ctrl_telefono_hraes t
+      ON t.id_tbl_empleados_hraes = c.id_tbl_empleados_hraes
      AND t.id_cat_estatus = 1
     WHERE NOT EXISTS (
-        -- No insertar si hay incidencia que cubra esa fecha
-        SELECT 1
-        FROM central.ctrl_incidencias ci
-        WHERE ci.id_tbl_empleados_hraes = x.id_tbl_empleados_hraes
-          AND ci.id_cat_incidencias IN (3,4,5,9,13)
-          AND ci.fecha_inicio IS NOT NULL
-          AND ci.fecha_fin IS NOT NULL
-          AND x.fecha BETWEEN ci.fecha_inicio AND ci.fecha_fin
+      SELECT 1 FROM central.ctrl_incidencias ci
+      WHERE ci.id_tbl_empleados_hraes = c.id_tbl_empleados_hraes
+        AND ci.id_cat_incidencias IN (3,4,5,9,13)
+        AND ci.fecha_inicio IS NOT NULL
+        AND ci.fecha_fin IS NOT NULL
+        AND c.fecha BETWEEN ci.fecha_inicio AND ci.fecha_fin
     )
     AND NOT EXISTS (
-        -- Evitar duplicados en reporte_faltas
-        SELECT 1
-        FROM central.reporte_faltas rf
-        WHERE rf.rfc = e.rfc
-          AND rf.fecha = x.fecha
-          AND rf.estatus = 'RETARDO MAYOR'
+      SELECT 1 FROM central.reporte_faltas rf
+      WHERE rf.rfc = e.rfc
+        AND rf.fecha = c.fecha
+        AND rf.estatus = 'RETARDO MAYOR'
     );
 ");
+
+
 }
 
 
