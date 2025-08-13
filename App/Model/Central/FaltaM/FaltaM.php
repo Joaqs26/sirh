@@ -362,19 +362,17 @@ WHERE NOT EXISTS (
             FROM (
                 SELECT  
                     A.fecha::date AS fecha, 
-                    MIN(A.hora)  AS hora,
+                    MIN(A.hora)   AS hora,
                     A.id_tbl_empleados_hraes
                 FROM central.ctrl_asistencia A
-                WHERE A.fecha::date NOT IN (
-                    SELECT fecha::date FROM central.cat_dias_festivos
-                )
-                AND A.fecha::date <> DATE '2025-05-14'
+                WHERE A.fecha::date NOT IN (SELECT fecha::date FROM central.cat_dias_festivos)
+                  AND A.fecha::date <> DATE '2025-05-14'
                 GROUP BY A.fecha::date, A.id_tbl_empleados_hraes
             ) AS Minimo
             WHERE 
                 (
                     Minimo.fecha = DATE '2025-06-02' 
-                    AND Minimo.hora  > TIME '10:00:59'
+                    AND Minimo.hora > TIME '10:00:59'
                 )
                 OR
                 (
@@ -396,7 +394,7 @@ WHERE NOT EXISTS (
             SELECT 1
             FROM central.ctrl_faltas f
             WHERE f.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
-              AND f.fecha::date = Entradas.fecha
+              AND f.fecha::date = Entradas.fecha::date
         )
 
         -- Justificación exacta por fecha (tabla temporal)
@@ -404,31 +402,49 @@ WHERE NOT EXISTS (
             SELECT 1
             FROM central.masivo_ctrl_temp_faltas_just mj
             WHERE mj.rfc = (
-                SELECT e.rfc 
-                FROM central.tbl_empleados_hraes e
-                WHERE e.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
-            )
+                    SELECT e.rfc 
+                    FROM central.tbl_empleados_hraes e
+                    WHERE e.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
+                )
               AND mj.fecha IS NOT NULL
-              AND mj.fecha::date = Entradas.fecha
+              AND mj.fecha::date = Entradas.fecha::date
         )
 
-        -- Día marcado como RETARDO MAYOR se excluye aquí (lo insertas en otro proceso)
+        -- Día extraordinario marcado como RETARDO MAYOR u OMISIÓN DE ENTRADA
         AND NOT EXISTS (
             SELECT 1
             FROM central.cat_dias_extraor ce
-            WHERE ce.fecha::date = Entradas.fecha
-              AND TRIM(UPPER(ce.tipo)) = 'RETARDO MAYOR'
+            WHERE ce.fecha::date = Entradas.fecha::date
+              AND (
+                    UPPER(TRIM(ce.tipo)) LIKE 'RETARDO MAYOR%'
+                 OR UPPER(TRIM(ce.tipo)) LIKE 'OMISION DE ENTRADA%'
+                 OR UPPER(TRIM(ce.tipo)) LIKE 'OMISIÓN DE ENTRADA%'
+                 OR UPPER(TRIM(ce.tipo)) LIKE 'RETARDO MAYOR/OMISION DE ENTRADA%'
+                 OR UPPER(TRIM(ce.tipo)) LIKE 'RETARDO MAYOR/OMISIÓN DE ENTRADA%'
+              )
         )
 
-        -- Incidencias justificadas (licencia, vacaciones, etc.)
+        -- Incidencias que justifican (por ID o por descripción del catálogo) usando RANGO inclusivo
         AND NOT EXISTS (
             SELECT 1
             FROM central.ctrl_incidencias ci
+            JOIN central.cat_incidencias c
+              ON c.id_cat_incidencias = ci.id_cat_incidencias
             WHERE ci.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
-              AND ci.id_cat_incidencias IN (1, 3, 4, 9, 12)
-              AND ci.fecha_inicio IS NOT NULL
-              AND ci.fecha_fin   IS NOT NULL
-              AND Entradas.fecha BETWEEN ci.fecha_inicio AND ci.fecha_fin
+              AND NULLIF(TRIM(ci.fecha_inicio::text), '') IS NOT NULL
+              -- si fecha_fin viene null, tratamos el mismo día
+              AND daterange(ci.fecha_inicio::date, COALESCE(ci.fecha_fin::date, ci.fecha_inicio::date), '[]')
+                    @> Entradas.fecha::date
+              AND (
+                    -- tus IDs originales + los que agregues
+                    ci.id_cat_incidencias IN (1,3,4,6,9,12)
+                    -- y también por descripción del catálogo
+                 OR UPPER(TRIM(c.descripcion)) IN (
+                        'OMISION DE ENTRADA', 'OMISIÓN DE ENTRADA',
+                        'RETARDO MAYOR',
+                        'RETARDO MAYOR/OMISION DE ENTRADA', 'RETARDO MAYOR/OMISIÓN DE ENTRADA'
+                    )
+              )
         )
     ");
 
