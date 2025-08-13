@@ -568,32 +568,52 @@ public function insertFalta()
     ");
 
     // 3) RETARDO MAYOR — SIN descartar nada (sin NOT EXISTS, sin filtros)
-    pg_query("
-        INSERT INTO central.reporte_faltas (rfc, nombre, movil, no_dispositivo, fecha, hora, cantidad, estatus)
-        SELECT
-            e.rfc,
-            (e.nombre || ' ' || e.primer_apellido || ' ' || e.segundo_apellido) AS nombre_completo,
-            MIN(t.movil) AS movil,                 -- toma un número si hay varios, sin filtrar
-            ai.no_dispositivo,                     -- puede quedar NULL si no hay registro
-            f.fecha,
-            f.hora,
-            f.cantidad,
-            'RETARDO MAYOR' AS estatus
-        FROM central.ctrl_faltas f
-        JOIN central.cat_retardo_estatus re
-          ON re.id_cat_retardo_estatus = f.id_cat_retardo_estatus
-        JOIN central.tbl_empleados_hraes e
-          ON e.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
-        LEFT JOIN central.ctrl_asistencia_info ai
-          ON ai.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
-        LEFT JOIN central.ctrl_telefono_hraes t
-          ON t.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
-        WHERE TRIM(UPPER(re.descripcion)) = 'RETARDO MAYOR'
-        GROUP BY
-            e.rfc, e.nombre, e.primer_apellido, e.segundo_apellido,
-            ai.no_dispositivo,
-            f.fecha, f.hora, f.cantidad;
-    ");
+ pg_query("INSERT INTO central.reporte_faltas (
+    rfc, nombre, movil, no_dispositivo, fecha, hora, cantidad, estatus
+)
+SELECT
+    e.rfc,
+    btrim(e.nombre || ' ' || e.primer_apellido || ' ' || coalesce(e.segundo_apellido, '')) AS nombre_completo,
+    MIN(t.movil) AS movil,               -- si hay varios, toma uno
+    ai.no_dispositivo,                   -- puede quedar NULL si no hay registro
+    f.fecha,
+    f.hora,
+    f.cantidad,
+    'RETARDO MAYOR' AS estatus
+FROM central.ctrl_faltas f
+JOIN central.cat_retardo_estatus re
+  ON re.id_cat_retardo_estatus = f.id_cat_retardo_estatus
+JOIN central.tbl_empleados_hraes e
+  ON e.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+LEFT JOIN central.ctrl_asistencia_info ai
+  ON ai.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+LEFT JOIN central.ctrl_telefono_hraes t
+  ON t.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+WHERE
+  UPPER(TRIM(re.descripcion)) = 'RETARDO MAYOR'
+  -- Excluir incidencias que justifiquen el día
+  AND NOT EXISTS (
+    SELECT 1
+    FROM central.ctrl_incidencias ci
+    WHERE ci.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+      AND ci.id_cat_incidencias IN (1, 3, 4, 6, 9, 12)
+      AND ci.fecha_inicio IS NOT NULL
+      AND ci.fecha_fin IS NOT NULL
+      AND f.fecha BETWEEN ci.fecha_inicio AND ci.fecha_fin
+  )
+  -- Excluir días extraordinarios marcados como RETARDO MAYOR
+  AND NOT EXISTS (
+    SELECT 1
+    FROM central.cat_dias_extraor ce
+    WHERE ce.fecha = f.fecha
+      AND UPPER(TRIM(ce.tipo)) = 'RETARDO MAYOR'
+  )
+GROUP BY
+    e.rfc, e.nombre, e.primer_apellido, e.segundo_apellido,
+    ai.no_dispositivo,
+    f.fecha, f.hora, f.cantidad
+");
+
 }
 
 
