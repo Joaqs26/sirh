@@ -540,45 +540,52 @@ public function process_3()
 }
 
 //RETARDOS MENORES
+//RETARDOS MENORES
 public function process_4()
 {
-    $query = pg_query("WITH base AS (
-            SELECT
-                r.id_tbl_empleados_hraes,
-                COUNT(DISTINCT r.fecha::date) AS cnt,  -- días únicos con retardo menor
-                MAX(r.fecha::date)            AS fecha_max
-            FROM central.ctrl_retardo r
-            WHERE r.fecha::date BETWEEN DATE '2025-07-01' AND DATE '2025-07-31'  -- ⬅️ periodo que esperas
-              AND (r.id_cat_retardo_estatus = 5 OR r.id_cat_retardo_estatus IS NULL)  -- ⬅️ retardo menor (ajusta si aplica)
-            GROUP BY r.id_tbl_empleados_hraes
-            HAVING COUNT(DISTINCT r.fecha::date) >= 3
-        )
-        INSERT INTO central.ctrl_faltas (
-            cantidad, id_tbl_empleados_hraes, es_por_retardo,
-            id_cat_retardo_tipo, id_cat_retardo_estatus, fecha
-        )
-        SELECT
-            CASE
-                WHEN b.cnt >= 12 THEN 4
-                WHEN b.cnt >=  9 THEN 3
-                WHEN b.cnt >=  6 THEN 2
-                ELSE 1
-            END AS cantidad,
-            b.id_tbl_empleados_hraes,
-            TRUE AS es_por_retardo,
-            3    AS id_cat_retardo_tipo,
-            6    AS id_cat_retardo_estatus,   -- 'RETARDOS MENORES'
-            b.fecha_max AS fecha
-        FROM base b
-        WHERE NOT EXISTS (  -- evita duplicar si ya lo insertaste antes
-            SELECT 1
-            FROM central.ctrl_faltas f
-            WHERE f.id_tbl_empleados_hraes = b.id_tbl_empleados_hraes
-              AND f.fecha::date            = b.fecha_max
-              AND f.id_cat_retardo_tipo    = 3
-              AND f.id_cat_retardo_estatus = 6
-        );
+    $query = pg_query("INSERT INTO central.ctrl_faltas (
+        cantidad,
+        id_tbl_empleados_hraes,
+        es_por_retardo,
+        id_cat_retardo_tipo,
+        id_cat_retardo_estatus,
+        fecha
+    )
+    SELECT 
+        CASE 
+            WHEN COUNT(*) >= 3 AND COUNT(*) < 6 THEN 1
+            WHEN COUNT(*) >= 6 AND COUNT(*) < 9 THEN 2
+            WHEN COUNT(*) >= 9 AND COUNT(*) < 12 THEN 3
+            WHEN COUNT(*) >= 12 THEN 4
+        END AS cantidad,
+        r.id_tbl_empleados_hraes,
+        TRUE AS es_por_retardo,
+        3 AS id_cat_retardo_tipo,
+        6 AS id_cat_retardo_estatus,
+        MAX(r.fecha) AS fecha
+    FROM central.ctrl_retardo r
+    INNER JOIN central.tbl_empleados_hraes e 
+        ON e.id_tbl_empleados_hraes = r.id_tbl_empleados_hraes
+    WHERE r.fecha BETWEEN '2025-07-01' AND '2025-07-15'
+    AND NOT EXISTS (
+        SELECT 1
+        FROM central.ctrl_incidencias ci
+        WHERE ci.id_tbl_empleados_hraes = r.id_tbl_empleados_hraes
+          AND ci.id_cat_incidencias IN (3, 4, 5, 9, 13)
+          AND ci.fecha_inicio IS NOT NULL
+          AND ci.fecha_fin IS NOT NULL
+          AND r.fecha BETWEEN ci.fecha_inicio AND ci.fecha_fin
+    )
+    AND NOT EXISTS (
+        SELECT 1
+        FROM central.cat_dias_extraor ce
+        WHERE ce.fecha = r.fecha
+          AND ce.tipo = 'RETARDO MAYOR'
+    )
+    GROUP BY r.id_tbl_empleados_hraes
+    HAVING COUNT(*) >= 3
     ");
+
     return $query;
 }
 
