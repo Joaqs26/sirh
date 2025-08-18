@@ -55,7 +55,7 @@ function processDataFaltas(file) {
     processData: false,
     contentType: false,
     cache: false,
-    dataType: 'json', // 👈 importante: ya no haces JSON.parse
+    dataType: 'json', // 
     success: function (resp) {
       // resp ya es un objeto
       console.log('DEBUG BACKEND:', resp.debug || null);
@@ -80,4 +80,6 @@ function processDataFaltas(file) {
       fadeOut();
     }
   });
+
+  
 }

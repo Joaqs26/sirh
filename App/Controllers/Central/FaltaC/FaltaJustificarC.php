@@ -17,6 +17,9 @@ $inserted = 0;
 $incidencias_insertadas = 0;
 $debug = [];
 
+// flag para autodescargar verificación
+$autoDescarga = isset($_POST['autodescarga']) && $_POST['autodescarga'] === '1';
+
 $fileExel = 'file';
 
 // 1) Limpiar tabla temporal al inicio
@@ -83,33 +86,40 @@ try {
     }
 
     // 4) Ejecutar el proceso CTE -> inserta en ctrl_incidencias
-    $res = $faltaModelM->updateincidencias(); // tu método ya arma todo el CTE
+    $res = $faltaModelM->updateincidencias(); // (corrige el typo "SELEC..." adentro de este método)
     if ($res === false) {
         respond(false, 'Error al ejecutar updateincidencias()', $inserted, 0, []);
     }
     $incidencias_insertadas = pg_affected_rows($res);
 
-    // 5) Truncar temporal al final
-    if (!$faltaModelM->truncateTableTmpFaltas()) {
-        respond(false, 'Se insertó en incidencias, pero falló el truncate final.', $inserted, $incidencias_insertadas, []);
+    // 5) Truncar temporal al final (solo si NO vamos a descargar verificación)
+    if (!$autoDescarga) {
+        if (!$faltaModelM->truncateTableTmpFaltas()) {
+            respond(false, 'Se insertó en incidencias, pero falló el truncate final.', $inserted, $incidencias_insertadas, []);
+        }
     }
 
-    respond(true, 'ok', $inserted, $incidencias_insertadas, []);
+    // Respuesta OK; si autodescarga, enviamos la URL de verificación
+    $extra = [];
+    if ($autoDescarga) {
+        $extra['download_url'] = "../../../../App/Controllers/Central/Asistencias/Asistencias/tabla.php";
+    }
+
+    respond(true, 'ok', $inserted, $incidencias_insertadas, $extra);
 
 } catch (Throwable $e) {
     respond(false, 'Excepción: ' . $e->getMessage(), $inserted, $incidencias_insertadas, []);
 }
 
-function respond($bool, $message, $inserted, $incidencias, $debug = [])
+function respond($bool, $message, $inserted, $incidencias, $extra = [])
 {
     if (ob_get_length()) { ob_clean(); }
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode([
+    echo json_encode(array_merge([
         'bool' => (bool)$bool,
         'message' => $message,
         'insertados_temp' => (int)$inserted,
         'incidencias_insertadas' => (int)$incidencias,
-        'debug' => $debug,
-    ], JSON_UNESCAPED_UNICODE);
+    ], $extra), JSON_UNESCAPED_UNICODE);
     exit;
 }

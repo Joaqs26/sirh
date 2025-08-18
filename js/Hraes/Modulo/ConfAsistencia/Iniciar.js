@@ -74,6 +74,9 @@ function ocultarModalConfigAsistencia(){
     $("#is_modal_config_asistencia").modal("hide");
 }
 
+function ocultarContenido(id) {
+    document.getElementById(id).style.display = 'none';
+}
 
 function agregarActualizarAsistencia(){
 
