@@ -76,7 +76,7 @@ class AsistenciaM
 
     function addAsistenciaInfoDB($conexion, $datos)
     {
-        $pg_add = pg_insert($conexion, 'central.ctrl_jornada', $datos);
+        $pg_add = pg_insert($conexion, 'central.ctrl_asistencia_info', $datos);
         return $pg_add;
     }
 
