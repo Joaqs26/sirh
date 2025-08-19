@@ -221,7 +221,7 @@ function x(input) {
 }
 
 $(document).ready(function () {
-    console(data);
+ 
     $("#truncatetable").click(function () {
         truncatetable();
     });
@@ -258,7 +258,7 @@ function y(input) {
 }
 
 $(document).ready(function () {
-    console(data);
+    
     $("#truncatetablefr").click(function () {
         truncatetablefr();
     });
