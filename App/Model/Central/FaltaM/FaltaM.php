@@ -626,7 +626,7 @@ INNER JOIN central.ctrl_asistencia_info ai
 WHERE 
     ai.id_cat_asistencia_ubicacion = 1
     AND ai.id_cat_asistencia_estatus = 1
-    AND ai.id_cat_asistencia_config = 1
+    --AND ai.id_cat_asistencia_config = 1
     AND ai.no_dispositivo IS NOT NULL
 
     -- no hay asistencia ese día

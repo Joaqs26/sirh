@@ -489,14 +489,15 @@ $q1 = pg_query("INSERT INTO central.reporte_faltas
       ON t.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
     JOIN central.cat_retardo_estatus re
       ON re.id_cat_retardo_estatus = f.id_cat_retardo_estatus
-    WHERE NOT EXISTS (
-        SELECT 1
-        FROM central.reporte_faltas rf
-        WHERE rf.rfc = e.rfc
-          AND rf.fecha::date = f.fecha::date
-          AND COALESCE(rf.hora::time, TIME '00:00') = COALESCE(f.hora::time, TIME '00:00')
-          AND rf.estatus = re.descripcion
-    )
+     WHERE NOT EXISTS (
+    SELECT 1
+    FROM central.ctrl_incidencias ci
+    WHERE ci.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+      AND ci.id_cat_incidencias IN (3,4,5,9,10,13) -- ajusta catálogo si aplica
+      AND ci.fecha_inicio IS NOT NULL
+      AND daterange(ci.fecha_inicio::date, COALESCE(ci.fecha_fin::date, ci.fecha_inicio::date), '[]')
+          @> f.fecha::date
+)
     GROUP BY
         e.rfc, e.nombre, e.primer_apellido, e.segundo_apellido,
         ai.no_dispositivo, f.fecha, f.hora, f.cantidad, re.descripcion
