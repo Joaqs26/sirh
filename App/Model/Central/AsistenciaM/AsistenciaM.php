@@ -83,13 +83,13 @@ class AsistenciaM
 
     function editJornadaInfoDB($conexion, $datos, $condicion)
     {
-        $pg_update = pg_update($conexion, 'central.ctrl_jornada', $datos, $condicion);
+        $pg_update = pg_update($conexion, 'central.ctrl_asistencia_info', $datos, $condicion);
         return $pg_update;
     }
 
     function addJornadaInfoDB($conexion, $datos)
     {
-        $pg_add = pg_insert($conexion, 'central.ctrl_jornada', $datos);
+        $pg_add = pg_insert($conexion, 'central.ctrl_asistencia_info', $datos);
         return $pg_add;
     }
 
