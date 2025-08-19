@@ -93,11 +93,7 @@ try {
     $incidencias_insertadas = pg_affected_rows($res);
 
     // 5) Truncar temporal al final (solo si NO vamos a descargar verificación)
-    if (!$autoDescarga) {
-        if (!$faltaModelM->truncateTableTmpFaltas()) {
-            respond(false, 'Se insertó en incidencias, pero falló el truncate final.', $inserted, $incidencias_insertadas, []);
-        }
-    }
+   
 
     // Respuesta OK; si autodescarga, enviamos la URL de verificación
     $extra = [];
