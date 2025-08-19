@@ -53,7 +53,7 @@ class AsistenciaM
         $query = pg_query("SELECT * 
                             FROM central.ctrl_asistencia_info
                             WHERE id_tbl_empleados_hraes = $id
-                            ORDER BY id_ctrl_asistencia_info ASC
+                            ORDER BY id_ctrl_asistencia_info DESC
                             LIMIT 1;");
         return $query;
     }
@@ -82,16 +82,14 @@ class AsistenciaM
 
 
     function editJornadaInfoDB($conexion, $datos, $condicion)
-    {
-        $pg_update = pg_update($conexion, 'central.ctrl_asistencia_info', $datos, $condicion);
-        return $pg_update;
-    }
+{
+    return pg_update($conexion, 'central.ctrl_jornada', $datos, $condicion);
+}
 
-    function addJornadaInfoDB($conexion, $datos)
-    {
-        $pg_add = pg_insert($conexion, 'central.ctrl_asistencia_info', $datos);
-        return $pg_add;
-    }
+function addJornadaInfoDB($conexion, $datos)
+{
+    return pg_insert($conexion, 'central.ctrl_jornada', $datos);
+}
 
     public function validateNoBiometrico($no_dispositivo, $id_tbl_empleados_hraes)
     {
