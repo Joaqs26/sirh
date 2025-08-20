@@ -129,7 +129,7 @@ if (isset($_FILES[$fileExel]) && $_FILES[$fileExel]['error'] === UPLOAD_ERR_OK) 
 
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-$filename = 'datos_postgresql.xlsx';
+$filename = 'gugasaurio.xlsx';
 
 // Crear un objeto Writer para guardar el archivo Excel en la salida directa
 $writer = new Xlsx($spreadsheet);
@@ -138,7 +138,7 @@ header('Content-Disposition: attachment;filename="' . $filename . '"');
 header('Cache-Control: max-age=0');
 $writer->save('php://output');
 
-header("Location: ../../../View/Hraes/CentroTrabajo/index.php");
+header("Location: ../../../View/Central/CentroTrabajo/index.php");
 
 function validateDateX($data) ////LA FUNCION VALIDA QUE NO VAYAN ELEMENTOS VACIOS
 {

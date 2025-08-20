@@ -43,7 +43,7 @@ while ($fila = pg_fetch_assoc($resultado)) {
 }
 
 // Configurar el nombre del archivo
-$filename = 'datos_postgresql.xlsx';
+$filename = 'datos_postgressql.xlsx';
 
 // Crear un objeto Writer para guardar el archivo Excel en la salida directa
 $writer = new Xlsx($spreadsheet);
