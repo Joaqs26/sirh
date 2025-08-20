@@ -41,6 +41,7 @@ if (pg_num_rows($result) > 0) {
                             <div class="dropdown-menu">
                                 <button onclick="getUser(' . $row[7] . ')" class="dropdown-item btn btn-light"><i class="	fa fa-user icon-edit-table"></i> Usuario</button>
                                 <button onclick="mostrarFalta(' . $row[8] . ')" class="dropdown-item btn btn-light"><i class="fas fa-edit icon-edit-table"></i> Modificar</button>
+                                <button onclick="showMail(' . $row[8] . ')" class="dropdown-item btn btn-light"><i class="	fa fa-envelope icon-edit-table"></i> Email</button>
                             </div>
                           </div>
                                 </td>

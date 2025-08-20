@@ -17,7 +17,8 @@
                             title="Eliminar Registros de Asistencia" onclick="truncatetable();">
                             <i class="fas fa-trash-alt"></i>
                         </button>
-                        <button id="truncatetableday" class="btn btn-light btn-circle" type="button" title="Eliminar registros por fecha">
+                        <button id="truncatetableday" class="btn btn-light btn-circle" type="button"
+                            title="Eliminar registros por fecha">
                             <i class="fas fa-calendar-times"></i>
                         </button>
                         <button class="btn btn-light btn-circle" type="button" data-toggle="tooltip"
@@ -99,6 +100,7 @@
 
 <?php include '../../librerias.php' ?>
 <?php include 'Carga.php' ?>
+<?php include 'email.php' ?>
 <?php include 'CargaFaltas.php' ?>
 <?php include 'ModalUsuario.php' ?>
 
@@ -113,6 +115,7 @@
 <script src="../../../../js/Ib/Asistencias/Falta/Listado.js"></script>
 <script src="../../../../js/Ib/Asistencias/Falta/Busqueda.js"></script>
 <script src="../../../../js/Ib/Asistencias/Falta/Masivo.js"></script>
+<script src="../../../../js/Ib/Asistencias/Falta/Mail.js"></script>
 
 
 <script src="../../../../js/Ib/Asistencias/Retardos/Listado.js"></script>
