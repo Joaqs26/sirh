@@ -323,7 +323,7 @@ public function process_1()
             SELECT 1
             FROM central.ctrl_incidencias ci
             WHERE ci.id_tbl_empleados_hraes = Entradas.id_tbl_empleados_hraes
-              AND ci.id_cat_incidencias IN (3,4,5,9,10,13)
+              AND ci.id_cat_incidencias IN (1,2,3,4,5,6,7,9,10,11,12,13,14,15,16,17)
               AND ci.fecha_inicio IS NOT NULL
               AND daterange(ci.fecha_inicio::date, COALESCE(ci.fecha_fin::date, ci.fecha_inicio::date), '[]')
                     @> Entradas.fecha::date
@@ -445,7 +445,7 @@ public function process_1()
                     @> Entradas.fecha::date
               AND (
                     -- tus IDs originales + los que agregues
-                    ci.id_cat_incidencias IN (1,3,4,6,9,12,10)
+                    ci.id_cat_incidencias IN (1,3,4,5,6,7,9,11,12,13,14,15,16,17)
                     -- y también por descripción del catálogo
                  OR UPPER(TRIM(c.descripcion)) IN (
                         'OMISION DE ENTRADA', 'OMISIÓN DE ENTRADA',
@@ -521,7 +521,7 @@ public function process_3()
             SELECT 1
             FROM central.ctrl_incidencias ci
             WHERE ci.id_tbl_empleados_hraes = s.id_tbl_empleados_hraes
-              AND ci.id_cat_incidencias IN (2,4,10,16,15,14)
+              AND ci.id_cat_incidencias IN (2,3,4,5,6,7,10,11,16,15,14,17)
               AND ci.fecha_inicio IS NOT NULL
               AND daterange(ci.fecha_inicio::date, COALESCE(ci.fecha_fin::date, ci.fecha_inicio::date), '[]')
                     @> s.fecha::date
@@ -539,7 +539,6 @@ public function process_3()
     return $query;
 }
 
-//RETARDOS MENORES
 //RETARDOS MENORES
 public function process_4()
 {
@@ -566,15 +565,15 @@ public function process_4()
     FROM central.ctrl_retardo r
     INNER JOIN central.tbl_empleados_hraes e 
         ON e.id_tbl_empleados_hraes = r.id_tbl_empleados_hraes
-    WHERE r.fecha BETWEEN '2025-07-01' AND '2025-07-15'
+  --  WHERE r.fecha BETWEEN '2025-07-01' AND '2025-07-15'
     AND NOT EXISTS (
         SELECT 1
         FROM central.ctrl_incidencias ci
-        WHERE ci.id_tbl_empleados_hraes = r.id_tbl_empleados_hraes
-          AND ci.id_cat_incidencias IN (3, 4, 5, 9, 13)
-          AND ci.fecha_inicio IS NOT NULL
-          AND ci.fecha_fin IS NOT NULL
-          AND r.fecha BETWEEN ci.fecha_inicio AND ci.fecha_fin
+         WHERE ci.id_tbl_empleados_hraes = r.id_tbl_empleados_hraes
+        AND ci.id_cat_incidencias IN (3,4,5,9,13)
+        AND ci.fecha_inicio IS NOT NULL
+        AND daterange(ci.fecha_inicio::date, COALESCE(ci.fecha_fin::date, ci.fecha_inicio::date), '[]')
+            @> r.fecha::date
     )
     AND NOT EXISTS (
         SELECT 1
