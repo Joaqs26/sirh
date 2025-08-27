@@ -48,14 +48,7 @@
                       atención de las mismas</strong>.
                     </p>
 
-
-<!-- Previsualización (opcional) 
-<div id="previewFechas" class="text-muted mt-2">
-  Se copiará: <strong>—</strong>
-</div>-->
-
-
-                    <p>Es importante que acuda con las incidencias que <strong>se hayan entregado en tiempo y
+                   <p>Es importante que acuda con las incidencias que <strong>se hayan entregado en tiempo y
                             forma</strong>
                         que justifiquen las omisiones que obran en su registro como se detallan a continuación:</p>
 
@@ -76,16 +69,8 @@
                                         ESTATUS</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <!-- Aquí van las filas dinámicamente o estáticas -->
-                                <tr>
-                                    <td style="padding: 10px; border: 1px solid #ddd;">Ejemplo</td>
-                                    <td style="padding: 10px; border: 1px solid #ddd;">Juan Pérez</td>
-                                    <td style="padding: 10px; border: 1px solid #ddd;">07/08/2025</td>
-                                    <td style="padding: 10px; border: 1px solid #ddd;">09:10</td>
-                                    <td style="padding: 10px; border: 1px solid #ddd;">Sin justificar</td>
-                                </tr>
-                            </tbody>
+                            <tbody id="tbodyFaltasEmail"></tbody>
+
                         </table>
                     </div>
 
@@ -109,110 +94,4 @@
         </div>
     </div>
 </div>
-<script>
-  // --- utilidades de fecha en español ---
-  const MESES_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  function getFecha(id){
-    const v = document.getElementById(id)?.value;
-    if(!v) return null;
-    const [y,m,d] = v.split('-').map(Number);
-    if(!y||!m||!d) return null;
-    return new Date(y, m-1, d);
-  }
-  function fmtFecha(d){
-    return `${d.getDate()} de ${MESES_ES[d.getMonth()]} de ${d.getFullYear()}`;
-  }
-  function construirFraseFechas(){
-    let f1 = getFecha('fecha1');
-    let f2 = getFecha('fecha2');
-
-    if(!f1 && !f2) return 'los días <strong>—</strong>';
-
-    // ordena si el usuario puso al revés
-    if(f1 && f2 && f2 < f1){ const t = f1; f1 = f2; f2 = t; }
-
-    if(f1 && (!f2 || f1.getTime()===f2.getTime())){
-      return `el día <strong>${fmtFecha(f1)}</strong>`;
-    }
-    if(f1 && f2){
-      const mismoMesYAño = f1.getMonth()===f2.getMonth() && f1.getFullYear()===f2.getFullYear();
-      if(mismoMesYAño){
-        return `los días <strong>${f1.getDate()} y ${f2.getDate()} de ${MESES_ES[f1.getMonth()]} de ${f1.getFullYear()}</strong>`;
-      } else {
-        return `los días <strong>${fmtFecha(f1)} y ${fmtFecha(f2)}</strong>`;
-      }
-    }
-    return ;
-  }
-
-  // opcional: mantener la vista previa actualizada
-  function actualizarPreview(){
-    const prev = document.getElementById('previewFechas');
-    if(prev) prev.innerHTML =  construirFraseFechas();
-  }
-  ['fecha1','fecha2'].forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) el.addEventListener('change', actualizarPreview);
-  });
-  actualizarPreview();
-
-  // --- copiar reemplazando el selector por la frase ---
-  async function copiarPlantillaCorreo() {
-    // 1) clona solo el contenido del email
-    const cont = document.querySelector('#contenidoEmail');
-    if(!cont){
-      alert('No se encontró #contenidoEmail');
-      return;
-    }
-    const clone = cont.cloneNode(true);
-
-    // 2) reemplaza el span con inputs por la frase final
-    const selector = clone.querySelector('#selector-fechas');
-    if(selector){
-      selector.outerHTML = construirFraseFechas();
-    }
-    // 3) elimina la vista previa si está dentro
-    const prev = clone.querySelector('#previewFechas');
-    if(prev) prev.remove();
-
-    // 4) arma HTML final "email-safe"
-    const html = `
-<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#fff;">
-  <div style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.6;color:#1f2d3d;">
-    ${clone.innerHTML}
-  </div>
-</body></html>`.trim();
-
-    // 5) también un texto plano como fallback
-    const text = html
-      .replace(/<style[\s\S]*?<\/style>/gi, '')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    try {
-      if (navigator.clipboard && window.ClipboardItem) {
-        const data = new ClipboardItem({
-          'text/html': new Blob([html], { type: 'text/html' }),
-          'text/plain': new Blob([text], { type: 'text/plain' })
-        });
-        await navigator.clipboard.write([data]);
-        window.notyf ? notyf.success('Plantilla copiada con las fechas seleccionadas') : alert('Copiado con fechas');
-      } else {
-        // fallback
-        const ta = document.createElement('textarea');
-        ta.value = html;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        window.notyf ? notyf.success('Plantilla copiada (fallback)') : alert('Copiado (fallback)');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('No se pudo copiar. Revisa permisos del portapapeles.');
-    }
-  }
-</script>
-
+<script src="/sirh/js/Ib/Asistencias/Falta/Mail.js"></script>

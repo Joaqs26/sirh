@@ -403,7 +403,7 @@ ORDER BY id_tbl_empleados_hraes, fecha, hora;");
                 INNER JOIN central.ctrl_asistencia 
                     ON central.ctrl_asistencia.id_tbl_empleados_hraes =
                         central.tbl_empleados_hraes.id_tbl_empleados_hraes
-                ORDER BY central.ctrl_asistencia.fecha ASC, central.ctrl_asistencia.hora desc
+                ORDER BY central.tbl_empleados_hraes.rfc desc, central.ctrl_asistencia.fecha desc, central.ctrl_asistencia.hora desc
                 LIMIT 5 OFFSET $paginator;");
         return $query;
     }
@@ -432,7 +432,7 @@ ORDER BY id_tbl_empleados_hraes, fecha, hora;");
                         OR TO_CHAR(central.ctrl_asistencia.hora, 'HH24:MI') LIKE '%$busqueda%' 
                         OR UPPER(central.ctrl_asistencia.dispositivo) LIKE '%$busqueda%'
                     )
-                     ORDER BY central.ctrl_asistencia.fecha ASC, central.ctrl_asistencia.hora desc
+                     ORDER BY central.tbl_empleados_hraes.rfc desc, central.ctrl_asistencia.fecha desc, central.ctrl_asistencia.hora desc
                     LIMIT 5 OFFSET $paginator;");
         return $query;
     }
@@ -488,7 +488,7 @@ $q1 = pg_query("INSERT INTO central.reporte_faltas
     LEFT JOIN central.ctrl_telefono_hraes t
       ON t.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
     JOIN central.cat_retardo_estatus re
-      ON re.id_cat_retardo_estatus = f.id_cat_retardo_estatus
+      ON re.id_cat_retardo_estatus = f.id_cat_retardo_estatus   
     WHERE f.fecha::date NOT IN (SELECT fecha::date FROM central.cat_dias_festivos
 )
     GROUP BY
