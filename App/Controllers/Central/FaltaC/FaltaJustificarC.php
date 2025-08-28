@@ -1,121 +1,74 @@
 <?php
 ini_set('memory_limit', '1024M');
-ini_set('display_errors', 0);
-ini_set('log_errors', 1);
 
 include '../librerias.php';
 require_once '../../../../vendor/autoload.php';
-
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
+/// Class
 $faltaModelM = new FaltaModelM();
 
+///Messages
 $bool = false;
 $message = 'ok';
-$inserted = 0;
-$incidencias_insertadas = 0;
-$debug = [];
 
-// flag para autodescargar verificación
-$autoDescarga = isset($_POST['autodescarga']) && $_POST['autodescarga'] === '1';
-
+///VALUE
 $fileExel = 'file';
+$schema = 'central';
+$tableName = $schema . '.ctrl_temp_asistencia';
 
-// 1) Limpiar tabla temporal al inicio
-if (!$faltaModelM->truncateTableTmpFaltas()) {
-    respond(false, 'Error al truncate table inicial', $inserted, $incidencias_insertadas, $debug);
-}
 
-if (!isset($_FILES[$fileExel]) || $_FILES[$fileExel]['error'] !== UPLOAD_ERR_OK) {
-    respond(false, 'No se recibió archivo válido.', $inserted, $incidencias_insertadas, $debug);
-}
+//Actions
+//Truncate table
+$bool = $faltaModelM->truncateTableTmpFaltas() ? true : false;
+$message = $bool ? 'ok' : 'Error al truncate table';
 
-try {
-    $archivo = $_FILES[$fileExel]['tmp_name'];
-    $spreadsheet = IOFactory::load($archivo);
-    /** @var Worksheet $ws */
-    $ws = $spreadsheet->getActiveSheet();
-    $lastRow = $ws->getHighestDataRow();
+if (isset($_FILES[$fileExel]) && $_FILES[$fileExel]['error'] === UPLOAD_ERR_OK) { ///VALIDACION DE ARCHIVO
+    $archivo = $_FILES[$fileExel]['tmp_name']; ///ARCHIVO TEMPORAL
 
-    // 2) Leemos SOLO A:E (RFC, FECHA, OBSERVACIONES, TIPO, TIPO_FALTA)
-    $data = $ws->rangeToArray('A1:E' . $lastRow, null, true, true, true);
+    $spreadsheet = IOFactory::load($archivo); ///MANIPULACION DE ARCHIVO
+    $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
 
-    // Validar que existan columnas A..E en encabezado
-    $header = $data[1] ?? [];
-    $requeridas = ['A','B','C','D','E'];
-    $faltantes = array_diff($requeridas, array_keys($header));
-    if (!empty($faltantes)) {
-        respond(false, 'Encabezados incompletos: se requieren A..E', $inserted, $incidencias_insertadas, [
-            'faltantes' => array_values($faltantes),
-            'keys' => array_keys($header),
-        ]);
-    }
+    $numero_columnas = count($sheetData[1]); ///NUMERO DE COLUMNAS DEL ARCHIVO
+    $totalFilas = 1; ///NUMERO TOTAL DE FILAS DE REGISTROS
 
-    // 3) Insertar filas (desde la 2)
-    for ($r = 2; $r <= $lastRow; $r++) {
-        $row = $data[$r] ?? null;
-        if (!$row) continue;
+    if ($numero_columnas == 5) {///VALIDAR EL NUMERO DE EL NUMERO DE COLUMNAS COINCIDA
+        foreach ($sheetData as $row) {
+            if ($totalFilas != 1) {///VALIDACION PARA NO EJECUTAR ENCABEZADO Y TEXTO
+                $rfc = trim(pg_escape_string($row['A'])) ? trim(pg_escape_string($row['A'])) : null;//
+                $fecha = trim(pg_escape_string($row['B'])) ? trim(pg_escape_string($row['B'])) : null;//
+                $observaciones = trim(pg_escape_string($row['C'])) ? trim(pg_escape_string($row['C'])) : null;//
+                $tipo = trim(pg_escape_string($row['D'])) ? trim(pg_escape_string($row['D'])) : null;//
+                $tipo_falta = trim(pg_escape_string($row['E'])) ? trim(pg_escape_string($row['E'])) : null;//
 
-        $rfc           = isset($row['A']) ? trim($row['A']) : null;
-        $fecha         = isset($row['B']) ? trim($row['B']) : null;
-        $observaciones = isset($row['C']) ? trim($row['C']) : null;
-        $tipo          = isset($row['D']) ? trim($row['D']) : null;
-        $tipo_falta    = isset($row['E']) ? trim($row['E']) : null;
+                $bool = $faltaModelM->addInfoFaltaTemp(
+                    $rfc,
+                    $fecha,
+                    $observaciones,
+                    $tipo,
+                    $tipo_falta,
+                ) ? true : false;
 
-        // Saltar filas totalmente vacías
-        if (($rfc === '' || $rfc === null) &&
-            ($fecha === '' || $fecha === null) &&
-            ($observaciones === '' || $observaciones === null) &&
-            ($tipo === '' || $tipo === null) &&
-            ($tipo_falta === '' || $tipo_falta === null)) {
-            continue;
+                $message = $bool ? 'ok' : 'Error al insertar en tabla temporal -> volver a intentar';
+            }
+            $totalFilas++;
         }
 
-        $ok = $faltaModelM->addInfoFaltaTemp($rfc, $fecha, $observaciones, $tipo, $tipo_falta);
-        if (!$ok) {
-            respond(false, 'Error al insertar en tabla temporal en fila ' . $r, $inserted, $incidencias_insertadas, [
-                'row' => $row
-            ]);
+        if ($bool) {
+            $result = $faltaModelM->udpdateFaltas();
+            $bool = $result ? true : false;
+            $message = $result ? 'ok' : 'Error de actualizacion de faltas/incidencias -> volver a intentar';
         }
-        $inserted++;
+
+    } else {
+        $bool = false;
+        $message = 'Las columnas del archivo cargado no corresponden con las columnas del formato requerido.';
     }
-
-    if ($inserted === 0) {
-        respond(false, 'El archivo no contiene filas válidas para procesar (A:E).', 0, 0, []);
-    }
-
-    // 4) Ejecutar el proceso CTE -> inserta en ctrl_incidencias
-    $res = $faltaModelM->updateincidencias(); // (corrige el typo "SELEC..." adentro de este método)
-    if ($res === false) {
-        respond(false, 'Error al ejecutar updateincidencias()', $inserted, 0, []);
-    }
-    $incidencias_insertadas = pg_affected_rows($res);
-
-    // 5) Truncar temporal al final (solo si NO vamos a descargar verificación)
-   
-
-    // Respuesta OK; si autodescarga, enviamos la URL de verificación
-    $extra = [];
-    if ($autoDescarga) {
-        $extra['download_url'] = "../../../../App/Controllers/Central/Asistencias/Asistencias/tabla.php";
-    }
-
-    respond(true, 'ok', $inserted, $incidencias_insertadas, $extra);
-
-} catch (Throwable $e) {
-    respond(false, 'Excepción: ' . $e->getMessage(), $inserted, $incidencias_insertadas, []);
 }
 
-function respond($bool, $message, $inserted, $incidencias, $extra = [])
-{
-    if (ob_get_length()) { ob_clean(); }
-    header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(array_merge([
-        'bool' => (bool)$bool,
-        'message' => $message,
-        'insertados_temp' => (int)$inserted,
-        'incidencias_insertadas' => (int)$incidencias,
-    ], $extra), JSON_UNESCAPED_UNICODE);
-    exit;
-}
+
+$var = [
+    'bool' => $bool,
+    'message' => $message,
+];
+echo json_encode($var);

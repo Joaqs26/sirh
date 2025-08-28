@@ -51,10 +51,10 @@ if (isset($_FILES[$fileExel]) && $_FILES[$fileExel]['error'] === UPLOAD_ERR_OK) 
                     $id_usuario,
                    
                 ) ? true : false;
-  
+
                 $message = $bool ? 'ok' : 'Error al insertar en tabla temporal';
             }
-            $totalFilas++;  
+            $totalFilas++;
         }
 
        

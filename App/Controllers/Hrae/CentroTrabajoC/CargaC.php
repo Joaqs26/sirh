@@ -1,19 +1,7 @@
 <?php
-// No ejecutes nada si este archivo se incluye desde otro script
-if (defined('SKIP_CENTRO_TRABAJO_CARGA') && SKIP_CENTRO_TRABAJO_CARGA) {
-    $esAccesoDirecto = (basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME']));
-    if ($esAccesoDirecto) {
-        // Redirige a una vista conocida (ajusta la ruta si hace falta)
-        header("Location: ../../../View/Hraes/CentroTrabajo/index.php");
-        exit;
-    }
-    // Si fue incluido por otro PHP, simplemente no hagas nada
-    return;
-}
 include '../librerias.php';
 require '../../../../vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\IOFactory;
-
 
 $rowx = new row();
 $modelCentro = new modelCentroTrabajoHraes();
@@ -141,27 +129,16 @@ if (isset($_FILES[$fileExel]) && $_FILES[$fileExel]['error'] === UPLOAD_ERR_OK) 
 
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-// Solo si explícitamente lo piden y está habilitado
-if (isset($_GET['export']) && $_GET['export'] === '1') {
-    if (ob_get_length()) { ob_end_clean(); }
-    ini_set('zlib.output_compression', '0');
+$filename = 'datos_postgresql.xlsx';
 
-    $filename = 'datos_postestepay.xlsx';
-    $writer = new Xlsx($spreadsheet);
+// Crear un objeto Writer para guardar el archivo Excel en la salida directa
+$writer = new Xlsx($spreadsheet);
+header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+header('Content-Disposition: attachment;filename="' . $filename . '"');
+header('Cache-Control: max-age=0');
+$writer->save('php://output');
 
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment; filename="'.$filename.'"');
-    header('Cache-Control: private, max-age=0, must-revalidate');
-    header('Pragma: public');
-
-    $writer->save('php://output');
-    exit;
-}
-// NUNCA redirijas después de mandar binario; si necesitas navegar:
-header("Location: ../../../View/Central/Asistencias/index.php");
-          //C:\xampp\htdocs\sirh\App\View\Central\Asistencias\Asistencias\index.php
-
-exit;
+header("Location: ../../../View/Hraes/CentroTrabajo/index.php");
 
 function validateDateX($data) ////LA FUNCION VALIDA QUE NO VAYAN ELEMENTOS VACIOS
 {

@@ -36,11 +36,12 @@ function uniqueNoBiometrico() {
     });
 }
 
-function toggleContenido(id, visible) {
-  const el = document.getElementById(id);
-  if (!el) {
-    console.warn('[toggleContenido] No existe el elemento con id:', id);
-    return;
-  }
-  el.classList.toggle('d-none', !visible);
-}
+document.getElementById("id_cat_asistencia_estatus").addEventListener("change", function () {
+    let id_cat_asistencia_estatus = this.value;
+
+    if (id_cat_asistencia_estatus == idExcluido) {
+        mostrarContenido('id_estatus_is_div');
+    } else {
+        ocultarContenido('id_estatus_is_div');
+    }
+});
