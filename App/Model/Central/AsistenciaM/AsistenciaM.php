@@ -491,6 +491,7 @@ $q1 = pg_query("INSERT INTO central.reporte_faltas
     LEFT JOIN central.ctrl_telefono_hraes t
       ON t.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
     JOIN central.cat_retardo_estatus re
+<<<<<<< HEAD
       ON re.id_cat_retardo_estatus = f.id_cat_retardo_estatus   
     WHERE f.fecha::date NOT IN (SELECT fecha::date FROM central.cat_dias_festivos
 =======
@@ -498,6 +499,17 @@ $q1 = pg_query("INSERT INTO central.reporte_faltas
     pg_query("INSERT INTO central.reporte_faltas (
     rfc, nombre, movil, no_dispositivo, fecha, hora, cantidad, estatus
 >>>>>>> parent of a80646e0 (Merge branch 'console' into console-trejo)
+=======
+      ON re.id_cat_retardo_estatus = f.id_cat_retardo_estatus
+     WHERE NOT EXISTS (
+    SELECT 1
+    FROM central.ctrl_incidencias ci
+    WHERE ci.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+      AND ci.id_cat_incidencias IN (3,4,5,9,10,13) -- ajusta catálogo si aplica
+      AND ci.fecha_inicio IS NOT NULL
+      AND daterange(ci.fecha_inicio::date, COALESCE(ci.fecha_fin::date, ci.fecha_inicio::date), '[]')
+          @> f.fecha::date
+>>>>>>> parent of 2e54d4a3 (flatam-22)
 )
 SELECT 
     e.rfc,

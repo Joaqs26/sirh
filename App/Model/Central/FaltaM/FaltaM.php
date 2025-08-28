@@ -1188,6 +1188,7 @@ ORDER BY f.fecha DESC, f.hora DESC NULLS LAST;");
        return $query;
    }
 
+<<<<<<< HEAD
    public function idemail($id_empleado) {
        $query = pg_query("SELECT f.id_tbl_empleados_hraes
              FROM central.ctrl_faltas f
@@ -1198,4 +1199,6 @@ ORDER BY f.fecha DESC, f.hora DESC NULLS LAST;");
 
 =======
 >>>>>>> parent of a80646e0 (Merge branch 'console' into console-trejo)
+=======
+>>>>>>> parent of 2e54d4a3 (flatam-22)
 }

@@ -32,21 +32,21 @@
                         personal IMSS-BIENESTAR adscrito a oficinas centrales; me permito informarle lo siguiente:</p>
 
                     <p>
-                    <p>
-                      Con la finalidad de esclarecer su situación respecto a las incidencias de las que se tienen
-                      registro en la asistencia de su jornada laboral en la <strong>primera quincena de julio</strong>; para
-                      cualquier aclaración, deberá presentarse
-                      <span id="selector-fechas" class="selector-fechas">
-                        <input type="date" id="fecha1" class="date-input" aria-label="Fecha 1">
-                        <span id="conector" class="mx-1 d-none">y</span>
-                        <input type="date" id="fecha2" class="date-input" aria-label="Fecha 2 (opcional)">
-                        <span id="previewFechas" class="ml-2 text-muted">(elige una o dos fechas)</span>
-                      </span>;
-                      en la <strong>Oficina de Control de Asistencia</strong>, ubicada en Gustavo E. Campa No. 54, Colonia
-                      Guadalupe Inn, piso 3, a un costado de las escaleras de emergencia; en un horario de 9:00 a
-                      15:00 y de 17:00 a 19:00 horas. Cabe mencionar que <strong>son las únicas fechas para recepción y
-                      atención de las mismas</strong>.
-                    </p>
+ <p>
+  Con la finalidad de esclarecer su situación respecto a las incidencias de las que se tienen
+  registro en la asistencia de su jornada laboral en la <strong>primera quincena de julio</strong>; para
+  cualquier aclaración, deberá presentarse
+  <span id="selector-fechas" class="selector-fechas">
+    <input type="date" id="fecha1" class="date-input" aria-label="Fecha 1">
+    <span id="conector" class="mx-1 d-none">y</span>
+    <input type="date" id="fecha2" class="date-input" aria-label="Fecha 2 (opcional)">
+    <span id="previewFechas" class="ml-2 text-muted">(elige una o dos fechas)</span>
+  </span>;
+  en la <strong>Oficina de Control de Asistencia</strong>, ubicada en Gustavo E. Campa No. 54, Colonia
+  Guadalupe Inn, piso 3, a un costado de las escaleras de emergencia; en un horario de 9:00 a
+  15:00 y de 17:00 a 19:00 horas. Cabe mencionar que <strong>son las únicas fechas para recepción y
+  atención de las mismas</strong>.
+</p>
 
                    <p>Es importante que acuda con las incidencias que <strong>se hayan entregado en tiempo y
                             forma</strong>
