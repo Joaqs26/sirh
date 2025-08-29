@@ -572,4 +572,3 @@ public function selectFaltas($fecha_inicio, $fecha_fin)
 }
 
 }
-
