@@ -977,29 +977,6 @@ WHERE p.id_cat_incidencias IS NOT NULL
         return $query;
     }
 
-   public function showemail($id_empleado) {
-       $query = pg_query("SELECT 
-  ''::text AS puesto,
-  UPPER(e.nombre || ' ' || e.primer_apellido || ' ' || COALESCE(e.segundo_apellido, '')) AS nombre,
-  f.fecha::date AS fecha,
-  f.hora::time  AS hora,
-  UPPER(COALESCE(cre.descripcion, '')) AS estatus
-FROM central.ctrl_faltas f
-JOIN central.tbl_empleados_hraes e
-  ON e.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
-LEFT JOIN central.cat_retardo_estatus cre
-  ON cre.id_cat_retardo_estatus = f.id_cat_retardo_estatus
-WHERE f.id_tbl_empleados_hraes = $id_empleado
-ORDER BY f.fecha DESC, f.hora DESC NULLS LAST;");
-       return $query;
-   }
-
-   public function idemail($id_empleado) {
-       $query = pg_query("SELECT f.id_tbl_empleados_hraes
-             FROM central.ctrl_faltas f
-            WHERE f.id_ctrl_faltas = $id_empleado
-            LIMIT 1;");
-       return $query;
-   }
+  
 
 }
