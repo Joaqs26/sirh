@@ -1,15 +1,16 @@
 <?php
 header('Content-Type: application/json; charset=UTF-8');
 
-
 require_once dirname(__FILE__, 5) . '/conexion.php';
-
-
 require_once dirname(__FILE__, 4) . '/Model/Central/FaltaM/FaltaM.php';
 
 try {
     $idFalta    = isset($_POST['id_falta'])    ? (int)$_POST['id_falta']    : 0;
     $idEmpleado = isset($_POST['id_empleado']) ? (int)$_POST['id_empleado'] : 0;
+
+    // Fechas del filtro (encabezado)
+    $desde = isset($_POST['desde']) ? trim($_POST['desde']) : '';
+    $hasta = isset($_POST['hasta']) ? trim($_POST['hasta']) : '';
 
     if ($idEmpleado <= 0 && $idFalta <= 0) {
         echo json_encode(['ok' => false, 'msg' => 'Falta id_empleado o id_falta']);
@@ -18,9 +19,9 @@ try {
 
     $model = new FaltaModelM();
 
-    // Si solo llega id_falta, resolver id_empleado con el modelo
+    // Resolver empleado si vino id_falta
     if ($idEmpleado <= 0) {
-        $resEmp = $model->idemail($idFalta); 
+        $resEmp = $model->idemail($idFalta);
         if (!$resEmp || pg_num_rows($resEmp) === 0) {
             echo json_encode(['ok' => false, 'msg' => 'Falta no encontrada']);
             exit;
@@ -29,8 +30,13 @@ try {
         $idEmpleado = (int)$rowEmp[0];
     }
 
-    // Traer faltas del empleado
-    $res = $model->showemail($idEmpleado); 
+    // Normalizar orden del rango
+    if ($desde !== '' && $hasta !== '' && $hasta < $desde) {
+        $tmp = $desde; $desde = $hasta; $hasta = $tmp;
+    }
+
+    // Llamar SIEMPRE con 3 argumentos (tu método los espera)
+    $res = $model->showemail($idEmpleado, $desde, $hasta);
     if ($res === false) {
         echo json_encode(['ok' => false, 'msg' => 'Error en consulta']);
         exit;

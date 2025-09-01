@@ -2,6 +2,8 @@
 const BASE = window.location.origin + '/sirh';
 const URL_FALTAS_EMAIL = BASE + '/App/Controllers/Central/FaltaC/faltas_email.php';
 
+
+
 function fmtDDMMYYYY(isoDate){
   if(!isoDate) return '';
   const [y,m,d] = isoDate.split('-');
@@ -111,20 +113,30 @@ function ajaxErrorFaltasEmail(xhr){
     `<tr><td colspan="5" style="padding:10px;border:1px solid #ddd;text-align:center;color:#c00;">Error al cargar</td></tr>`;
 }
 
+let _ctxMail = { idEmpleado: null, idFalta: null };
+
+function getRangoFiltroFechas() {
+  const desde = document.getElementById('filtro_desde')?.value || '';
+  const hasta = document.getElementById('filtro_hasta')?.value || '';
+  return { desde, hasta };
+}
+
 
 function showMail(idFalta) {
+  _ctxMail = { idEmpleado: null, idFalta: Number(idFalta) };
   const tbody = document.getElementById('tbodyFaltasEmail');
   if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="padding:10px;border:1px solid #ddd;text-align:center;">Cargando...</td></tr>`;
   $('#modal_mail').modal('show');
 
 
-  ensureSelectorFechasInit();
+   ensureSelectorFechasInit();
+    const { desde, hasta } = getRangoFiltroFechas();
 
   $.ajax({
     url: URL_FALTAS_EMAIL,
     type: 'POST',
     dataType: 'json',
-    data: { id_falta: Number(idFalta) },
+    data: { id_falta: Number(idFalta), desde, hasta },
     success: renderFaltasEmail,
     error: ajaxErrorFaltasEmail
   });
@@ -132,19 +144,48 @@ function showMail(idFalta) {
 
 
 function showMailEmpleado(idEmpleado) {
+  _ctxMail = { idEmpleado: Number(idEmpleado), idFalta: null };
   const tbody = document.getElementById('tbodyFaltasEmail');
   if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="padding:10px;border:1px solid #ddd;text-align:center;">Cargando...</td></tr>`;
   $('#modal_mail').modal('show');
+
+  ensureSelectorFechasInit();
+
+  const { desde, hasta } = getRangoFiltroFechas();
 
   $.ajax({
     url: URL_FALTAS_EMAIL,
     type: 'POST',
     dataType: 'json',
-    data: { id_empleado: Number(idEmpleado) },
+    data: { id_empleado: Number(idEmpleado), desde, hasta },
     success: renderFaltasEmail,
     error: ajaxErrorFaltasEmail
   });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('btnFiltrarFaltas');
+  if (!btn) return;
+
+btn.addEventListener('click', () => {
+    const { desde, hasta } = getRangoFiltroFechas();
+    const tb = document.getElementById('tbodyFaltasEmail');
+    if (tb) tb.innerHTML = `<tr><td colspan="5" style="padding:10px;border:1px solid #ddd;text-align:center;">Cargando...</td></tr>`;
+
+    const payload = { desde, hasta };
+    if (_ctxMail.idEmpleado) payload.id_empleado = _ctxMail.idEmpleado;
+    if (_ctxMail.idFalta)    payload.id_falta    = _ctxMail.idFalta;
+
+    $.ajax({
+      url: URL_FALTAS_EMAIL,
+      type: 'POST',
+      dataType: 'json',
+      data: payload,
+      success: renderFaltasEmail,
+      error: ajaxErrorFaltasEmail
+    });
+  });
+});
 
 const MESES_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 

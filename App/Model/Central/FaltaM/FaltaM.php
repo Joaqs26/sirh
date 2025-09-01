@@ -976,7 +976,53 @@ WHERE p.id_cat_incidencias IS NOT NULL
   );");
         return $query;
     }
+ 
+    public function showemail($id_empleado, $fecha_inicio = '', $fecha_fin = '') {
+    $id = (int)$id_empleado;
+    $f1 = trim((string)$fecha_inicio);
+    $f2 = trim((string)$fecha_fin);
 
-  
+    // sanitizar si llegan
+    $f1 = $f1 !== '' ? pg_escape_string($f1) : '';
+    $f2 = $f2 !== '' ? pg_escape_string($f2) : '';
+
+    $extra = '';
+    if ($f1 !== '' && $f2 !== '') {
+        // BETWEEN cerrado
+        $extra = " AND f.fecha::date BETWEEN '$f1'::date AND '$f2'::date ";
+    } elseif ($f1 !== '') {
+        $extra = " AND f.fecha::date >= '$f1'::date ";
+    } elseif ($f2 !== '') {
+        $extra = " AND f.fecha::date <= '$f2'::date ";
+    }
+
+    $sql = "SELECT 
+      ''::text AS puesto,
+      UPPER(e.nombre || ' ' || e.primer_apellido || ' ' || COALESCE(e.segundo_apellido, '')) AS nombre,
+      f.fecha::date AS fecha,
+      f.hora::time  AS hora,
+      UPPER(COALESCE(cre.descripcion, '')) AS estatus
+    FROM central.ctrl_faltas f
+    JOIN central.tbl_empleados_hraes e
+      ON e.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+    LEFT JOIN central.cat_retardo_estatus cre
+      ON cre.id_cat_retardo_estatus = f.id_cat_retardo_estatus
+    WHERE f.id_tbl_empleados_hraes = $id
+      $extra
+    ORDER BY f.fecha DESC, f.hora DESC NULLS LAST;";
+
+    return pg_query($sql);
+}
+
+
+   public function idemail($id_empleado) {
+       $query = pg_query("SELECT f.id_tbl_empleados_hraes
+             FROM central.ctrl_faltas f
+            WHERE f.id_ctrl_faltas = $id_empleado
+            LIMIT 1;");
+       return $query;
+   }
 
 }
+  
+

@@ -19,11 +19,23 @@
                     </div>
                 </div>
             </div>
-
-            <div id="correoContenido">
-                <div class="div-spacing"></div>
-                <div class="card-body"
-                    style="font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; text-align: justify; padding: 30px;">
+   <!-- Filtro de rango de fechas para faltas de empleado-->
+           <div class="w-100 d-flex align-items-center justify-content-center flex-wrap" style="gap:.5rem;">
+  <div class="d-flex align-items-center flex-wrap" style="gap:.5rem;">
+    <span id="rango-fechas-filtro" class="selector-fechas">
+      <input type="date" id="filtro_desde" class="date-input" aria-label="Desde">
+      <span class="mx-1">hasta</span>
+      <input type="date" id="filtro_hasta" class="date-input" aria-label="Hasta (opcional)">
+      <button type="button" class="btn btn-success btn-sm ml-2" id="btnFiltrarFaltas">
+        <i class="fa fa-search"></i> Buscar
+      </button>
+    </span>
+  </div>
+</div>
+                 <div id="correoContenido">
+  <div class="div-spacing"></div>
+  <div class="card-body"
+       style="font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; text-align: justify; padding: 30px;">
 
                     <p><strong>Referente a la circular <span
                                 style="font-weight:bold;">UAF-CRH-6065-2024</span>,</strong>
@@ -55,7 +67,7 @@
                     <div style="overflow-x: auto;">
                         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
                             <thead>
-                                <tr style="background-color: #28a745;">
+                                <tr style="background-color: #13322b;">
                                     <th style="color: white; font-weight: bold; padding: 10px; border: 1px solid #ddd;">
                                         PUESTO</th>
                                     <th style="color: white; font-weight: bold; padding: 10px; border: 1px solid #ddd;">
@@ -93,5 +105,7 @@
             </div>
         </div>
     </div>
+</div> 
+ </div>
 </div>
 <script src="/sirh/js/Ib/Asistencias/Falta/Mail.js"></script>
