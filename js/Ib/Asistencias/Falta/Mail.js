@@ -48,111 +48,111 @@
   }
 
   // ===== Copiar HTML robusto (HTTPS AsyncClipboard -> DIV contenteditable -> textarea) =====
-  function copiarHtmlRobusto(html) {
-    const isSecure =
-      location.protocol === 'https:' ||
-      location.hostname === 'localhost' ||
-      location.hostname === '127.0.0.1';
+  function copyHtmlToClipboard(html) {
+  // aseguramos foco en el documento
+  if (document.activeElement) document.activeElement.blur();
 
-    const tryAsyncClipboard = async () => {
-      if (!isSecure || !navigator.clipboard || !window.ClipboardItem) {
-        throw new Error('AsyncClipboard no disponible');
+  const el = document.createElement('div');
+  el.contentEditable = 'true';
+  el.style.position = 'fixed';
+  el.style.left = '-9999px';
+  el.style.top = '0';
+  // importante: innerHTML para conservar FORMATO
+  el.innerHTML = html;
+  document.body.appendChild(el);
+
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+
+  let ok = false;
+  try {
+    ok = document.execCommand('copy');
+  } catch (e) {
+    ok = false;
+  }
+
+  sel.removeAllRanges();
+  document.body.removeChild(el);
+  return ok;
+}
+
+function ocultarModalEmail2() {
+  const cont = document.getElementById('correoContenido');
+  if (!cont) {
+    alert('No se encontró #correoContenido');
+    return;
+  }
+
+  // clonar y sustituir el selector de fechas por la frase
+  const clone = cont.cloneNode(true);
+  const selector = clone.querySelector('#selector-fechas');
+  if (selector) selector.outerHTML = construirFraseFechas();
+  const prev = clone.querySelector('#previewFechas');
+  if (prev) prev.remove();
+
+  const html = `
+<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#fff;">
+  <div style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.6;color:#1f2d3d;">
+    ${clone.innerHTML}
+  </div>
+</body></html>`.trim();
+
+  // 1) Intento API moderna SOLO si está disponible y en contexto seguro
+  if (window.isSecureContext && navigator.clipboard && window.ClipboardItem) {
+    const item = new ClipboardItem({
+      'text/html': new Blob([html], { type: 'text/html' }),
+      'text/plain': new Blob([
+        html.replace(/<style[\s\S]*?<\/style>/gi, '')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+      ], { type: 'text/plain' })
+    });
+
+    navigator.clipboard.write([item]).then(() => {
+      if (window.notyf) notyf.success('Contenido copiado con formato');
+      $('#modal_mail').modal('hide');
+    }).catch(() => {
+      // 2) Fallback con formato
+      const ok = copyHtmlToClipboard(html);
+      if (ok) {
+        if (window.notyf) notyf.success('Contenido copiado');
+        $('#modal_mail').modal('hide');
+      } else {
+        if (window.notyf) notyf.error('No se pudo copiar');
       }
-      const data = new ClipboardItem({
-        'text/html': new Blob([html], { type: 'text/html' }),
-        'text/plain': new Blob(
-          [
-            html
-              .replace(/<style[\s\S]*?<\/style>/gi, '')
-              .replace(/<[^>]+>/g, ' ')
-              .replace(/\s+/g, ' ')
-              .trim(),
-          ],
-          { type: 'text/plain' }
-        ),
-      });
-      await navigator.clipboard.write([data]);
-    };
+    });
+    return;
+  }
 
-    const trySelectDiv = () => {
-      const holder = document.createElement('div');
-      holder.setAttribute('contenteditable', 'true');
-      holder.style.position = 'fixed';
-      holder.style.left = '-9999px';
-      holder.style.top = '0';
-      holder.style.opacity = '0';
-      holder.innerHTML = html;
-      document.body.appendChild(holder);
-
-      const range = document.createRange();
-      range.selectNodeContents(holder);
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-
-      const ok = document.execCommand('copy');
-      sel.removeAllRanges();
-      holder.remove();
-      if (!ok) throw new Error('execCommand(copy) falló en DIV');
-    };
-
-    const tryTextarea = () => {
+  // 2) Producción (tu caso): usar SIEMPRE fallback con formato
+  const ok = copyHtmlToClipboard(html);
+  if (ok) {
+    if (window.notyf) notyf.success('Contenido copiado');
+    $('#modal_mail').modal('hide');
+  } else {
+    // 3) Último recurso: copiar como texto plano (sin formato)
+    try {
       const ta = document.createElement('textarea');
       ta.value = html;
       ta.style.position = 'fixed';
       ta.style.left = '-9999px';
       document.body.appendChild(ta);
-      ta.focus();
       ta.select();
-      const ok = document.execCommand('copy');
-      ta.remove();
-      if (!ok) throw new Error('execCommand(copy) falló en TEXTAREA');
-    };
-
-    return (async () => {
-      try {
-        await tryAsyncClipboard();
-        return true;
-      } catch (e1) {
-        try {
-          trySelectDiv();
-          return true;
-        } catch (e2) {
-          try {
-            tryTextarea();
-            return true;
-          } catch (e3) {
-            console.warn('Todos los métodos de copiado fallaron:', e1, e2, e3);
-            return false;
-          }
-        }
-      }
-    })();
-  }
-
-  // ===== Acción del botón "Copiar" =====
-  async function ocultarModalEmail2() {
-    try {
-      const html = construirHTMLCorreo();
-
-      // Evita el warning "aria-hidden con foco"
-      if (document.activeElement && typeof document.activeElement.blur === 'function') {
-        document.activeElement.blur();
-      }
-
-      const ok = await copiarHtmlRobusto(html);
-      if (ok) {
-        window.notyf ? notyf.success('Contenido copiado con éxito') : alert('Copiado');
-        $('#modal_mail').modal('hide'); // cerrar sólo cuando copió
-      } else {
-        window.notyf ? notyf.error('No se pudo copiar. Usa Ctrl+C manual') : alert('No se pudo copiar');
-      }
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      if (window.notyf) notyf.success('Contenido copiado (texto)');
+      $('#modal_mail').modal('hide');
     } catch (err) {
+      if (window.notyf) notyf.error('Error al copiar');
       console.error('Error al copiar:', err);
-      window.notyf ? notyf.error('Error al copiar') : alert('Error al copiar');
     }
   }
-
+}
   // ===== Render/errores de la tabla =====
   function renderFaltasEmail(resp) {
     const tb = document.getElementById('tbodyFaltasEmail');
