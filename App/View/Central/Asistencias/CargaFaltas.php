@@ -88,7 +88,4 @@
     </div>
   </div>
 </div>
-<!-- tus scripts (ajusta rutas reales)-->
-<script src="/path/jquery.min.js"></script>
-<script src="/path/bootstrap.bundle.min.js"></script>
-<script src="/path/MasivoFaltas.js" defer></script> 
+

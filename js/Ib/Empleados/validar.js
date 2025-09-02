@@ -46,7 +46,7 @@ function validarUnique(rfc,curp,numEmpleado,id_object){
         id_object:id_object
     },
         function (data) {
-            console.log(data);
+            
             let jsonData = JSON.parse(data);//se obtiene el json
             let bool = jsonData.bool; 
             let message = jsonData.message;
@@ -88,7 +88,7 @@ document.getElementById("id_cat_pais_nacimiento").addEventListener("change", fun
         id_cat_pais_nacimiento: id_cat_pais_nacimiento,
     },
         function (data) {
-            console.log(data);
+            
             let jsonData = JSON.parse(data);
             let estado = jsonData.estado; 
 
@@ -110,7 +110,7 @@ document.getElementById("id_cat_pais_nacimiento").addEventListener("change", fun
             id_cat_pais_nacimiento: select.value,
         },
             function (data) {
-                console.log(data);
+                
                 let jsonData = JSON.parse(data);
                 let estado = jsonData.estado; 
     

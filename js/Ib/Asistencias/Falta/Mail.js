@@ -15,7 +15,7 @@ function fmtHHMM(hhmmss){
 }
 
 
-function ocultarModalEmail() {
+function ocultarModalEmail2() {
   const cont = document.getElementById('correoContenido');
   if (!cont) {
     alert('No se encontró #correoContenido');
@@ -51,7 +51,7 @@ function ocultarModalEmail() {
         'text/plain': new Blob([html.replace(/<style[\s\S]*?<\/style>/gi, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()], { type: 'text/plain' })
       });
       navigator.clipboard.write([data]).then(() => {
-        window.notyf ? notyf.success('Contenido con formato copiado') : alert('Copiado');
+        window.notyf ? notyf.success('Contenido copiado con éxito') : alert('Copiado');
         $("#modal_mail").modal("hide");
       }).catch(err => {
         console.error(err);
@@ -77,7 +77,7 @@ function ocultarModalEmail() {
 
 
 function renderFaltasEmail(resp){
-  console.log('RESP faltas_email:', resp);
+  
   const tb = document.getElementById('tbodyFaltasEmail');
   if (!tb) return;
 

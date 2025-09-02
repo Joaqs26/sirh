@@ -59,7 +59,7 @@ function agregarEditarDetalles(id_object) { //SE OBTIENEN INFO DE ID SELECCIONAD
         id_tbl_centro_trabajo_hraes: id_tbl_centro_trabajo_hraes
     },
         function (data) {
-            console.log(data);
+            
             let jsonData = JSON.parse(data);//se obtiene el json
             let entity = jsonData.entity; //Se agrega a emtidad 
             let plazas = jsonData.plazas;
@@ -169,7 +169,7 @@ function agregarEditarByDb() {
         fecha_fin: $("#is_fecha_fin").val(),
     },
         function (data) {
-            console.log(data);
+            
             if (data == 'edit') {
                 notyf.success('Plaza modificada con éxito');
             } else if (data == 'add') {
@@ -209,7 +209,7 @@ function eliminarEntity(id_object) {
                 id_object: id_object
             },
                 function (data) {
-                    console.log(data);
+                    
                     if (data == 'delete') {
                         notyf.success('Plaza eliminada con éxito');
                     } else {
@@ -239,7 +239,7 @@ function buscarInfoCentroTrabajo() {
             id_tbl_centro_trabajo_hraes: id_tbl_centro_trabajo_hraes,
         },
             function (data) {
-                console.log(data);
+                
                 let jsonData = JSON.parse(data);//se obtiene el json
 
                 clvResult.textContent = jsonData.clave;
@@ -261,7 +261,7 @@ function detallesPlazaModal(id_tbl_control_plazas_hraes) {
         id_tbl_control_plazas_hraes: id_tbl_control_plazas_hraes,
     },
         function (data) {   
-            console.log(data);
+            
             let jsonData = JSON.parse(data);//se obtiene el json
             let entity = jsonData.entity;
             let empleado = jsonData.empleado;

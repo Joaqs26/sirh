@@ -156,7 +156,7 @@ function actualizarRetardo() {//ELIMINAR USUARIO
         $.post("../../../../App/Controllers/Central/RetardoC/ActualizarC.php", {
             },
             function (data) {
-                console.log(data);
+                
                 if (data){
                     notyf.success('Proceso realizado con éxito')
                 } else {

@@ -37,7 +37,7 @@ function agregarEditarFalta(id_object) {
         id_object: id_object
     },
         function (data) {
-            console.log(data);
+            
             let jsonData = JSON.parse(data);
             let entity = jsonData.response;
             let faltaEstatus = jsonData.faltaEstatus;

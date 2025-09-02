@@ -1,8 +1,8 @@
 // Confirmar que el JS está cargado y que se detecta el clic
 $(document).ready(function () {
-    console.log("✅ truncateday.js cargado correctamente");
+   
     $('#truncatetableday').on('click', function () {
-        console.log("🟢 Botón clic detectado");
+       
         truncatetableday();
     });
 });
@@ -41,7 +41,7 @@ function truncatetableday() {
                 type: "POST",
                 data: { fecha: fecha },
                 success: function (response) {
-                    console.log("✅ Respuesta del servidor:", response);
+                   
                     try {
                         let result = JSON.parse(response);
                         Swal.fire("✅ Listo", result.message, "success");

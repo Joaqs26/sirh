@@ -71,6 +71,4 @@
         </div>
     </div>
 </div>
- <script src="/path/jquery.min.js"></script>
-<script src="/path/bootstrap.bundle.min.js"></script>
-<script src="/path/MasivoFaltas.js" defer></script>
+

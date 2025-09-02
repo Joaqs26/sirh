@@ -33,7 +33,7 @@ $id_rol = $_SESSION['id_rol'];
     <script src="../../../../assets/jquery/jquery-351.js"></script>
 
     <script src="../../../../js/Mensajes/mensajes.js"></script>
-    <script src="../../../../js/Mensajes/mensajes.js"></script>
+    
     <script src="../../../../js/Global/Curp/ValidarCurp.js"></script>
     <script src="../../../../js/Global/Mensajes/Mensajes.js"></script>
     <script src="../../../../js/Global/Seguridad/Confirmacion.js"></script>
@@ -61,6 +61,7 @@ $id_rol = $_SESSION['id_rol'];
     </style>
 
 </head>
+
 
 <body>
 
@@ -215,54 +216,102 @@ $id_rol = $_SESSION['id_rol'];
     <!-- FIN MODAL MODIFICAR PW -->
     <input type="hidden" id="id_user" value="<?php echo $id_user ?>">
     <input type="hidden" id="pw">
-    <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
-        aria-hidden="true" id="modificar_pw">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header background-modal">
-                    <h5 class="modal-title  text-modal-tittle">
-                        Actualizar contraseña</h5>
-                </div>
+   <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+     aria-hidden="true" id="modificar_pw">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header background-modal">
+        <h5 class="modal-title text-modal-tittle">Actualizar contraseña</h5>
+      </div>
 
-                <div class="card-body">
-                    <div class="container">
-                        <div class="row">
-                            <div class="div-spacing"></div>
-                            <div class="col-12">
-                                <label class="text-input-form div-spacing text-input-rem">Contraseña
-                                    anterior</label><label class="text-required">*</label>
-                                <input type="password" class="form-control" id="pw_anterior"
-                                    placeholder="Contraseña anterior">
-                            </div>
-                            <div class="div-spacing"></div>
-                            <div class="col-12">
-                                <label class="text-input-form div-spacing text-input-rem">Nueva contraseña</label><label
-                                    class="text-required">*</label>
-                                <input type="password" class="form-control" id="pw_nueva"
-                                    placeholder="Nueva contraseña">
-                            </div>
-                            <div class="div-spacing"></div>
-                            <div class="col-12">
-                                <label class="text-input-form div-spacing text-input-rem">Confirmar
-                                    contraseña</label><label class="text-required">*</label>
-                                <input type="password" class="form-control" id="pw_confirmar"
-                                    placeholder="Confirmar contraseña">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+      <div class="card-body">
+        <div class="container">
+          <div class="row">
+            <div class="div-spacing"></div>
 
-                <div class="div-spacing"></div>
-                <div class="modal-footer">
-                    <button onclick="modalEditPwExit();" type="button" class="btn btn-secondary" data-dismiss="modal"><i
-                            class="fas fa-times"></i> Cancelar</button>
-                    <button type="button" class="btn btn-success save-botton-modal" onclick="return validarPW();"><i
-                            class="fas fa-save"></i> Guardar</button>
-                </div>
+            <!-- FORM empieza aquí -->
+            <form id="form_pw" action="#" method="post" onsubmit="return validarPW();" autocomplete="off" class="w-100">
 
-            </div>
+              <!-- Username “oculto visualmente” para accesibilidad/autocompletado -->
+              <div class="visually-hidden">
+                <label for="pw_username">Usuario</label>
+                <input
+                  type="text"
+                  id="pw_username"
+                  name="username"
+                  autocomplete="username"
+                  value="<?php echo htmlspecialchars($nick ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                  readonly
+                >
+              </div>
+
+              <div class="col-12">
+                <label class="text-input-form div-spacing text-input-rem">Contraseña anterior</label>
+                <label class="text-required">*</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="pw_anterior"
+                  name="current_password"
+                  placeholder="Contraseña anterior"
+                  autocomplete="current-password"
+                  required
+                >
+              </div>
+
+              <div class="div-spacing"></div>
+
+              <div class="col-12">
+                <label class="text-input-form div-spacing text-input-rem">Nueva contraseña</label>
+                <label class="text-required">*</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="pw_nueva"
+                  name="new_password"
+                  placeholder="Nueva contraseña"
+                  autocomplete="new-password"
+                  required
+                >
+              </div>
+
+              <div class="div-spacing"></div>
+
+              <div class="col-12">
+                <label class="text-input-form div-spacing text-input-rem">Confirmar contraseña</label>
+                <label class="text-required">*</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="pw_confirmar"
+                  name="confirm_password"
+                  placeholder="Confirmar contraseña"
+                  autocomplete="new-password"
+                  required
+                >
+              </div>
+
+              <div class="div-spacing"></div>
+
+              <div class="modal-footer">
+                <button onclick="modalEditPwExit();" type="button" class="btn btn-secondary" data-dismiss="modal">
+                  <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button type="submit" class="btn btn-success save-botton-modal">
+                  <i class="fas fa-save"></i> Guardar
+                </button>
+              </div>
+
+            </form>
+            <!-- FORM termina aquí -->
+
+          </div>
         </div>
+      </div>
+
     </div>
+  </div>
+</div>
 
 
 

@@ -96,8 +96,6 @@
 </div>
 
 
-
-
 <?php include '../../librerias.php' ?>
 <?php include 'Carga.php' ?>
 <?php include 'email.php' ?>
@@ -105,32 +103,21 @@
 <?php include 'ModalUsuario.php' ?>
 
 
-
 <script src="../../../../js/Ib/Asistencias/Reporte/Reporte.js"></script>
 
 <script src="../../../../js/Ib/Asistencias/Asistencias/Listado.js"></script>
 <script src="../../../../js/Ib/Asistencias/Asistencias/Busqueda.js"></script>
 <script src="../../../../js/Ib/Asistencias/Asistencias/truncate.js"></script>
+<script src="../../../../js/Ib/Asistencias/Asistencias/truncateday.js"></script>
 
 <script src="../../../../js/Ib/Asistencias/Falta/Listado.js"></script>
 <script src="../../../../js/Ib/Asistencias/Falta/Busqueda.js"></script>
 <script src="../../../../js/Ib/Asistencias/Falta/Masivo.js"></script>
-<script src="../../../../js/Ib/Asistencias/Falta/Mail.js"></script>
 
 
 <script src="../../../../js/Ib/Asistencias/Retardos/Listado.js"></script>
 <script src="../../../../js/Ib/Asistencias/Retardos/Busqueda.js"></script>
 
-
 <script src="../../../../js/Ib/Asistencias/Inicio.js"></script>
 <script src="../../../../js/Ib/Asistencias/Carga.js"></script>
-<script src="../../../../js/Ib/Asistencias/Asistencias/truncate.js"></script>
 
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-<script src="../../../../js/Ib/Asistencias/Asistencias/truncateday.js"></script>

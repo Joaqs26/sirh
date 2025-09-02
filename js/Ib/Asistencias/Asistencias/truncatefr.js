@@ -1,6 +1,5 @@
 $(document).ready(function () {
-    console.log("Script truncate.js cargado correctamente");
-
+   
     $("#truncatetablefr").click(function () {
         truncatetablefr();
     });

@@ -98,7 +98,7 @@
 
                 <div class="div-spacing"></div>
                 <div class="modal-footer" style="justify-content: center;">
-                    <button onclick="ocultarModalEmail();" type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <button onclick="ocultarModalEmail2();" type="button" class="btn btn-secondary" data-dismiss="modal">
                         <i class="fa fa-check"></i> Copiar
                     </button>
                 </div>

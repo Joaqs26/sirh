@@ -1,6 +1,5 @@
 $(document).ready(function () {
-    console.log("Script truncate.js cargado correctamente");
-
+    
     $("#truncatetable").click(function () {
         truncatetable();
     });
@@ -13,7 +12,7 @@ function truncatetable() {
             url: "../../../../App/Controllers/Central/AsistenciaC/truncate.php",
             type: "POST",
             success: function (response) {
-                console.log("✅ Respuesta del servidor:", response);
+               
                 let result = JSON.parse(response);
                 alert(result.message);
             },
