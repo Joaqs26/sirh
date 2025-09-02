@@ -98,14 +98,15 @@
 
                 <div class="div-spacing"></div>
                 <div class="modal-footer" style="justify-content: center;">
-                    <button onclick="ocultarModalEmail2();" type="button" class="btn btn-secondary" data-dismiss="modal">
-                        <i class="fa fa-check"></i> Copiar
-                    </button>
-                </div>
+  <button onclick="ocultarModalEmail2();" type="button" class="btn btn-secondary">
+    <i class="fa fa-check"></i> Copiar
+  </button>
+</div>
+
             </div>
         </div>
     </div>
-</div> 
- </div>
+
+
 </div>
 <script src="/sirh/js/Ib/Asistencias/Falta/Mail.js"></script>
