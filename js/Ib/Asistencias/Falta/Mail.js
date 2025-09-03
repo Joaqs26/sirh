@@ -79,6 +79,7 @@
   return ok;
 }
 
+// ===== Copiar HTML robusto (compatible con Debian/Windows) =====
 function ocultarModalEmail2() {
   const cont = document.getElementById('correoContenido');
   if (!cont) {
@@ -101,56 +102,120 @@ function ocultarModalEmail2() {
   </div>
 </body></html>`.trim();
 
-  // 1) Intento API moderna SOLO si está disponible y en contexto seguro
-  if (window.isSecureContext && navigator.clipboard && window.ClipboardItem) {
-    const item = new ClipboardItem({
-      'text/html': new Blob([html], { type: 'text/html' }),
-      'text/plain': new Blob([
-        html.replace(/<style[\s\S]*?<\/style>/gi, '')
-            .replace(/<[^>]+>/g, ' ')
-            .replace(/\s+/g, ' ')
-            .trim()
-      ], { type: 'text/plain' })
-    });
+  // Texto plano alternativo
+  const plainText = html
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 
-    navigator.clipboard.write([item]).then(() => {
-      if (window.notyf) notyf.success('Contenido copiado con formato');
-      $('#modal_mail').modal('hide');
-    }).catch(() => {
-      // 2) Fallback con formato
-      const ok = copyHtmlToClipboard(html);
-      if (ok) {
+  // 1) Intento con API moderna async (si está disponible)
+  if (navigator.clipboard && window.ClipboardItem) {
+    try {
+      const htmlBlob = new Blob([html], { type: 'text/html' });
+      const textBlob = new Blob([plainText], { type: 'text/plain' });
+      
+      const data = [
+        new ClipboardItem({
+          'text/html': htmlBlob,
+          'text/plain': textBlob
+        })
+      ];
+      
+      navigator.clipboard.write(data).then(() => {
+        if (window.notyf) notyf.success('Contenido copiado con formato');
+        $('#modal_mail').modal('hide');
+      }).catch(async (err) => {
+        console.warn('Clipboard API failed, trying fallback:', err);
+        // Fallback a método sincrónico
+        if (fallbackCopy(html)) {
+          if (window.notyf) notyf.success('Contenido copiado');
+          $('#modal_mail').modal('hide');
+        } else {
+          throw new Error('Fallback also failed');
+        }
+      });
+    } catch (err) {
+      console.warn('ClipboardItem failed, trying fallback:', err);
+      if (fallbackCopy(html)) {
         if (window.notyf) notyf.success('Contenido copiado');
         $('#modal_mail').modal('hide');
       } else {
-        if (window.notyf) notyf.error('No se pudo copiar');
+        if (window.notyf) notyf.error('No se pudo copiar el contenido');
       }
-    });
+    }
     return;
   }
 
-  // 2) Producción (tu caso): usar SIEMPRE fallback con formato
-  const ok = copyHtmlToClipboard(html);
-  if (ok) {
+  // 2) Método fallback para navegadores más antiguos
+  if (fallbackCopy(html)) {
     if (window.notyf) notyf.success('Contenido copiado');
     $('#modal_mail').modal('hide');
   } else {
-    // 3) Último recurso: copiar como texto plano (sin formato)
-    try {
-      const ta = document.createElement('textarea');
-      ta.value = html;
-      ta.style.position = 'fixed';
-      ta.style.left = '-9999px';
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      if (window.notyf) notyf.success('Contenido copiado (texto)');
+    // 3) Último recurso: copiar como texto plano
+    copyPlainText(plainText);
+  }
+}
+
+// Función auxiliar para copiado fallback
+function fallbackCopy(html) {
+  try {
+    // Crear elemento editable temporal
+    const tempElement = document.createElement('div');
+    tempElement.contentEditable = 'true';
+    tempElement.style.position = 'fixed';
+    tempElement.style.left = '-9999px';
+    tempElement.style.top = '0';
+    tempElement.innerHTML = html;
+    document.body.appendChild(tempElement);
+
+    // Seleccionar contenido
+    const range = document.createRange();
+    range.selectNodeContents(tempElement);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    // Intentar copiar
+    const success = document.execCommand('copy');
+    
+    // Limpiar
+    selection.removeAllRanges();
+    document.body.removeChild(tempElement);
+    
+    return success;
+  } catch (err) {
+    console.error('Fallback copy failed:', err);
+    return false;
+  }
+}
+
+// Función para copiar texto plano
+function copyPlainText(text) {
+  try {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-9999px';
+    textArea.style.top = '0';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    const success = document.execCommand('copy');
+    document.body.removeChild(textArea);
+    
+    if (success) {
+      if (window.notyf) notyf.success('Contenido copiado (solo texto)');
       $('#modal_mail').modal('hide');
-    } catch (err) {
+    } else {
       if (window.notyf) notyf.error('Error al copiar');
-      console.error('Error al copiar:', err);
     }
+    return success;
+  } catch (err) {
+    console.error('Plain text copy failed:', err);
+    if (window.notyf) notyf.error('Error crítico al copiar');
+    return false;
   }
 }
   // ===== Render/errores de la tabla =====

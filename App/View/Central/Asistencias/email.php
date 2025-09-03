@@ -1,6 +1,6 @@
 <!-- MODALE_UPLOAD_FALTA -->
 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
-    aria-hidden="true" id="modal_mail">
+    id="modal_mail">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header background-modal">
@@ -98,9 +98,10 @@
 
                 <div class="div-spacing"></div>
                 <div class="modal-footer" style="justify-content: center;">
-  <button onclick="ocultarModalEmail2();" type="button" class="btn btn-secondary">
-    <i class="fa fa-check"></i> Copiar
-  </button>
+  <button type="button" class="btn btn-secondary" onclick="ocultarModalEmail2()">
+  <i class="fa fa-check"></i> Copiar
+</button>
+
 </div>
 
             </div>
