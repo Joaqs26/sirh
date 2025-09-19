@@ -589,7 +589,7 @@ public function process_4()
 }
 
 //INASISTENCIAS
-    public function process_5()
+        public function process_5()
     {
         $query = pg_query("INSERT INTO central.ctrl_faltas (
     id_tbl_empleados_hraes,

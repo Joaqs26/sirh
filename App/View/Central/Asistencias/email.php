@@ -1,6 +1,6 @@
 <!-- MODALE_UPLOAD_FALTA -->
 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
-    id="modal_mail">
+        id="modal_mail">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header background-modal">
