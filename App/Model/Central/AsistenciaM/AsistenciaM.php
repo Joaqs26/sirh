@@ -469,70 +469,153 @@ ORDER BY id_tbl_empleados_hraes, fecha, hora;");
 public function insertFalta()
 {
     // 1) Faltas normales (desde ctrl_faltas)
-$q1 = pg_query("INSERT INTO central.reporte_faltas
-        (rfc, nombre, movil, no_dispositivo, fecha, hora, cantidad, estatus)
-    SELECT 
-        e.rfc,
-        btrim(e.nombre || ' ' || e.primer_apellido || ' ' || COALESCE(e.segundo_apellido,'')) AS nombre_completo,
-        MIN(CASE WHEN t.id_cat_estatus = 1 THEN t.movil END) AS movil,   -- toma un número activo si hay varios
-        ai.no_dispositivo,
-        f.fecha::date AS fecha,
-        f.hora::time  AS hora,
-        f.cantidad,
-        re.descripcion AS estatus
-    FROM central.ctrl_faltas f
-    JOIN central.tbl_empleados_hraes e
-      ON e.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
-    LEFT JOIN central.ctrl_asistencia_info ai
-      ON ai.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
-    LEFT JOIN central.ctrl_telefono_hraes t
-      ON t.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
-    JOIN central.cat_retardo_estatus re
-      ON re.id_cat_retardo_estatus = f.id_cat_retardo_estatus   
-    WHERE f.fecha::date NOT IN (SELECT fecha::date FROM central.cat_dias_festivos
-)
-    GROUP BY
-        e.rfc, e.nombre, e.primer_apellido, e.segundo_apellido,
-        ai.no_dispositivo, f.fecha, f.hora, f.cantidad, re.descripcion
-");
-
+ $q1 = pg_query("INSERT INTO central.reporte_faltas
+            (rfc, nombre, movil, no_dispositivo, fecha, hora, cantidad, estatus)
+        SELECT 
+            e.rfc,
+            btrim(e.nombre || ' ' || e.primer_apellido || ' ' || COALESCE(e.segundo_apellido,'')) AS nombre_completo,
+            MIN(CASE WHEN t.id_cat_estatus = 1 THEN t.movil END) AS movil,   -- toma un número activo si hay varios
+            ai.no_dispositivo,
+            f.fecha::date AS fecha,
+            f.hora::time  AS hora,
+            f.cantidad,
+            re.descripcion AS estatus
+        FROM central.ctrl_faltas f
+        JOIN central.tbl_empleados_hraes e
+          ON e.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+        LEFT JOIN central.ctrl_asistencia_info ai
+          ON ai.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+        LEFT JOIN central.ctrl_telefono_hraes t
+          ON t.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+        JOIN central.cat_retardo_estatus re
+          ON re.id_cat_retardo_estatus = f.id_cat_retardo_estatus
+        WHERE f.fecha::date NOT IN (
+                SELECT fecha::date FROM central.cat_dias_festivos
+              )
+          AND NOT EXISTS (
+                SELECT 1
+                FROM central.ctrl_incidencias ci
+                WHERE ci.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+                  AND ci.fecha_inicio IS NOT NULL
+                  AND daterange(
+                        ci.fecha_inicio::date,
+                        COALESCE(ci.fecha_fin::date, ci.fecha_inicio::date),
+                        '[]'
+                      ) @> f.fecha::date
+              )
+        GROUP BY
+            e.rfc, e.nombre, e.primer_apellido, e.segundo_apellido,
+            ai.no_dispositivo, f.fecha, f.hora, f.cantidad, re.descripcion
+    ");
     if ($q1 === false) return false;
 
     // 2) Retardos (menores) desde asistencia
-    $q2 = pg_query("INSERT INTO central.reporte_faltas (rfc, nombre, movil, no_dispositivo, fecha, hora, cantidad, estatus)
-        SELECT DISTINCT ON (e.rfc, a.fecha::date, a.hora::time)
-            e.rfc,
-            (e.nombre || ' ' || e.primer_apellido || ' ' || e.segundo_apellido) AS nombre_completo,
-            t.movil,
-            ai.no_dispositivo,
-            a.fecha::date AS fecha,
-            a.hora::time  AS hora,
-            1 AS cantidad,
-            'RETARDO' AS estatus
-        FROM central.ctrl_asistencia a
-        INNER JOIN central.tbl_empleados_hraes e ON e.id_tbl_empleados_hraes = a.id_tbl_empleados_hraes
-        INNER JOIN central.ctrl_asistencia_info ai ON ai.id_tbl_empleados_hraes = a.id_tbl_empleados_hraes
-        INNER JOIN central.ctrl_telefono_hraes t ON t.id_tbl_empleados_hraes = a.id_tbl_empleados_hraes
-        WHERE a.fecha::date NOT IN (SELECT fecha::date FROM central.cat_dias_festivos)
-          AND a.hora::time >= (SELECT c.hora_min_retardo FROM central.cat_asistencia_config c WHERE c.id_cat_asistencia_config = ai.id_cat_asistencia_config)
-          AND a.hora::time <= (SELECT c.hora_max_retardo FROM central.cat_asistencia_config c WHERE c.id_cat_asistencia_config = ai.id_cat_asistencia_config)
+$q2 = pg_query("INSERT INTO central.reporte_faltas
+        (rfc, nombre, movil, no_dispositivo, fecha, hora, cantidad, estatus)
+    WITH Minimo AS (
+        SELECT
+            A.fecha::date AS fecha,
+            MIN(A.hora::time) AS hora,
+            A.id_tbl_empleados_hraes
+        FROM central.ctrl_asistencia A
+        WHERE A.fecha::date NOT IN (SELECT fecha::date FROM central.cat_dias_festivos)
+        GROUP BY A.fecha::date, A.id_tbl_empleados_hraes
+    ),
+    Entradas AS (
+        SELECT
+            m.fecha,
+            m.hora,
+            m.id_tbl_empleados_hraes
+        FROM Minimo m
+        WHERE
+            (m.fecha = DATE '2025-06-02' AND m.hora > TIME '10:00:59')
+            OR
+            (
+                m.fecha <> DATE '2025-06-02'
+                AND m.hora >= (
+                    SELECT c.hora_min_retardo
+                    FROM central.cat_asistencia_config c
+                    WHERE c.id_cat_asistencia_config = (
+                        SELECT ai.id_cat_asistencia_config
+                        FROM central.ctrl_asistencia_info ai
+                        WHERE ai.id_tbl_empleados_hraes = m.id_tbl_empleados_hraes
+                    )
+                )
+                AND m.hora <= (
+                    SELECT c.hora_max_retardo
+                    FROM central.cat_asistencia_config c
+                    WHERE c.id_cat_asistencia_config = (
+                        SELECT ai.id_cat_asistencia_config
+                        FROM central.ctrl_asistencia_info ai
+                        WHERE ai.id_tbl_empleados_hraes = m.id_tbl_empleados_hraes
+                    )
+                )
+            )
+    ),
+    Filtradas AS (
+        SELECT e.*
+        FROM Entradas e
+        WHERE NOT EXISTS (
+                SELECT 1
+                FROM central.masivo_ctrl_temp_faltas_just mj
+                WHERE mj.rfc = (
+                    SELECT emp.rfc
+                    FROM central.tbl_empleados_hraes emp
+                    WHERE emp.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
+                )
+                  AND mj.fecha IS NOT NULL
+                  AND mj.fecha <> ''
+                  AND mj.fecha::date = e.fecha::date
+            )
           AND NOT EXISTS (
-              SELECT 1
-              FROM central.ctrl_incidencias ci
-              WHERE ci.id_tbl_empleados_hraes = a.id_tbl_empleados_hraes
-                AND ci.id_cat_incidencias IN (3,4,5,9,10,13)
-                AND ci.fecha_inicio IS NOT NULL
-                AND daterange(ci.fecha_inicio::date, COALESCE(ci.fecha_fin::date, ci.fecha_inicio::date), '[]')
-                    @> a.fecha::date
-          )
+                SELECT 1
+                FROM central.ctrl_incidencias ci
+                WHERE ci.id_tbl_empleados_hraes = e.id_tbl_empleados_hraes
+                  AND ci.id_cat_incidencias IN (1,2,3,4,5,6,7,9,10,11,12,13,14,15,16,17)
+                  AND ci.fecha_inicio IS NOT NULL
+                  AND daterange(
+                        ci.fecha_inicio::date,
+                        COALESCE(ci.fecha_fin::date, ci.fecha_inicio::date),
+                        '[]'
+                      ) @> e.fecha::date
+            )
           AND NOT EXISTS (
-              SELECT 1
-              FROM central.cat_dias_extraor ce
-              WHERE ce.fecha::date = a.fecha::date
-                AND UPPER(TRIM(ce.tipo)) = 'RETARDO MAYOR'
-          )
-        ORDER BY e.rfc, a.fecha::date, a.hora::time
-    ");
+                SELECT 1
+                FROM central.cat_dias_extraor ce
+                WHERE ce.fecha::date = e.fecha::date
+                  AND UPPER(TRIM(ce.tipo)) = 'RETARDO MAYOR'
+            )
+    ),
+    rfc_con_3 AS (
+        SELECT id_tbl_empleados_hraes
+        FROM Filtradas
+        GROUP BY id_tbl_empleados_hraes
+        HAVING COUNT(*) >= 3   -- 👈 aquí se fuerza “igual o mayor a 3”
+    )
+    SELECT
+        emp.rfc,
+        btrim(emp.nombre || ' ' || emp.primer_apellido || ' ' || COALESCE(emp.segundo_apellido,'')) AS nombre,
+        (
+            SELECT t.movil
+            FROM central.ctrl_telefono_hraes t
+            WHERE t.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+              AND t.id_cat_estatus = 1
+            LIMIT 1
+        ) AS movil,
+        ai.no_dispositivo,
+        f.fecha::date AS fecha,
+        f.hora::time  AS hora,
+        1 AS cantidad,
+        'RETARDO' AS estatus
+    FROM Filtradas f
+    JOIN rfc_con_3 c
+      ON c.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+    JOIN central.tbl_empleados_hraes emp
+      ON emp.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+    LEFT JOIN central.ctrl_asistencia_info ai
+      ON ai.id_tbl_empleados_hraes = f.id_tbl_empleados_hraes
+");
+
     if ($q2 === false) return false;
 
     return $q2;
